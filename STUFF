@@ -1,0 +1,4 @@
+USE CASE:
+
+<% client.invoices.outstanding.each do |invoice| %>
+            <%= link_to invoice.invoice_number, {:controller => "party", :action => "invoice_show", :id => invoice.id, :entity_instance_id => client.party, :entity_type_id => EntityType::PARTY}, :onclick => "event.cancelBubble=true;" %> <%= number_to_currency(invoice.balance_out)
