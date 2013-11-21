@@ -16,6 +16,7 @@ module Disposable
       end
 
       def facade!
+        #self.extend(Id)
         self.class.facade_options.first.new(self)
       end
     end
@@ -31,6 +32,12 @@ module Disposable
           @_facade_options
         end
       end # TODO: use hooks.
+    end
+
+
+    # Forward #id to facaded. this is only a concern in 1.8.
+    def id
+      __getobj__.id
     end
   end
 end
