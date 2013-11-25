@@ -18,6 +18,11 @@ class Invoice
 	end
 
 
+Why facades?
+you don't wanna add code to existing shit
+transparently change the API
+
+
 * facades
 * overriding public methods in facade
 * temporary Refinements
@@ -25,11 +30,19 @@ class Invoice
 * steps of refactoring
 
 
+"partial refactoring"
 "explicit refactoring"
 
 
+* make it simple to split existing model into smaller (reducing validations etc)
+* mark dead code
+* by explicit use of `facade` you can track "dirt"
+
 
 TODO: Write a gem description
+* generator for Facades
+loading of facades?
+location of facades? i wanna have Facade::Client, not facades/ClientFacade.
 
 ## Installation
 
