@@ -27,6 +27,7 @@ ActiveRecord::Base.establish_connection(
 #   end
 # end
 
+# TODO: test auto-loading of Rails assets.
 require 'disposable/facade/active_record'
 
 class ActiveRecordAssociationsTest < MiniTest::Spec
@@ -39,6 +40,9 @@ class ActiveRecordAssociationsTest < MiniTest::Spec
   let (:invoice) { Invoice.new }
   it "allows adding facades to associations" do
     # tests #is_a?
+    InvoiceItem.new.facade.class.must_equal Item
+    InvoiceItem.new.facade.is_a?(InvoiceItem).must_equal true
+
     invoice.invoice_items << InvoiceItem.new.facade
   end
 end
