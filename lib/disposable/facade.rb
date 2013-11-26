@@ -39,5 +39,8 @@ module Disposable
     def id
       __getobj__.id
     end
+
+
+    alias_method :facaded, :__getobj__
   end
 end
