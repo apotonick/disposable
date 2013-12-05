@@ -21,7 +21,9 @@ class Invoice
 Why facades?
 you don't wanna add code to existing shit
 transparently change the API
+you don't have to worry about what's happening in the underlying pile of shit (GstCalculations module), you only correct the API on top of it
 
+you basically don't change existing code but build extracted components on top of your legacy app
 
 * facades
 * overriding public methods in facade
@@ -38,11 +40,16 @@ transparently change the API
 * mark dead code
 * by explicit use of `facade` you can track "dirt"
 
+* rename options => DSL
 
 TODO: Write a gem description
 * generator for Facades
 loading of facades?
 location of facades? i wanna have Facade::Client, not facades/ClientFacade.
+
+
+Facadable#facade
+Facade#facaded
 
 ## Installation
 
