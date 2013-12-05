@@ -32,7 +32,7 @@ class FacadeTest < MiniTest::Spec
   end
 end
 
-class FacadeWithOptionsTest < MiniTest::Spec
+class FacadesWithOptionsTest < MiniTest::Spec
   class Track < ::Track
   end
 
