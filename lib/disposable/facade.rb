@@ -1,39 +1,56 @@
 require "delegate"
+require "hooks/inheritable_attribute"
 
 module Disposable
   class Facade < SimpleDelegator
-    module Facadable
-      def facade
-        options = self.class.facade_options
+    extend Hooks::InheritableAttribute
+    inheritable_attr :facade_options
+    self.facade_options = [nil, {}]
 
-        if options.last[:if]
-          return self unless options.last[:if].call(self)
+
+    module Facadable
+      def facade!(facade_class=nil)
+        facade_class ||= self.class.facade_class
+        facade_class.facade!(self)
+      end
+
+      def facade(facade_class=nil)
+        facade_class ||= self.class.facade_class
+        facade_class.facade(self)
+      end
+    end
+
+
+    class << self
+      def facades(klass, options={})
+        facade_options = [self, options]
+
+        self.facade_options = facade_options
+
+        klass.instance_eval do
+          include Facadable
+          @_facade_class = facade_options.first
+
+          def facade_class
+            @_facade_class
+          end
+        end # TODO: use hooks.
+      end
+
+      # TODO: move both into Facader instance.
+      def facade(facaded)
+        if facade_options.last[:if]
+          return facaded unless facade_options.last[:if].call(facaded)
         end
 
         # TODO: check if already facaded.
-        # TODO: allow different facades.
-        facade!
+        facade!(facaded)
       end
 
-      def facade!
-        #self.extend(Id)
-        self.class.facade_options.first.new(self)
+      def facade!(facaded)
+        new(facaded)
       end
     end
-
-    def self.facades(klass, options={})
-      facade_class = self
-
-      klass.instance_eval do
-        include Facadable
-        @_facade_options = [facade_class, options]
-
-        def facade_options
-          @_facade_options
-        end
-      end # TODO: use hooks.
-    end
-
 
     # Forward #id to facaded. this is only a concern in 1.8.
     def id

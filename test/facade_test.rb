@@ -8,11 +8,20 @@ class FacadeTest < MiniTest::Spec
     facades Track
   end
 
-  it { Track.new.class.must_equal Track }
-  it { Track.new.facade.class.must_equal Song }
+  class Hit < Disposable::Facade
+  end
+
+  let (:track) { Track.new }
+
+  it { track.class.must_equal Track }
+  it { track.facade.class.must_equal Song }
+
+  it "allows passing facade name" do # FIXME: what if track doesn't have Facadable?
+    track.facade(Hit).class.must_equal Hit
+  end
+  # DISCUSS: should this be Hit.facade(track) ?
 
   it "facades only once" do
-
   end
 
   describe "#id" do
