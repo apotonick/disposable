@@ -45,4 +45,36 @@ class ActiveRecordAssociationsTest < MiniTest::Spec
 
     invoice.invoice_items << InvoiceItem.new.facade
   end
+
+
+  class InvoiceFacade < Disposable::Facade
+    facades ::Invoice
+
+    include Disposable::Facade::ActiveRecord
+    #has_many :items, :class_name => ::InvoiceItem, :foreign_key_name => :invoice_item_id
+
+    module InstanceMethods # IncludeMethods, Included
+      extend ActiveSupport::Concern
+      included do
+        has_many :items, :class_name => ::InvoiceItem, :foreign_key => :invoice_item_id
+
+        def self.name
+          "anon"
+        end
+
+      end
+    end
+    module ClassMethods # ExtendMethods, Extended
+    end
+
+    extend Disposable::Facade::Build
+  end
+
+  it "what" do
+    invoice = InvoiceFacade.build
+    invoice.items << item = InvoiceItem.new
+    # TODO: test items << Facade::Item.new
+
+    invoice.items.must_equal([item])
+  end
 end
