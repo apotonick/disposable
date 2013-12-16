@@ -9,6 +9,7 @@ module Disposable
 
 
     module Facadable
+      # used in facaded.
       def facade!(facade_class=nil)
         facade_class ||= self.class.facade_class
         facade_class.facade!(self)
@@ -23,13 +24,14 @@ module Disposable
 
     class << self
       def facades(klass, options={})
-        facade_options = [self, options]
+        facade_options = [klass, options] # TODO: test.
 
         self.facade_options = facade_options
 
+        facade_class = self
         klass.instance_eval do
           include Facadable
-          @_facade_class = facade_options.first
+          @_facade_class = facade_class
 
           def facade_class
             @_facade_class
@@ -59,5 +61,18 @@ module Disposable
 
 
     alias_method :facaded, :__getobj__
+
+    # Extend your facade and call Song.build, includes ClassMethods (extend constructor).
+    module Build
+      def build(*args)
+        facade_class = self
+        Class.new(facade_options.first).class_eval do
+          include facade_class::InstanceMethods # TODO: check if exists.
+          extend facade_class::ClassMethods # TODO: check if exists.
+
+          self
+        end.new(*args)
+      end
+    end
   end
 end
