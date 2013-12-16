@@ -63,7 +63,7 @@ module Disposable
     alias_method :facaded, :__getobj__
 
     # Extend your facade and call Song.build, includes ClassMethods (extend constructor).
-    module Build
+    module Subclass
       def build(*args)
         facade_class = self
         Class.new(facade_options.first).class_eval do
@@ -73,6 +73,8 @@ module Disposable
           self
         end.new(*args)
       end
+
+      alias_method :subclass, :build
     end
   end
 end

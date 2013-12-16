@@ -67,11 +67,11 @@ class ActiveRecordAssociationsTest < MiniTest::Spec
     module ClassMethods # ExtendMethods, Extended
     end
 
-    extend Disposable::Facade::Build
+    extend Disposable::Facade::Subclass
   end
 
   it "what" do
-    invoice = InvoiceFacade.build
+    invoice = InvoiceFacade.subclass
     invoice.items << item = InvoiceItem.new
     # TODO: test items << Facade::Item.new
 

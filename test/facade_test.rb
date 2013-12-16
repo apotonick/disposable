@@ -63,7 +63,7 @@ class FacadesWithOptionsTest < MiniTest::Spec
   end
 end
 
-class ClassFacadeTest < MiniTest::Spec
+class SubclassTest < MiniTest::Spec
   class Track
     attr_reader :title
 
@@ -79,7 +79,7 @@ class ClassFacadeTest < MiniTest::Spec
     # has_one :album
     # rename_options
 
-    extend Build # do ... end instead of ClassMethods.
+    extend Subclass # do ... end instead of ClassMethods.
     #include Disposable::Facade::ActiveRecord
 
     module InstanceMethods
@@ -95,7 +95,7 @@ class ClassFacadeTest < MiniTest::Spec
   end
 
   #it { Track.facade(Song).new(:name => "Bombs Away").title.must_equal "Bombs Away" }
-  it { Song.build(:name => "Bombs Away").title.must_equal "Bombs Away" }
+  it { Song.subclass(:name => "Bombs Away").title.must_equal "Bombs Away" }
   # it "what" do
   #   Song.build(:name => "Bombs Away").facade(Song).is_a?(Track).must_equal true
   # end
