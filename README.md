@@ -22,6 +22,9 @@ Why facades?
 you don't wanna add code to existing shit
 transparently change the API
 you don't have to worry about what's happening in the underlying pile of shit (GstCalculations module), you only correct the API on top of it
+no inheritance, composition whereever possible (interfaces between layers)
+optional, still use old assets
+don't/step-wise change existing "running" code
 
 you basically don't change existing code but build extracted components on top of your legacy app
 
@@ -46,10 +49,35 @@ TODO: Write a gem description
 * generator for Facades
 loading of facades?
 location of facades? i wanna have Facade::Client, not facades/ClientFacade.
-
+FACADE keeps all configuration in one place (like a new has_many), also you can track which methods you actually need in your data model. this wouldn't be possible that easy with inheritance.
 
 Facadable#facade
 Facade#facaded
+
+
+idea: collect # REFAC lines
+
+
+running with Rails 2.3->4.0, 1.8.7 ..as that makes sense
+
+
+## Refinement
+
+injected into instance _after_ construction
+
+## Build
+
+
+
+FacadeClass
+  extend Build
+
+  module ClassMethods
+    def initializer
+    def another_class_method # FIXME: does that work?
+
+make anonymous class, allow overriding initializer and (works?) add class methods.
+
 
 ## Installation
 
