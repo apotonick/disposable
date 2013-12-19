@@ -100,3 +100,29 @@ class SubclassTest < MiniTest::Spec
   #   Song.build(:name => "Bombs Away").facade(Song).is_a?(Track).must_equal true
   # end
 end
+
+
+class RefinementsTest < MiniTest::Spec
+  class Track
+    def length
+      duration.round(2)
+    end
+
+    def duration
+      4.321
+    end
+  end
+
+  class Song < Disposable::Facade
+    facades Track
+    include Disposable::Facade::Refine
+
+    module Refinements
+      def duration
+        5.309
+      end
+    end
+  end
+
+  it { Track.new.facade.length.must_equal 5.31 }
+end

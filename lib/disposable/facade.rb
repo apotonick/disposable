@@ -62,6 +62,7 @@ module Disposable
 
     alias_method :facaded, :__getobj__
 
+
     # Extend your facade and call Song.build, includes ClassMethods (extend constructor).
     module Subclass
       def build(*args)
@@ -75,6 +76,19 @@ module Disposable
       end
 
       alias_method :subclass, :build
+    end
+
+
+    module Refine
+      def initialize(facaded) # DISCUSS: should we override ::facade here?
+        super.tap do |res|
+          refine(facaded)
+        end
+      end
+
+      def refine(facaded)
+        facaded.extend(self.class::Refinements)
+      end
     end
   end
 end
