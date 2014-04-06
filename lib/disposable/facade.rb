@@ -1,9 +1,9 @@
 require "delegate"
-require "hooks/inheritable_attribute"
+require "uber/inheritable_attr"
 
 module Disposable
   class Facade < SimpleDelegator
-    extend Hooks::InheritableAttribute
+    extend Uber::InheritableAttr
     inheritable_attr :facade_options
     self.facade_options = [nil, {}]
 
