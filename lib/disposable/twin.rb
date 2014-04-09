@@ -31,32 +31,46 @@ module Disposable
     end
 
 
-    def self.from(model)
+    def self.from(model) # TODO: private.
       new(model)
     end
 
     def self.new(model=nil)
-      super(model || _model.new)
+      model, options = nil, model if model.is_a?(Hash) # sorry but i wanna have the same API as ActiveRecord here.
+      super(model || _model.new, *[options].compact) # TODO: make this nicer.
     end
 
     def self.find(id)
-      from(_model.find(id))
+      new(_model.find(id))
+    end
+
+    def save # implement that in Reform::AR.
+      model.update_attributes(self.class.representer_class.new(self).to_hash)
+      # FIXME: sync again, here, or just id?
+      self.id = model.id
     end
 
     # below is the code for a representable-style twin:
 
     # TODO: improve speed when setting up a twin.
-    def initialize(model)
+    def initialize(model, options={})
       @model = model
 
-      from_hash(self.class.representer_class.new(model).to_hash)
+      # FIXME: make that in representable:
+      options = options.tap do |h|
+  h.keys.each { |k| h[k.to_s] = h.delete(k) }
+end
+
+      # DISCUSS: does the case exist where we get model AND options? if yes, test. if no, we can save the mapping and just use options.
+      from_hash(self.class.representer_class.new(model).to_hash.
+        merge(options))
     end
 
+  private
     def from_hash(options={})
       self.class.representer_class.new(self).from_hash(options)
     end
 
-  private
     attr_reader :model # TODO: test
   end
 end

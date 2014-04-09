@@ -65,6 +65,15 @@ class TwinTest < MiniTest::Spec
   end
 
 
+  describe "::new with :symbols" do
+    subject { Song.new(:title => "Broken") }
+
+    it { subject.title.must_equal "Broken" }
+    # it { subject.album.must_equal nil }
+  end
+
+
+  # DISCUSS: make ::from private.
   describe "::from" do
     let (:song) { Model::Song.new(1, "Broken", album) }
     let (:album) { Model::Album.new("The Process Of  Belief") }
@@ -105,7 +114,10 @@ class TwinActiveRecordTest < MiniTest::Spec
 
 
   describe "::save" do
-    # subject { Song. }
-    it { ::Song.find(subject.id).attributes.must_equal({}) }
+    subject { Song.new(:title => "1.80 Down") }
+    before { subject.save }
+
+    it { ::Song.find(subject.id).attributes.slice("id", "title").
+      must_equal({"id" => subject.id, "title" => "1.80 Down"}) }
   end
 end
