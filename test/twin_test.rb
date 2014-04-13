@@ -39,7 +39,7 @@ class TwinTest < MiniTest::Spec
   class Song < Disposable::Twin
     property :id # DISCUSS: needed for #save.
     property :title
-    property :album, setter: lambda { |v, args| self.album=(Album.from(v)) }
+    property :album, setter: lambda { |v, args| self.album=(Album.from(v)) }, :twin => true
 
     model Model::Song
   end
@@ -138,6 +138,13 @@ class TwinActiveRecordTest < MiniTest::Spec
       ::Song.find(subject.id).album.must_equal album
     }
   end
+end
+
+
+class TwinDecoratorTest < MiniTest::Spec
+  subject { TwinTest::Song.representer_class }
+
+  it { subject.twin_names.must_equal ["album"] }
 end
 
 # from is as close to from_hash as possible

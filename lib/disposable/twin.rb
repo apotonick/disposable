@@ -11,7 +11,23 @@ module Disposable
       def self.clone # called in inheritable_attr :representer_class.
         Class.new(self) # By subclassing, representable_attrs.clone is called.
       end
+
+      def self.build_config
+        super.extend(ConfigExtensions)
+      end
+
+      def self.twin_names
+        representable_attrs.twin_names
+      end
+
+      module ConfigExtensions
+        def twin_names
+          find_all { |attr| attr[:twin] }.
+          collect { |attr| attr.name }
+        end
+      end
     end
+
 
     extend Uber::InheritableAttr
     inheritable_attr :representer_class
@@ -23,13 +39,11 @@ module Disposable
       self._model = name
     end
 
-
     def self.property(name, *args, &block)
       attr_accessor name
 
       representer_class.property(name, *args, &block)
     end
-
 
     def self.from(model) # TODO: private.
       new(model)
@@ -46,13 +60,15 @@ module Disposable
 
     def save # use that in Reform::AR.
       sync_attrs    = self.class.representer_class.new(self).to_hash
-      update_attrs  = sync_attrs.reject { |k| ["album"].include?(k) }
-      save_attrs    = sync_attrs.select { |k| ["album"].include?(k) }
+      twin_names    = self.class.representer_class.twin_names
 
-      model.update_attributes(update_attrs)
+      update_attrs  = sync_attrs.reject { |k| twin_names.include?(k) }
+      save_attrs    = sync_attrs.select { |k| twin_names.include?(k) }
 
       save_attrs.values.map(&:save)
 
+      # this is AR-specific:
+      model.update_attributes(update_attrs)
       # FIXME: sync again, here, or just id?
       self.id = model.id
     end
