@@ -33,11 +33,11 @@ require 'disposable/twin'
 class TwinTest < MiniTest::Spec
   module Model
     Song  = Struct.new(:id, :title, :album)
-    Album = Struct.new(:name)
+    Album = Struct.new(:id, :name)
   end
 
   class Song < Disposable::Twin
-    property :id
+    property :id # DISCUSS: needed for #save.
     property :title
     property :album, setter: lambda { |v, args| self.album=(Album.from(v)) }
 
@@ -45,6 +45,7 @@ class TwinTest < MiniTest::Spec
   end
 
   class Album < Disposable::Twin
+    property :id # DISCUSS: needed for #save.
     property :name
   end
 
@@ -76,7 +77,7 @@ class TwinTest < MiniTest::Spec
   # DISCUSS: make ::from private.
   describe "::from" do
     let (:song) { Model::Song.new(1, "Broken", album) }
-    let (:album) { Model::Album.new("The Process Of  Belief") }
+    let (:album) { Model::Album.new(2, "The Process Of  Belief") }
 
     subject { Song.from(song) }
 
@@ -93,12 +94,13 @@ class TwinActiveRecordTest < MiniTest::Spec
   class Song < Disposable::Twin
     property :id
     property :title
-    property :album, setter: lambda { |v, args| self.album=(Album.from(v)) }
+    property :album, setter: lambda { |v, args| self.album=(Album.from(v)) }, :twin => true
 
     model ::Song
   end
 
   class Album < Disposable::Twin
+    property :id
     property :name
   end
 
@@ -113,11 +115,33 @@ class TwinActiveRecordTest < MiniTest::Spec
   end
 
 
-  describe "::save" do
+
+  describe "::save, nested not set" do
     subject { Song.new(:title => "1.80 Down") }
     before { subject.save }
 
     it { ::Song.find(subject.id).attributes.slice("id", "title").
       must_equal({"id" => subject.id, "title" => "1.80 Down"}) }
   end
+
+  describe "::save, nested present" do
+    let (:song) { ::Song.new(:title => "Broken", :album => album) }
+    let (:album) { ::Album.new(:name => "The Process Of  Belief") }
+
+    subject { Song.from(song) }
+
+    before { subject.save } # propagate album.save
+
+    it { ::Song.find(subject.id).attributes.slice("id", "title").
+      must_equal({"id" => subject.id, "title" => "Broken"})
+
+      ::Song.find(subject.id).album.must_equal album
+    }
+  end
 end
+
+# from is as close to from_hash as possible
+# there should be #to in a perfect API, nothing else.
+
+
+# should #new create empty associated models?

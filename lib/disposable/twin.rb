@@ -44,8 +44,15 @@ module Disposable
       new(_model.find(id))
     end
 
-    def save # implement that in Reform::AR.
-      model.update_attributes(self.class.representer_class.new(self).to_hash)
+    def save # use that in Reform::AR.
+      sync_attrs    = self.class.representer_class.new(self).to_hash
+      update_attrs  = sync_attrs.reject { |k| ["album"].include?(k) }
+      save_attrs    = sync_attrs.select { |k| ["album"].include?(k) }
+
+      model.update_attributes(update_attrs)
+
+      save_attrs.values.map(&:save)
+
       # FIXME: sync again, here, or just id?
       self.id = model.id
     end
