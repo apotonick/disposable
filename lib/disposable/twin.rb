@@ -6,6 +6,7 @@ module Disposable
   class Twin
     class Decorator < Representable::Decorator
       include Representable::Hash
+      include AllowSymbols
 
       # DISCUSS: same in reform, is that a bug in represntable?
       def self.clone # called in inheritable_attr :representer_class.
@@ -78,11 +79,6 @@ module Disposable
     # TODO: improve speed when setting up a twin.
     def initialize(model, options={})
       @model = model
-
-      # FIXME: make that in representable:
-      options = options.tap do |h|
-  h.keys.each { |k| h[k.to_s] = h.delete(k) }
-end
 
       # DISCUSS: does the case exist where we get model AND options? if yes, test. if no, we can save the mapping and just use options.
       from_hash(self.class.representer_class.new(model).to_hash.
