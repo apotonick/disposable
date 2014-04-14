@@ -66,6 +66,7 @@ module Disposable
       update_attrs  = sync_attrs.reject { |k| twin_names.include?(k) }
       save_attrs    = sync_attrs.select { |k| twin_names.include?(k) }
 
+      puts "saving #{save_attrs.inspect}........................"
       save_attrs.values.map(&:save)
 
       # this is AR-specific:

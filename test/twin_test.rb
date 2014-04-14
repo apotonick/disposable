@@ -28,8 +28,6 @@ ActiveRecord::Base.establish_connection(
 # end
 
 
-require 'disposable/twin'
-
 class TwinTest < MiniTest::Spec
   module Model
     Song  = Struct.new(:id, :title, :album)
@@ -47,6 +45,8 @@ class TwinTest < MiniTest::Spec
   class Album < Disposable::Twin
     property :id # DISCUSS: needed for #save.
     property :name
+
+    model Model::Album
   end
 
 
@@ -127,6 +127,7 @@ class TwinActiveRecordTest < MiniTest::Spec
     it { subject.album.must_equal nil }
   end
 
+
   describe "::save, nested present" do
     let (:song) { ::Song.new(:title => "Broken", :album => album) }
     let (:album) { ::Album.new(:name => "The Process Of  Belief") }
@@ -141,6 +142,22 @@ class TwinActiveRecordTest < MiniTest::Spec
       must_equal({"id" => subject.id, "title" => "Broken"}) }
 
     it { subject.album.must_equal album }
+  end
+
+  describe "::save, nested new" do
+    # let (:song) { ::Song.new(:title => "Broken", :album => album) }
+    # let (:album) { ::Album.new(:name => "The Process Of  Belief") }
+
+    let(:twin) { Song.new(:title => "How It Goes", :album => Album.new(:name => "Billy Talent")) }
+
+    before { twin.save } # propagate album.save
+
+    subject { ::Song.find(twin.id) }
+
+    it { subject.attributes.slice("id", "title").
+      must_equal({"id" => subject.id, "title" => "Broken"}) }
+
+    it { subject.album.attributes.must_equal(:name => "Billy Talent") }
   end
 end
 

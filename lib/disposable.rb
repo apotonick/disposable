@@ -2,6 +2,7 @@ require "disposable/version"
 
 module Disposable
   # Your code goes here...
+  autoload :Twin, 'disposable/twin'
 end
 
 require "disposable/facade"
