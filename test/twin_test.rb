@@ -117,26 +117,30 @@ class TwinActiveRecordTest < MiniTest::Spec
 
 
   describe "::save, nested not set" do
-    subject { Song.new(:title => "1.80 Down") }
-    before { subject.save }
+    let (:twin) { Song.new(:title => "1.80 Down") }
+    before { twin.save }
+    subject { ::Song.find(twin.id) }
 
-    it { ::Song.find(subject.id).attributes.slice("id", "title").
+    it { subject.attributes.slice("id", "title").
       must_equal({"id" => subject.id, "title" => "1.80 Down"}) }
+
+    it { subject.album.must_equal nil }
   end
 
   describe "::save, nested present" do
     let (:song) { ::Song.new(:title => "Broken", :album => album) }
     let (:album) { ::Album.new(:name => "The Process Of  Belief") }
 
-    subject { Song.from(song) }
+    let(:twin) { Song.from(song) }
 
-    before { subject.save } # propagate album.save
+    before { twin.save } # propagate album.save
 
-    it { ::Song.find(subject.id).attributes.slice("id", "title").
-      must_equal({"id" => subject.id, "title" => "Broken"})
+    subject { ::Song.find(twin.id) }
 
-      ::Song.find(subject.id).album.must_equal album
-    }
+    it { subject.attributes.slice("id", "title").
+      must_equal({"id" => subject.id, "title" => "Broken"}) }
+
+    it { subject.album.must_equal album }
   end
 end
 
