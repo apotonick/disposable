@@ -99,19 +99,17 @@ module Disposable
 
     # it's important to stress that #save is the only entry point where we hit the database after initialize.
     def save # use that in Reform::AR.
-      raw_attrs    = self.class.representer_class.new(self).to_hash
-      puts "after to_hash: #{raw_attrs.inspect}"
       twin_names    = self.class.representer_class.twin_names
 
-
+      raw_attrs     = self.class.representer_class.new(self).to_hash
       save_attrs    = raw_attrs.select { |k| twin_names.include?(k) }
-      puts "saving #{save_attrs.inspect}........................"
       save_attrs.values.map(&:save)
 
 
       sync_attrs    = self.class.save_representer.new(self).to_hash
-      # this is AR-specific:
+      # this is ORM-specific:
       model.update_attributes(sync_attrs) # this also does `album: #<Album>`
+
       # FIXME: sync again, here, or just id?
       self.id = model.id
     end

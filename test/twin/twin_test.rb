@@ -48,7 +48,7 @@ class TwinTest < MiniTest::Spec
     subject { Twin::Song.new(:title => "Broken") }
 
     it { subject.title.must_equal "Broken" }
-    # it { subject.album.must_equal nil }
+    it { subject.album.must_equal nil }
   end
 
 
