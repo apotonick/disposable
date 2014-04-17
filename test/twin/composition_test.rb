@@ -45,5 +45,6 @@ class CompositionTest < MiniTest::Spec
 
   describe "#_models" do
     it { subject.send(:_models).must_equal([album, band]) }
+    it { Twin::Album.new(:album => album).send(:_models).must_equal([album]) }
   end
 end
