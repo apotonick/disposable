@@ -41,4 +41,9 @@ class CompositionTest < MiniTest::Spec
     it { subject.album.object_id.must_equal album.object_id }
     it { subject.band.object_id.must_equal  band.object_id }
   end
+
+
+  describe "#_models" do
+    it { subject.send(:_models).must_equal([album, band]) }
+  end
 end

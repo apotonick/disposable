@@ -1,8 +1,21 @@
 module Disposable
   # Composition delegates accessors to models as per configuration.
+  #
+  #   class Album
+  #     include Disposable::Composition
+
+  #     map( {cd: [:id, :name], band: [:title]} )
+  #   end
+
+  #   album = Album.new(cd: CD.find(1), band: Band.new)
+  #   album.id #=> 1
+  #   album.title = "Ten Foot Pole"
   module Composition
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
+
     module ClassMethods
-    private
       def map(options)
         @attr2obj = {}  # {song: ["title", "track"], artist: ["name"]}
 
@@ -21,10 +34,15 @@ module Disposable
     end
 
 
+  private
     def initialize(models)
       models.each do |name, obj|
         instance_variable_set(:"@#{name}", obj)
       end
+
+      @_models = models.values
     end
+
+    attr_reader:_models
   end
 end
