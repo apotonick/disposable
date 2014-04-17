@@ -4,7 +4,7 @@
 
 ## Twin
 
-`Twin`s implement light-weight domain objects that contain business logic - no persistance logic. They have read- and write access to a persistant object (or a composition of those) and expose a sub-set of accessors to that persistant "brother", making it a "data mapper-like phantom".
+Twins implement light-weight domain objects that contain business logic - no persistance logic. They have read- and write access to a persistant object (or a composition of those) and expose a sub-set of accessors to that persistant "brother", making it a "data mapper-like phantom".
 
 Being designed to wrap persistant objects, a typical "brother" class could be an ActiveRecord one.
 
