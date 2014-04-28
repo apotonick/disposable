@@ -54,9 +54,9 @@ module Disposable
     end
 
     def self.property(name, *args, &block)
-      attr_accessor name
-
-      representer_class.property(name, *args, &block)
+      representer_class.property(name, *args, &block).tap do |definition|
+        attr_accessor definition[:as].evaluate(nil)
+      end
     end
 
     def self.from(model) # TODO: private.
@@ -92,6 +92,18 @@ module Disposable
       representer
     end
 
+    def self.write_representer
+      representer = Class.new(representer_class) # inherit configuration
+      representer.representable_attrs.
+        each { |attr| attr.merge!(
+          :pass_options => true,
+          # use the alias name (as:) when writing attributes in new.
+          :getter      => lambda { |args| send("#{args.binding[:as].evaluate(nil)}") },
+          :setter      => lambda { |value, args| send("#{args.binding[:as].evaluate(nil)}=", value) } )}
+
+      representer
+    end
+
 
     def to_hash(*) # DISCUSS: do we want that here?
       model
@@ -101,8 +113,8 @@ module Disposable
     def save # use that in Reform::AR.
       twin_names    = self.class.representer_class.twin_names
 
-      raw_attrs     = self.class.representer_class.new(self).to_hash
-      save_attrs    = raw_attrs.select { |k| twin_names.include?(k) }
+      raw_attrs     = self.class.write_representer.new(self).to_hash
+      save_attrs    = raw_attrs.select { |k| twin_names.include?(k) } # FIXME: bug when as and nested.
       save_attrs.values.map(&:save)
 
 
@@ -127,7 +139,7 @@ module Disposable
 
   private
     def from_hash(options={})
-      self.class.representer_class.new(self).from_hash(options)
+      self.class.write_representer.new(self).from_hash(options)
     end
 
     attr_reader :model # TODO: test
