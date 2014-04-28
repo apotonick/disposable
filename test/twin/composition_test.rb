@@ -9,7 +9,6 @@ class CompositionTest < MiniTest::Spec
   module Twin
     class Album #< Disposable::Twin
       include Disposable::Composition
-      extend Disposable::Composition::ClassMethods # FIXME.
 
       # property :id # DISCUSS: needed for #save.
       # property :name,   :on => :album
