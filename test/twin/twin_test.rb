@@ -77,3 +77,48 @@ end
 
 
 # should #new create empty associated models?
+
+
+class TwinAsTest < MiniTest::Spec
+  module Model
+    Song  = Struct.new(:title, :album)
+    Album = Struct.new(:name)
+  end
+
+
+  module Twin
+    class Album < Disposable::Twin
+      property :name, :as => :record_name
+
+      model Model::Album
+    end
+
+    class Song < Disposable::Twin
+      property :title, :as => :name
+      property :album, :twin => Album, :as => :record
+
+      model Model::Song
+    end
+  end
+
+
+  let (:record) { Twin::Album.new(:record_name => "Veni Vidi Vicous") }
+  subject { Twin::Song.new(:name => "Outsmarted", :record => record) }
+
+
+  describe "::new" do # TODO: this creates a new model!
+    # the Twin exposes the as: API.
+    it { subject.name.must_equal "Outsmarted" }
+    it { subject.record.must_equal record }
+  end
+
+
+  describe "#save" do
+    before { subject.save }
+
+    it { subject.name }
+  end
+end
+
+
+# TODO: test coercion!
