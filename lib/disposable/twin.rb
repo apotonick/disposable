@@ -53,7 +53,7 @@ module Disposable
       new(_model.find(id))
     end
 
-    # hash for #update_attributes (model API).
+    # hash for #update_attributes (model API): {title: "Future World", album: <Album>}
     def self.save_representer
       # TODO: do that only at compile-time!
       save = Class.new(write_representer) # inherit configuration
