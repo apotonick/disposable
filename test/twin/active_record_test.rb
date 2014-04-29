@@ -85,6 +85,7 @@ class TwinActiveRecordTest < MiniTest::Spec
       must_equal({"id" => subject.id, "title" => "Broken"}) }
 
     it { subject.album.must_equal album }
+    it { subject.album.id.wont_equal nil } # FIXME: this only works because song is saved after album.
   end
 
 
@@ -101,4 +102,63 @@ class TwinActiveRecordTest < MiniTest::Spec
 
     it { subject.album.attributes.slice("name").must_equal("name" => "Billy Talent") }
   end
+end
+
+
+class TwinActiveRecordAsTest < MiniTest::Spec
+  module Twin
+    class Album < Disposable::Twin
+      property :id
+      property :name, :as => :album_name
+
+      model ::Album
+    end
+
+    class Song < Disposable::Twin
+      property :id
+      property :title, :as => :song_title
+      property :album, :twin => Album, :as => :record
+
+      model ::Song
+    end
+  end
+
+
+  describe "::from" do
+     # (existing models)
+    let (:song) { ::Song.new(:title => "Broken", :album => album) }
+    let (:album) { ::Album.new(:name => "The Process Of Belief") }
+
+    let(:twin) { Twin::Song.from(song) }
+
+    it { twin.song_title.must_equal "Broken" }
+    it { twin.record.album_name.must_equal "The Process Of Belief" }
+  end
+
+
+  describe "#save" do
+    # existing models
+    let (:song) { ::Song.new(:title => "Broken", :album => album) }
+    let (:album) { ::Album.new(:name => "The Process Of  Belief") }
+
+    let(:twin) { Twin::Song.from(song) }
+
+    before do
+      twin.song_title = "Emo Boy"
+      twin.record.album_name = "Rode Hard And Put Away Wet"
+
+      twin.save
+    end
+
+    let (:ar_song) { ::Song.find(twin.id) }
+    let (:ar_album) { ar_song.album }
+
+    it { ar_song.attributes.slice("id", "title").
+      must_equal({"id" => ar_song.id, "title" => "Emo Boy"}) }
+
+    it { ar_album.must_equal album }
+    it("xxx") { ar_album.name.must_equal "Rode Hard And Put Away Wet" }
+    it { ar_album.id.wont_equal nil } # FIXME: this only works because song is saved after album.
+  end
+
 end

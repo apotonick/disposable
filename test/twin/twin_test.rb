@@ -112,12 +112,22 @@ class TwinAsTest < MiniTest::Spec
     it { subject.record.must_equal record }
   end
 
+  # DISCUSS: should we test saving without AR? is that worth the hustle?
+  # describe "#save" do
+  #   before { subject.send(:model).instance_eval do
+  #     def update_attributes(*)
 
-  describe "#save" do
-    before { subject.save }
+  #     end
+  #   end
+  #   subject.save
+  # }
 
-    it { subject.name }
-  end
+
+
+  #   # before { subject.save }
+
+  #   it { subject.name }
+  # end
 end
 
 

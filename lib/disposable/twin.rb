@@ -53,9 +53,11 @@ module Disposable
       self._model = name
     end
 
-    def self.property(name, *args, &block)
-      representer_class.property(name, *args, &block).tap do |definition|
-        attr_accessor definition[:as].evaluate(nil)
+    def self.property(name, options={}, &block)
+      options[:public_name] = options.delete(:as) || name
+
+      representer_class.property(name, options, &block).tap do |definition|
+        attr_accessor definition[:public_name]
       end
     end
 
@@ -72,53 +74,92 @@ module Disposable
       new(_model.find(id))
     end
 
+    # hash for #update_attributes (model API).
     def self.save_representer
       # TODO: do that only at compile-time!
-      save = Class.new(representer_class) # inherit configuration
+      save = Class.new(write_representer) # inherit configuration
       save.representable_attrs.
         find_all { |attr| attr[:twin] }.
         each { |attr| attr.merge!(
           :representable => true) }
+
+        save.representable_attrs.each do |attr|
+          attr.merge!(:as => attr.name)
+        end
+
       save
     end
+    def to_hash(*) # DISCUSS: do we want that here?
+      model
+    end
 
+    # transform incoming model into twin API hash.
     def self.new_representer
       representer = Class.new(representer_class) # inherit configuration
+
+      # wrap incoming nested model in it's Twin.
       representer.representable_attrs.
         find_all { |attr| attr[:twin] }.
         each { |attr| attr.merge!(
           :pass_options => true,
           :prepare      => lambda { |object, args| args.binding[:twin].new(object) }) }
+
+      # song_title => model.title
+      representer.representable_attrs.each do |attr|
+        attr.merge!(:as => attr[:public_name])
+      end
+
       representer
     end
 
+    # read/write to twin using twin's API (e.g. #record= not #album=).
     def self.write_representer
       representer = Class.new(representer_class) # inherit configuration
       representer.representable_attrs.
         each { |attr| attr.merge!(
           :pass_options => true,
           # use the alias name (as:) when writing attributes in new.
-          :getter      => lambda { |args| send("#{args.binding[:as].evaluate(nil)}") },
-          :setter      => lambda { |value, args| send("#{args.binding[:as].evaluate(nil)}=", value) } )}
+          # DISCUSS: attr.name = public_name would be simpler.
+          :as => attr[:public_name],
+          :getter      => lambda { |args|        send("#{args.binding[:public_name]}") },
+          :setter      => lambda { |value, args| send("#{args.binding[:public_name]}=", value) }
+        )}
+
+      representer
+    end
+
+    def self.pre_save_representer
+      representer = Class.new(write_representer)
+      representer.representable_attrs.
+        each { |attr| attr.merge!(
+          :representable => true,
+          :serialize => lambda { |model, args| puts model.inspect; model.save }
+        )}
 
       representer
     end
 
 
-    def to_hash(*) # DISCUSS: do we want that here?
-      model
-    end
-
     # it's important to stress that #save is the only entry point where we hit the database after initialize.
     def save # use that in Reform::AR.
       twin_names    = self.class.representer_class.twin_names
+      twin_names = twin_names.collect { |n| n.to_sym }
 
-      raw_attrs     = self.class.write_representer.new(self).to_hash
-      save_attrs    = raw_attrs.select { |k| twin_names.include?(k) } # FIXME: bug when as and nested.
-      save_attrs.values.map(&:save)
+      # raw_attrs     = self.class.write_representer.new(self).to_hash
+      # save_attrs    = raw_attrs.select { |k| twin_names.include?(k) } # FIXME: bug when as and nested.
+      # save_attrs.values.map(&:save)
+      puts "iiiinclude #{twin_names.inspect}"
+      self.class.pre_save_representer.new(self).to_hash(:include => twin_names) # #save on nested Twins.
 
+
+
+      # what we do right now
+      # call save on all nested twins - how does that work with dependencies (eg Album needs Song id)?
+      # extract all ORM attributes
+      # write to model
 
       sync_attrs    = self.class.save_representer.new(self).to_hash
+      puts "sync> #{sync_attrs.inspect}"
       # this is ORM-specific:
       model.update_attributes(sync_attrs) # this also does `album: #<Album>`
 
