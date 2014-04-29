@@ -1,3 +1,5 @@
+require 'forwardable'
+
 module Disposable
   # Composition delegates accessors to models as per configuration.
   #
@@ -12,12 +14,13 @@ module Disposable
   #   album.title = "Ten Foot Pole"
   module Composition
     def self.included(base)
+      base.extend(Forwardable)
       base.extend(ClassMethods)
     end
 
     module ClassMethods
       def map(options)
-        @attr2obj = {}  # {song: ["title", "track"], artist: ["name"]}
+        @attr2obj = {}  # {song: {:id => :id, :name => :name}, artist: }
 
         options.each do |mdl, meths|
           create_accessors(mdl, meths)
@@ -29,7 +32,8 @@ module Disposable
 
       def create_accessors(model, methods)
         accessors = methods.collect { |m| [m, "#{m}="] }.flatten
-        delegate *accessors << {:to => :"#{model}"}
+
+        def_instance_delegator # where, meth, new_metho *accessors << {:to => :"#{model}"}
       end
     end
 

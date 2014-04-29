@@ -152,5 +152,19 @@ module Disposable
     end
 
     attr_reader :model # TODO: test
+
+
+    # class Composition < self
+    #   def initialize(hash)
+    #     hash = hash.first
+    #     composition = Class.new do
+    #       include Disposable::Composition
+    #       map( {:song => [:song_title], :requester => [:name]})
+    #       self
+    #     end.new(hash)
+
+    #     super(composition)
+    #   end
+    # end
   end
 end
