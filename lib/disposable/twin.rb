@@ -32,7 +32,8 @@ module Disposable
     end
 
     def self.property(name, options={}, &block)
-      options[:public_name] = options.delete(:as) || name
+      options[:public_name]  = options.delete(:as) || name
+      options[:pass_options] = true
 
       representer_class.property(name, options, &block).tap do |definition|
         attr_accessor definition[:public_name]
@@ -79,7 +80,6 @@ module Disposable
       representer.representable_attrs.
         find_all { |attr| attr[:twin] }.
         each { |attr| attr.merge!(
-          :pass_options => true,
           :prepare      => lambda { |object, args| args.binding[:twin].new(object) }) }
 
       # song_title => model.title
@@ -95,7 +95,6 @@ module Disposable
       representer = Class.new(representer_class) # inherit configuration
       representer.representable_attrs.
         each { |attr| attr.merge!(
-          :pass_options => true,
           # use the alias name (as:) when writing attributes in new.
           # DISCUSS: attr.name = public_name would be simpler.
           :as => attr[:public_name],
