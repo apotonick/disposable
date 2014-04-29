@@ -22,11 +22,31 @@ class CompositionTest < MiniTest::Spec
   let (:album) { Model::Album.new(2, "Dick Sandwhich") }
   subject { Twin::Album.new(:album => album, :band => band) }
 
-  it { subject.id.must_equal 2 }
-  it { subject.band_id.must_equal 1 }
-  it { subject.name.must_equal "Dick Sandwhich" }
-  it { subject.title.must_equal "Frenzal Rhomb" }
+  describe "readers" do
+    it { subject.id.must_equal 2 }
+    it { subject.band_id.must_equal 1 }
+    it { subject.name.must_equal "Dick Sandwhich" }
+    it { subject.title.must_equal "Frenzal Rhomb" }
+  end
 
+
+  describe "writers" do
+    before do
+      subject.id = 3
+      subject.band_id = 4
+      subject.name = "Eclipse"
+      subject.title = "Yngwie J. Malmsteen"
+    end
+
+    it { subject.id.must_equal 3 }
+    it { album.id.must_equal   3 }
+    it { subject.band_id.must_equal 4 }
+    it { band.id.must_equal 4 }
+    it { subject.name.must_equal "Eclipse" }
+    it { subject.title.must_equal "Yngwie J. Malmsteen" }
+    it { album.name.must_equal "Eclipse" }
+    it { band.title.must_equal "Yngwie J. Malmsteen" }
+  end
   # it { subject.save }
 
   it "raises when non-mapped property" do

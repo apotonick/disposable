@@ -2,6 +2,9 @@ require 'forwardable'
 
 module Disposable
   # Composition delegates accessors to models as per configuration.
+  # Composition doesn't know anything but methods (readers and writers) to expose and the mappings to
+  # the internal models.
+  # Furthemore, it knows about renamings such as mapping `#song_id` to `song.id`.
   #
   #   class Album
   #     include Disposable::Composition
@@ -20,20 +23,22 @@ module Disposable
 
     module ClassMethods
       def map(options)
-        @attr2obj = {}  # {song: {:id => :id, :name => :name}, artist: }
+        # @attr2obj = {}
 
         options.each do |mdl, meths|
-          create_accessors(mdl, meths)
           attr_reader mdl
 
-          meths.each { |m| @attr2obj[m.to_s] = mdl }
+          meths.each do |mtd| # [[:title], [:id, :song_id]]
+            create_accessors(mdl, mtd)
+          end
+
+          # meths.each { |m| @attr2obj[m.to_s] = mdl }
         end
       end
 
       def create_accessors(model, methods)
-        accessors = methods.collect { |m| [m, "#{m}="] }.flatten
-
-        def_instance_delegator # where, meth, new_metho *accessors << {:to => :"#{model}"}
+        def_instance_delegator model, *methods # reader
+        def_instance_delegator model, *methods.map { |m| "#{m}=" } # writer
       end
     end
 
