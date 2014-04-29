@@ -1,6 +1,9 @@
 # Disposable
 
 
+why?
+because i want this to fuckin work: Wallpaper.find(51).update_attributes(enabled:false)
+
 
 ## Twin
 

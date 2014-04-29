@@ -67,9 +67,9 @@ end
 
 
 class TwinDecoratorTest < MiniTest::Spec
-  subject { TwinTest::Twin::Song.representer_class }
+  subject { TwinTest::Twin::Song.representer_class.new(nil) }
 
-  it { subject.twin_names.must_equal ["album"] }
+  it { subject.twin_names.must_equal [:album] }
 end
 
 # from is as close to from_hash as possible

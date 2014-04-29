@@ -13,34 +13,12 @@ module Disposable
         Class.new(self) # By subclassing, representable_attrs.clone is called.
       end
 
-      def self.build_config
-        super.extend(ConfigExtensions)
-      end
-
-      def self.twin_names
-        representable_attrs.twin_names
-      end
-
-      def twins(&block)
-        clone_config!.
-            find_all { |attr| attr[:form] }.
-            each(&block)
-        end
-
-      module ConfigExtensions
-        def twin_names
+      def twin_names
+        representable_attrs.
           find_all { |attr| attr[:twin] }.
-          collect { |attr| attr.name }
-        end
-      end
-
-
-      class Save < self
-
+          collect { |attr| attr.name.to_sym }
       end
     end
-
-
 
 
     extend Uber::InheritableAttr
@@ -128,28 +106,32 @@ module Disposable
       representer
     end
 
+    # call save on all nested twins.
     def self.pre_save_representer
       representer = Class.new(write_representer)
       representer.representable_attrs.
         each { |attr| attr.merge!(
           :representable => true,
-          :serialize => lambda { |model, args| puts model.inspect; model.save }
+          :serialize => lambda { |model, args| model.save }
         )}
 
       representer
     end
 
 
+    # TODO: improve speed when setting up a twin.
+    def initialize(model, options={})
+      @model = model
+
+      # DISCUSS: does the case exist where we get model AND options? if yes, test. if no, we can save the mapping and just use options.
+      from_hash(self.class.new_representer.new(model).to_hash.
+        merge(options))
+    end
+
     # it's important to stress that #save is the only entry point where we hit the database after initialize.
     def save # use that in Reform::AR.
-      twin_names    = self.class.representer_class.twin_names
-      twin_names = twin_names.collect { |n| n.to_sym }
-
-      # raw_attrs     = self.class.write_representer.new(self).to_hash
-      # save_attrs    = raw_attrs.select { |k| twin_names.include?(k) } # FIXME: bug when as and nested.
-      # save_attrs.values.map(&:save)
-      puts "iiiinclude #{twin_names.inspect}"
-      self.class.pre_save_representer.new(self).to_hash(:include => twin_names) # #save on nested Twins.
+      pre_save = self.class.pre_save_representer.new(self)
+      pre_save.to_hash(:include => pre_save.twin_names) # #save on nested Twins.
 
 
 
@@ -159,23 +141,12 @@ module Disposable
       # write to model
 
       sync_attrs    = self.class.save_representer.new(self).to_hash
-      puts "sync> #{sync_attrs.inspect}"
+      # puts "sync> #{sync_attrs.inspect}"
       # this is ORM-specific:
       model.update_attributes(sync_attrs) # this also does `album: #<Album>`
 
       # FIXME: sync again, here, or just id?
       self.id = model.id
-    end
-
-    # below is the code for a representable-style twin:
-
-    # TODO: improve speed when setting up a twin.
-    def initialize(model, options={})
-      @model = model
-
-      # DISCUSS: does the case exist where we get model AND options? if yes, test. if no, we can save the mapping and just use options.
-      from_hash(self.class.new_representer.new(model).to_hash.
-        merge(options))
     end
 
   private
