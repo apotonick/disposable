@@ -1,51 +1,37 @@
-require 'test_helper'
+# require 'test_helper'
 
-class CompositionTest < MiniTest::Spec
-  module Model
-    Band  = Struct.new(:id, :title,)
-    Album = Struct.new(:id, :name)
-  end
+# class TwinCompositionTest < MiniTest::Spec
+#   class Request < Disposable::Twin::Composition
+#     property :title, :on => :song, :as => :song_title
+#     property :id,    :on => :song, :as => :song_id
 
-  module Twin
-    class Album #< Disposable::Twin
-      include Disposable::Composition
+#     property :name,  :on => :requester
 
-      # property :id # DISCUSS: needed for #save.
-      # property :name,   :on => :album
-      # property :title,  :on => :band # as: :band_name
+#     # map ...
+#   end
 
-      # model Model::Album
+#   module Model
+#     Song      = Struct.new(:id, :title, :album)
+#     Requester = Struct.new(:id, :name)
+#   end
 
-      map( {:album => [:id, :name], :band => [:title]} )
-    end
-  end
+#   let (:requester) { Model::Requester.new(1, "Greg Howe") }
+#   let (:song) { Model::Song.new(2, "Extraction") }
 
-  # a Composition may be composed of Twins. how are we gonna handle #save?
+#   let (:request) { Request.new([:song => song, :requester => requester]) }
 
-  let (:band) { Model::Band.new(1, "Frenzal Rhomb") }
-  let (:album) { Model::Album.new(2, "Dick Sandwhich") }
-  subject { Twin::Album.new(:album => album, :band => band) }
-
-  # it { subject.id.must_equal 2 }
-  it { subject.name.must_equal "Dick Sandwhich" }
-  it { subject.title.must_equal "Frenzal Rhomb" }
-
-  # it { subject.save }
-
-  it "raises when non-mapped property" do
-    assert_raises NoMethodError do
-      subject.raise_an_exception
-    end
-  end
-
-  describe "readers to models" do
-    it { subject.album.object_id.must_equal album.object_id }
-    it { subject.band.object_id.must_equal  band.object_id }
-  end
+#   it { request.song_title.must_equal "Extraction" }
+#   it { request.name.must_equal "Greg Howe" }
 
 
-  describe "#_models" do
-    it { subject.send(:_models).must_equal([album, band]) }
-    it { Twin::Album.new(:album => album).send(:_models).must_equal([album]) }
-  end
-end
+#   describe "setter" do
+#     before do
+#       request.song_title = "Tease"
+#       request.name = "Wooten"
+#     end
+
+#     it { request.song_title.must_equal "Tease" }
+#     it { song.title.must_equal "Tease" }
+#     it { request.name.must_equal "Wooten" }
+#   end
+# end
