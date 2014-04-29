@@ -60,16 +60,14 @@ module Disposable
       save.representable_attrs.
         find_all { |attr| attr[:twin] }.
         each { |attr| attr.merge!(
-          :representable => true) }
+          :representable => true,
+          :serialize     => lambda { |obj, args| obj.send(:model) }) }
 
         save.representable_attrs.each do |attr|
           attr.merge!(:as => attr.name)
         end
 
       save
-    end
-    def to_hash(*) # DISCUSS: do we want that here?
-      model
     end
 
     # transform incoming model into twin API hash.
