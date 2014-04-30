@@ -85,6 +85,12 @@ song.save # write to DB.
 
 
 
+## Composition
+
+hiding composed datastructures
+mapping methods, with optional as:
+
+
 ## To be documented properly
 
 Facade existing (model) class
