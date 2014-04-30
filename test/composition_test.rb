@@ -80,9 +80,9 @@ class CompositionTest < MiniTest::Spec
 
     # yepp, a private test WITH interface violation, as this is still a semi-public concept.
     it { composition.instance_variable_get(:@map).must_equal({
-      :id      => {:method=>"id", :model=>:album},
+      :id      => {:method=>:id, :model=>:album},
       :name    => {:method=>:name, :model=>:album},
-      :band_id => {:method=>:id, :model=>"band"},
-      :title   => {:method=>:title, :model=>"band"}}) }
+      :band_id => {:method=>:id, :model=>:band},
+      :title   => {:method=>:title, :model=>:band}}) }
   end
 end

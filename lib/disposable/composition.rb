@@ -45,7 +45,7 @@ module Disposable
         name, public_name = methods
         public_name     ||= name
 
-        @map[public_name.to_sym] = {:method => name, :model => model}
+        @map[public_name.to_sym] = {:method => name.to_sym, :model => model.to_sym}
       end
     end
 
