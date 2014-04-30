@@ -65,4 +65,24 @@ class CompositionTest < MiniTest::Spec
     it { subject.send(:_models).must_equal([album, band]) }
     it { Twin::Album.new(:album => album).send(:_models).must_equal([album]) }
   end
+
+
+  describe "@map" do
+    let (:composition) {
+      Class.new do
+        include Disposable::Composition
+
+        map( {:album => [["id"], [:name]],
+              "band" => [[:id, "band_id"], [:title]]
+          } )
+      end
+    }
+
+    # yepp, a private test WITH interface violation, as this is still a semi-public concept.
+    it { composition.instance_variable_get(:@map).must_equal({
+      :id      => {:method=>"id", :model=>:album},
+      :name    => {:method=>:name, :model=>:album},
+      :band_id => {:method=>:id, :model=>"band"},
+      :title   => {:method=>:title, :model=>"band"}}) }
+  end
 end
