@@ -58,6 +58,11 @@ module Disposable
       @_models = models.values
     end
 
+    # Allows multiplexing method calls to all composed models.
+    def each(&block)
+      _models.each(&block)
+    end
+
   private
     attr_reader:_models
   end

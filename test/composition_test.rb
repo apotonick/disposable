@@ -16,8 +16,6 @@ class CompositionTest < MiniTest::Spec
     end
   end
 
-  # a Composition may be composed of Twins. how are we gonna handle #save?
-
   let (:band) { Model::Band.new(1, "Frenzal Rhomb") }
   let (:album) { Model::Album.new(2, "Dick Sandwhich") }
   subject { Twin::Album.new(:album => album, :band => band) }
@@ -55,9 +53,19 @@ class CompositionTest < MiniTest::Spec
     end
   end
 
+
   describe "readers to models" do
     it { subject.album.object_id.must_equal album.object_id }
     it { subject.band.object_id.must_equal  band.object_id }
+  end
+
+
+  describe "#each" do
+    it "what" do
+      results = []
+      subject.each { |mdl| results << mdl.object_id }
+      results.must_equal([album.object_id, band.object_id])
+    end
   end
 
 
