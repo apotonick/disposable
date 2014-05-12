@@ -109,15 +109,15 @@ class TwinActiveRecordAsTest < MiniTest::Spec
   module Twin
     class Album < Disposable::Twin
       property :id
-      property :name, :as => :album_name
+      property :album_name, :as => :name
 
       model ::Album
     end
 
     class Song < Disposable::Twin
       property :id
-      property :title, :as => :song_title
-      property :album, :twin => Album, :as => :record
+      property :song_title, :as => :title
+      property :record, :twin => Album, :as => :album
 
       model ::Song
     end

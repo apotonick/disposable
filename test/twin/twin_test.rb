@@ -88,14 +88,14 @@ class TwinAsTest < MiniTest::Spec
 
   module Twin
     class Album < Disposable::Twin
-      property :name, :as => :record_name
+      property :record_name, :as => :name
 
       model Model::Album
     end
 
     class Song < Disposable::Twin
-      property :title, :as => :name
-      property :album, :twin => Album, :as => :record
+      property :name, :as => :title
+      property :record, :twin => Album, :as => :album
 
       model Model::Song
     end

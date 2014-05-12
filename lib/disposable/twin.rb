@@ -32,11 +32,11 @@ module Disposable
     end
 
     def self.property(name, options={}, &block)
-      options[:public_name]  = options.delete(:as) || name
+      options[:private_name]  = options.delete(:as) || name
       options[:pass_options] = true
 
       representer_class.property(name, options, &block).tap do |definition|
-        attr_accessor definition[:public_name]
+        attr_accessor name
       end
     end
 
@@ -64,7 +64,7 @@ module Disposable
           :serialize     => lambda { |obj, args| obj.send(:model) }) }
 
         save.representable_attrs.each do |attr|
-          attr.merge!(:as => attr.name)
+          attr.merge!(:as => attr[:private_name])
         end
 
       save
@@ -82,7 +82,9 @@ module Disposable
 
       # song_title => model.title
       representer.representable_attrs.each do |attr|
-        attr.merge!(:as => attr[:public_name])
+        attr.merge!(
+          :getter      => lambda { |args| send("#{args.binding[:private_name]}") },
+        )
       end
 
       representer
@@ -91,16 +93,6 @@ module Disposable
     # read/write to twin using twin's API (e.g. #record= not #album=).
     def self.write_representer
       representer = Class.new(representer_class) # inherit configuration
-      representer.representable_attrs.
-        each { |attr| attr.merge!(
-          # use the alias name (as:) when writing attributes in new.
-          # DISCUSS: attr.name = public_name would be simpler.
-          :as => attr[:public_name],
-          :getter      => lambda { |args|        send("#{args.binding[:public_name]}") },
-          :setter      => lambda { |value, args| send("#{args.binding[:public_name]}=", value) }
-        )}
-
-      representer
     end
 
     # call save on all nested twins.

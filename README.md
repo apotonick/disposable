@@ -83,6 +83,7 @@ song.save # write to DB.
 * Twins don't know anything about the underlying persistance layer.
 * Lazy-loading
 
+aliasing with :as
 
 
 ## Composition
