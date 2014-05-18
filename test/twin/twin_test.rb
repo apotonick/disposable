@@ -4,14 +4,18 @@ require 'test_helper'
 class TwinTest < MiniTest::Spec
   module Model
     Song  = Struct.new(:id, :title, :album)
-    Album = Struct.new(:id, :name)
+    Album = Struct.new(:id, :name, :songs)
   end
 
 
   module Twin
+    class Song < Disposable::Twin
+    end
+
     class Album < Disposable::Twin
       property :id # DISCUSS: needed for #save.
       property :name
+      collection :songs, :twin => Song
 
       model Model::Album
     end
@@ -27,20 +31,25 @@ class TwinTest < MiniTest::Spec
 
 
   describe "::new" do # TODO: this creates a new model!
-    subject { Twin::Song.new }
+    let(:album) { Twin::Album.new }
+    let (:song) { Twin::Song.new }
 
-    it { subject.title.must_equal nil }
-    it { subject.album.must_equal nil }
+    it { album.name.must_equal nil }
+    it { album.songs.must_equal nil }
+    it { song.title.must_equal nil }
+    it { song.album.must_equal nil }
   end
 
 
   describe "::new with arguments" do
-    let (:album) { Twin::Album.new(:name => "30 Years") }
+    let (:talking) { Twin::Song.new("title" => "Talking") }
+    let (:album) { Twin::Album.new(:name => "30 Years", :songs => [talking]) }
     subject { Twin::Song.new("title" => "Broken", "album" => album) }
 
     it { subject.title.must_equal "Broken" }
     it { subject.album.must_equal album }
     it { subject.album.name.must_equal "30 Years" }
+    it { album.songs.must_equal [talking] }
   end
 
 
@@ -55,13 +64,14 @@ class TwinTest < MiniTest::Spec
   # DISCUSS: make ::from private.
   describe "::from" do
     let (:song) { Model::Song.new(1, "Broken", album) }
-    let (:album) { Model::Album.new(2, "The Process Of  Belief") }
+    let (:album) { Model::Album.new(2, "The Process Of  Belief", [Model::Song.new(3, "Dr. Stein")]) }
 
     subject {Twin::Song.from(song) }
 
     it { subject.title.must_equal "Broken" }
     it { subject.album.must_be_kind_of Twin::Album }
     it { subject.album.name.must_equal album.name }
+    it { subject.album.songs.first.title.must_equal "Dr. Stein" } # TODO: more tests on collections and object identity (if we need that).
   end
 end
 

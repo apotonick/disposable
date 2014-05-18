@@ -40,6 +40,10 @@ module Disposable
       end
     end
 
+    def self.collection(name, options={}, &block)
+      property(name, options.merge(:collection => true), &block)
+    end
+
     def self.from(model) # TODO: private.
       new(model)
     end
@@ -78,7 +82,7 @@ module Disposable
       representer.representable_attrs.
         find_all { |attr| attr[:twin] }.
         each { |attr| attr.merge!(
-          :prepare      => lambda { |object, args| args.binding[:twin].new(object) }) }
+          :prepare      => lambda { |object, args| args.binding[:twin].call.new(object) }) }
 
       # song_title => model.title
       representer.representable_attrs.each do |attr|
