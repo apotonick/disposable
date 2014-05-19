@@ -4,6 +4,13 @@ require 'representable/hash'
 
 module Disposable
   class Twin
+    class Definition < Representable::Definition
+      def dynamic_options
+        super + [:twin]
+      end
+    end
+
+
     class Decorator < Representable::Decorator
       include Representable::Hash
       include AllowSymbols
@@ -11,6 +18,10 @@ module Disposable
       # DISCUSS: same in reform, is that a bug in represntable?
       def self.clone # called in inheritable_attr :representer_class.
         Class.new(self) # By subclassing, representable_attrs.clone is called.
+      end
+
+      def self.definition_class
+        Definition
       end
 
       def twin_names
@@ -82,7 +93,7 @@ module Disposable
       representer.representable_attrs.
         find_all { |attr| attr[:twin] }.
         each { |attr| attr.merge!(
-          :prepare      => lambda { |object, args| args.binding[:twin].new(object) }) }
+          :prepare      => lambda { |object, args| args.binding[:twin].evaluate(nil).new(object) }) }
 
       # song_title => model.title
       representer.representable_attrs.each do |attr|

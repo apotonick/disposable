@@ -33,6 +33,7 @@ class TwinActiveRecordTest < MiniTest::Spec
     class Album < Disposable::Twin
       property :id
       property :name
+      collection :songs, :twin => Song
 
       model ::Album
     end
@@ -40,7 +41,7 @@ class TwinActiveRecordTest < MiniTest::Spec
     class Song < Disposable::Twin
       property :id
       property :title
-      property :album, :twin => Album#, representable: true  #, setter: lambda { |v, args| self.album=(Album.from(v)) }
+      property :album, :twin => Album
 
       model ::Song
     end
