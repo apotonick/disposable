@@ -59,7 +59,7 @@ module Disposable
       new(model)
     end
 
-    def self.new(model=nil)
+    def self.new(model=nil, options={})
       model, options = nil, model if model.is_a?(Hash) # sorry but i wanna have the same API as ActiveRecord here.
       super(model || _model.new, *[options].compact) # TODO: make this nicer.
     end
@@ -89,11 +89,20 @@ module Disposable
     def self.new_representer
       representer = Class.new(representer_class) # inherit configuration
 
-      # wrap incoming nested model in it's Twin.
+      # wrap incoming nested model in its Twin.
       representer.representable_attrs.
         find_all { |attr| attr[:twin] }.
         each { |attr| attr.merge!(
-          :prepare      => lambda { |object, args| args.binding[:twin].evaluate(nil).new(object) }) }
+          :prepare      => lambda { |object, args|
+            puts args.user_options.inspect
+            puts "twinning: #{args.binding[:twin]}: #{object.inspect}"
+
+            if twin = args.user_options[:object_map][object]
+              twin
+            else
+              args.binding[:twin].evaluate(nil).new(object, args.user_options)
+            end
+          }) }
 
       # song_title => model.title
       representer.representable_attrs.each do |attr|
@@ -128,8 +137,13 @@ module Disposable
       @model = model
 
       # DISCUSS: does the case exist where we get model AND options? if yes, test. if no, we can save the mapping and just use options.
-      from_hash(self.class.new_representer.new(model).to_hash.
-        merge(options))
+      map = options[:object_map] ||= {} # TODO: this is just experimenting.
+      map[self.class] ||= {}
+      map[self.class][model.id] = self
+      map[:new] ||= {}
+      map[:new][model] = self #if model.pe
+
+      from_hash(self.class.new_representer.new(model).to_hash(:object_map => map))
     end
 
     # it's important to stress that #save is the only entry point where we hit the database after initialize.
