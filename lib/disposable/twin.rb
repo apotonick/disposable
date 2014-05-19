@@ -82,7 +82,7 @@ module Disposable
       representer.representable_attrs.
         find_all { |attr| attr[:twin] }.
         each { |attr| attr.merge!(
-          :prepare      => lambda { |object, args| args.binding[:twin].call.new(object) }) }
+          :prepare      => lambda { |object, args| args.binding[:twin].new(object) }) }
 
       # song_title => model.title
       representer.representable_attrs.each do |attr|
