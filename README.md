@@ -3,7 +3,7 @@
 
 why?
 because i want this to fuckin work: Wallpaper.find(51).update_attributes(enabled:false)
-
+i want to see my fields when opening the class file, a la DataMapper.
 
 ## Twin
 
@@ -83,7 +83,6 @@ song.save # write to DB.
 * Twins don't know anything about the underlying persistance layer.
 * Lazy-loading
 
-aliasing with :as
 
 
 ## Composition

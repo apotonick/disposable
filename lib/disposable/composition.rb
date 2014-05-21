@@ -2,6 +2,7 @@ require 'forwardable'
 
 module Disposable
   # Composition delegates accessors to models as per configuration.
+  #
   # Composition doesn't know anything but methods (readers and writers) to expose and the mappings to
   # the internal models. Optionally, it knows about renamings such as mapping `#song_id` to `song.id`.
   #
@@ -14,6 +15,8 @@ module Disposable
   #   album = Album.new(cd: CD.find(1), band: Band.new)
   #   album.id #=> 1
   #   album.title = "Ten Foot Pole"
+  #
+  # It allows accessing the contained models using the `#[]` reader.
   module Composition
     def self.included(base)
       base.extend(Forwardable)
@@ -26,8 +29,6 @@ module Disposable
          @map = {}
 
         options.each do |mdl, meths|
-          attr_reader mdl
-
           meths.each do |mtd| # [[:title], [:id, :song_id]]
             create_accessors(mdl, mtd)
             add_to_map(mdl, mtd)
@@ -37,8 +38,8 @@ module Disposable
 
     private
       def create_accessors(model, methods)
-        def_instance_delegator model, *methods # reader
-        def_instance_delegator model, *methods.map { |m| "#{m}=" } # writer
+        def_instance_delegator "@#{model}", *methods # reader
+        def_instance_delegator "@#{model}", *methods.map { |m| "#{m}=" } # writer
       end
 
       def add_to_map(model, methods)
@@ -58,12 +59,17 @@ module Disposable
       @_models = models.values
     end
 
+    # Allows accessing the contained models.
+    def [](name)
+      instance_variable_get(:"@#{name}")
+    end
+
     # Allows multiplexing method calls to all composed models.
     def each(&block)
       _models.each(&block)
     end
 
   private
-    attr_reader:_models
+    attr_reader :_models
   end
 end

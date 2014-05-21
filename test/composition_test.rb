@@ -3,27 +3,28 @@ require 'test_helper'
 class CompositionTest < MiniTest::Spec
   module Model
     Band  = Struct.new(:id, :title,)
-    Album = Struct.new(:id, :name)
+    Album = Struct.new(:id, :name, :album)
   end
 
   module Twin
     class Album #< Disposable::Twin
       include Disposable::Composition
 
-      map( {:album => [[:id], [:name]],
+      map( {:album => [[:id], [:name], [:album]],
             :band  => [[:id, :band_id], [:title]]
           } )
     end
   end
 
   let (:band) { Model::Band.new(1, "Frenzal Rhomb") }
-  let (:album) { Model::Album.new(2, "Dick Sandwhich") }
+  let (:album) { Model::Album.new(2, "Dick Sandwich", "For the Term of Their Unnatural Lives") }
   subject { Twin::Album.new(:album => album, :band => band) }
 
   describe "readers" do
     it { subject.id.must_equal 2 }
     it { subject.band_id.must_equal 1 }
-    it { subject.name.must_equal "Dick Sandwhich" }
+    it { subject.name.must_equal "Dick Sandwich" }
+    it { subject.album.must_equal "For the Term of Their Unnatural Lives" }
     it { subject.title.must_equal "Frenzal Rhomb" }
   end
 
@@ -34,6 +35,7 @@ class CompositionTest < MiniTest::Spec
       subject.band_id = 4
       subject.name = "Eclipse"
       subject.title = "Yngwie J. Malmsteen"
+      subject.album = "Best Of"
     end
 
     it { subject.id.must_equal 3 }
@@ -44,6 +46,8 @@ class CompositionTest < MiniTest::Spec
     it { subject.title.must_equal "Yngwie J. Malmsteen" }
     it { album.name.must_equal "Eclipse" }
     it { band.title.must_equal "Yngwie J. Malmsteen" }
+    it { subject.album.must_equal "Best Of" }
+    it { album.album.must_equal "Best Of" }
   end
   # it { subject.save }
 
@@ -54,9 +58,11 @@ class CompositionTest < MiniTest::Spec
   end
 
 
-  describe "readers to models" do
-    it { subject.album.object_id.must_equal album.object_id }
-    it { subject.band.object_id.must_equal  band.object_id }
+  describe "#[]" do
+    it { subject[:album].object_id.must_equal album.object_id }
+    it { subject[:band].object_id.must_equal  band.object_id }
+
+    it { assert_raises( NoMethodError) { subject.song } } # no reader to contained model.
   end
 
 
