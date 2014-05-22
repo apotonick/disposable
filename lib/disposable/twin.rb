@@ -55,13 +55,30 @@ module Disposable
       property(name, options.merge(:collection => true), &block)
     end
 
+    # this method should only be called in finders, and considered semi-private. it should only be called once as the top stack entry.
     def self.from(model) # TODO: private.
-      new(model)
+      new(model, {}) # create object_map
     end
 
-    def self.new(model=nil, options={})
-      model, options = nil, model if model.is_a?(Hash) # sorry but i wanna have the same API as ActiveRecord here.
-      super(model || _model.new, *[options].compact) # TODO: make this nicer.
+    def self.new(model, object_map={})
+      super(model, object_map)
+    end
+
+
+    # TODO: improve speed when setting up a twin.
+    def initialize(model, object_map)
+      options = {}
+      options, model = model, self.class._model.new if model.is_a?(Hash)
+
+
+      # model, options = nil, model if model.is_a?(Hash) # sorry but i wanna have the same API as ActiveRecord here.
+      @model = model #|| self.class._model.new
+
+      # DISCUSS: does the case exist where we get model AND options? if yes, test. if no, we can save the mapping and just use options.
+      object_map[@model] = self
+
+      from_hash(self.class.new_representer.new(@model).to_hash(:object_map => object_map).
+        merge(options))
     end
 
     def self.find(id)
@@ -95,12 +112,12 @@ module Disposable
         each { |attr| attr.merge!(
           :prepare      => lambda { |object, args|
             puts args.user_options.inspect
-            puts "twinning: #{args.binding[:twin]}: #{object.inspect}"
+            # puts "twinning: #{args.binding[:twin]}: #{object.inspect}"
 
             if twin = args.user_options[:object_map][object]
               twin
             else
-              args.binding[:twin].evaluate(nil).new(object, args.user_options)
+              args.binding[:twin].evaluate(nil).new(object, args.user_options[:object_map])
             end
           }) }
 
@@ -131,20 +148,6 @@ module Disposable
       representer
     end
 
-
-    # TODO: improve speed when setting up a twin.
-    def initialize(model, options={})
-      @model = model
-
-      # DISCUSS: does the case exist where we get model AND options? if yes, test. if no, we can save the mapping and just use options.
-      map = options[:object_map] ||= {} # TODO: this is just experimenting.
-      map[self.class] ||= {}
-      map[self.class][model.id] = self
-      map[:new] ||= {}
-      map[:new][model] = self #if model.pe
-
-      from_hash(self.class.new_representer.new(model).to_hash(:object_map => map))
-    end
 
     # it's important to stress that #save is the only entry point where we hit the database after initialize.
     def save # use that in Reform::AR.

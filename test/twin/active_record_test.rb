@@ -48,6 +48,7 @@ class TwinActiveRecordTest < MiniTest::Spec
   end
 
 
+  # new models
   describe "::from, nested circular dependency" do
     let (:song) { ::Song.new(:title => "Broken", :album => album) }
     let (:album) { ::Album.new(:name => "The Process Of  Belief") }
@@ -56,7 +57,7 @@ class TwinActiveRecordTest < MiniTest::Spec
 
     let(:twin) { Twin::Song.from(song) }
 
-    it { twin }
+    it { twin.album.songs.must_equal [twin] }
   end
 
 
