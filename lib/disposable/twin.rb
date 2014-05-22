@@ -60,7 +60,7 @@ module Disposable
       new(model, {}) # create object_map
     end
 
-    def self.new(model, object_map={})
+    def self.new(model={}, object_map={})
       super(model, object_map)
     end
 
