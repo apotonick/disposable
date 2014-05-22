@@ -57,10 +57,10 @@ module Disposable
 
     # this method should only be called in finders, and considered semi-private. it should only be called once as the top stack entry.
     def self.from(model) # TODO: private.
-      new(model, {}) # create object_map
+      new(model)
     end
 
-    def self.new(model={}, object_map={})
+    def self.new(model={}, object_map=ObjectMap.new)
       super(model, object_map)
     end
 
@@ -177,6 +177,9 @@ module Disposable
 
     attr_reader :model # TODO: test
 
+
+    class ObjectMap < Hash
+    end
 
     # class Composition < self
     #   def initialize(hash)
