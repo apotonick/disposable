@@ -74,11 +74,12 @@ module Disposable
       # model, options = nil, model if model.is_a?(Hash) # sorry but i wanna have the same API as ActiveRecord here.
       @model = model #|| self.class._model.new
 
-      # DISCUSS: does the case exist where we get model AND options? if yes, test. if no, we can save the mapping and just use options.
-      object_map[@model] = self
+      object_map[@model] = self # DISCUSS: how to we handle compositions here?
 
-      from_hash(self.class.new_representer.new(@model).to_hash(:object_map => object_map).
-        merge(options))
+      from_hash(
+        self.class.new_representer.new(@model).to_hash(:object_map => object_map). # always read from model, even when it's new.
+        merge(options)
+      )
     end
 
     def self.find(id)
@@ -111,9 +112,6 @@ module Disposable
         find_all { |attr| attr[:twin] }.
         each { |attr| attr.merge!(
           :prepare      => lambda { |object, args|
-            puts args.user_options.inspect
-            # puts "twinning: #{args.binding[:twin]}: #{object.inspect}"
-
             if twin = args.user_options[:object_map][object]
               twin
             else
