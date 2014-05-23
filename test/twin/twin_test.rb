@@ -15,7 +15,7 @@ class TwinTest < MiniTest::Spec
     class Album < Disposable::Twin
       property :id # DISCUSS: needed for #save.
       property :name
-      collection :songs, :twin => Song
+      collection :songs, :twin => lambda { |*| Song }
 
       model Model::Album
     end
@@ -23,7 +23,7 @@ class TwinTest < MiniTest::Spec
     class Song < Disposable::Twin
       property :id # DISCUSS: needed for #save.
       property :title
-      property :album, :twin => Album #, setter: lambda { |v, args| self.album=(Album.from(v)) }
+      property :album, :twin => Album
 
       model Model::Song
     end

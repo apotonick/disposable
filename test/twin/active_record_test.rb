@@ -33,6 +33,7 @@ class TwinActiveRecordTest < MiniTest::Spec
     class Album < Disposable::Twin
       property :id
       property :name
+      collection :songs, :twin => lambda { |*| Twin::Song }
 
       model ::Album
     end
@@ -40,12 +41,36 @@ class TwinActiveRecordTest < MiniTest::Spec
     class Song < Disposable::Twin
       property :id
       property :title
-      property :album, :twin => Album#, representable: true  #, setter: lambda { |v, args| self.album=(Album.from(v)) }
+      property :album, :twin => Album
 
       model ::Song
     end
   end
 
+
+  # new models
+  describe "::from, nested circular dependency" do
+    let (:song) { ::Song.new(:title => "Broken", :album => album) }
+    let (:album) { ::Album.new(:name => "The Process Of  Belief") }
+
+    before { album.songs = [song] } # circular dependency.
+
+    let(:twin) { Twin::Song.from(song) }
+
+    it { twin.album.songs.must_equal [twin] }
+  end
+
+  # existing, nested, models
+  describe "::from existing models, nested circular dependency" do
+    let (:song) { ::Song.create(:title => "Broken", :album => album) }
+    let (:album) { ::Album.create(:name => "The Process Of  Belief") }
+
+    before { album.songs.must_equal [song] } # circular dependency.
+
+    let(:twin) { Twin::Song.from(song) }
+
+    it { twin.album.songs.must_equal [twin] }
+  end
 
 
   describe "::find" do

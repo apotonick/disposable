@@ -4,6 +4,13 @@ require 'representable/hash'
 
 module Disposable
   class Twin
+    class Definition < Representable::Definition
+      def dynamic_options
+        super + [:twin]
+      end
+    end
+
+
     class Decorator < Representable::Decorator
       include Representable::Hash
       include AllowSymbols
@@ -11,6 +18,10 @@ module Disposable
       # DISCUSS: same in reform, is that a bug in represntable?
       def self.clone # called in inheritable_attr :representer_class.
         Class.new(self) # By subclassing, representable_attrs.clone is called.
+      end
+
+      def self.definition_class
+        Definition
       end
 
       def twin_names
@@ -44,13 +55,31 @@ module Disposable
       property(name, options.merge(:collection => true), &block)
     end
 
+    # this method should only be called in finders, and considered semi-private. it should only be called once as the top stack entry.
     def self.from(model) # TODO: private.
       new(model)
     end
 
-    def self.new(model=nil)
-      model, options = nil, model if model.is_a?(Hash) # sorry but i wanna have the same API as ActiveRecord here.
-      super(model || _model.new, *[options].compact) # TODO: make this nicer.
+    def self.new(model={}, object_map=ObjectMap.new)
+      super(model, object_map)
+    end
+
+
+    # TODO: improve speed when setting up a twin.
+    def initialize(model, object_map)
+      options = {}
+      options, model = model, self.class._model.new if model.is_a?(Hash)
+
+
+      # model, options = nil, model if model.is_a?(Hash) # sorry but i wanna have the same API as ActiveRecord here.
+      @model = model #|| self.class._model.new
+
+      object_map[@model] = self # DISCUSS: how to we handle compositions here?
+
+      from_hash(
+        self.class.new_representer.new(@model).to_hash(:object_map => object_map). # always read from model, even when it's new.
+        merge(options)
+      )
     end
 
     def self.find(id)
@@ -78,11 +107,17 @@ module Disposable
     def self.new_representer
       representer = Class.new(representer_class) # inherit configuration
 
-      # wrap incoming nested model in it's Twin.
+      # wrap incoming nested model in its Twin.
       representer.representable_attrs.
         find_all { |attr| attr[:twin] }.
         each { |attr| attr.merge!(
-          :prepare      => lambda { |object, args| args.binding[:twin].call.new(object) }) }
+          :prepare      => lambda { |object, args|
+            if twin = args.user_options[:object_map][object]
+              twin
+            else
+              args.binding[:twin].evaluate(nil).new(object, args.user_options[:object_map])
+            end
+          }) }
 
       # song_title => model.title
       representer.representable_attrs.each do |attr|
@@ -112,15 +147,6 @@ module Disposable
     end
 
 
-    # TODO: improve speed when setting up a twin.
-    def initialize(model, options={})
-      @model = model
-
-      # DISCUSS: does the case exist where we get model AND options? if yes, test. if no, we can save the mapping and just use options.
-      from_hash(self.class.new_representer.new(model).to_hash.
-        merge(options))
-    end
-
     # it's important to stress that #save is the only entry point where we hit the database after initialize.
     def save # use that in Reform::AR.
       pre_save = self.class.pre_save_representer.new(self)
@@ -149,6 +175,9 @@ module Disposable
 
     attr_reader :model # TODO: test
 
+
+    class ObjectMap < Hash
+    end
 
     # class Composition < self
     #   def initialize(hash)
