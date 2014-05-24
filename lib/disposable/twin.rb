@@ -122,7 +122,7 @@ module Disposable
       # song_title => model.title
       representer.representable_attrs.each do |attr|
         attr.merge!(
-          :getter      => lambda { |args| send("#{args.binding[:private_name]}") },
+          :getter => lambda { |args| send("#{args.binding[:private_name]}") },
         )
       end
 
@@ -142,6 +142,7 @@ module Disposable
           :representable => true,
           :serialize => lambda do |twin, args|
             processed = args.user_options[:processed_map]
+
             twin.save(processed) unless processed[twin] # don't call save if it is already scheduled.
           end
         )}
@@ -151,7 +152,7 @@ module Disposable
 
 
     # it's important to stress that #save is the only entry point where we hit the database after initialize.
-    def save(processed_map={}) # use that in Reform::AR.
+    def save(processed_map=ObjectMap.new) # use that in Reform::AR.
       processed_map[self] = true
 
       pre_save = self.class.pre_save_representer.new(self)
