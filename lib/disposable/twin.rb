@@ -140,7 +140,10 @@ module Disposable
       representer.representable_attrs.
         each { |attr| attr.merge!(
           :representable => true,
-          :serialize => lambda { |model, args| model.save }
+          :serialize => lambda do |twin, args|
+            processed = args.user_options[:processed_map]
+            twin.save(processed) unless processed[twin] # don't call save if it is already scheduled.
+          end
         )}
 
       representer
@@ -148,9 +151,11 @@ module Disposable
 
 
     # it's important to stress that #save is the only entry point where we hit the database after initialize.
-    def save # use that in Reform::AR.
+    def save(processed_map={}) # use that in Reform::AR.
+      processed_map[self] = true
+
       pre_save = self.class.pre_save_representer.new(self)
-      pre_save.to_hash(:include => pre_save.twin_names) # #save on nested Twins.
+      pre_save.to_hash(:include => pre_save.twin_names, :processed_map => processed_map) # #save on nested Twins.
 
 
 
