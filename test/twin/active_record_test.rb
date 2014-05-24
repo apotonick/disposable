@@ -70,6 +70,11 @@ class TwinActiveRecordTest < MiniTest::Spec
     let(:twin) { Twin::Song.from(song) }
 
     it { twin.album.songs.must_equal [twin] }
+
+    it do
+      twin.save
+      twin.album.songs.must_equal [twin]
+    end
   end
 
 
