@@ -8,9 +8,9 @@ Disposable gives you "_Twins_" which are domain objects, decoupled from ActiveRe
 
 Twins are non-persistent domain objects. That is reflected in the name of the gem. However, they can read and write values from a persistent object.
 
-Twins are an integral part of the "Trailblazer":https://github.com/apotonick/trailblazer architectural style which provides clean layering of concerns.
+Twins are an integral part of the [Trailblazer](https://github.com/apotonick/trailblazer) architectural style which provides clean layering of concerns.
 
-They provide a clean alternative to delegators that many projects use to separate domain and persistence and help you restricting the domain API.
+They give you an encapsulated alternative to delegators that many projects use to separate domain and persistence and help you restricting the domain API.
 
 ## Why?
 
