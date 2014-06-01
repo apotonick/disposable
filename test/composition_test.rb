@@ -2,7 +2,7 @@ require 'test_helper'
 
 class CompositionTest < MiniTest::Spec
   module Model
-    Band  = Struct.new(:id, :title,)
+    Band  = Struct.new(:id, :title)
     Album = Struct.new(:id, :name, :album)
   end
 
