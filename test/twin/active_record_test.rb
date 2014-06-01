@@ -1,6 +1,5 @@
 require 'test_helper'
 
-require 'active_record'
 class Album < ActiveRecord::Base
   has_many :songs
 end
@@ -87,6 +86,40 @@ class TwinActiveRecordTest < MiniTest::Spec
     it { subject.album.must_equal nil }
   end
 
+
+  describe "::finders" do
+    before {
+      DatabaseCleaner.clean
+      savage
+      starlight
+    }
+    let (:savage)    { ::Song.create(:title => "Savage") }
+    let (:starlight) { ::Song.create(:title => "Starlight") }
+
+    describe "collections" do
+      subject { Twin::Song.finders.all }
+
+      it { subject.size.must_equal 2 }
+
+      it { subject[0].must_be_kind_of Twin::Song }
+      it { subject[0].id.must_equal savage.id }
+      it { subject[0].title.must_equal "Savage" }
+
+      it { subject[1].must_be_kind_of Twin::Song }
+      it { subject[1].id.must_equal starlight.id }
+      it { subject[1].title.must_equal "Starlight" }
+    end
+
+    describe "::where" do
+      subject { Twin::Song.finders.where(:title => "Starlight") }
+
+      it { subject.size.must_equal 1 }
+
+      it { subject[0].must_be_kind_of Twin::Song }
+      it { subject[0].id.must_equal starlight.id }
+      it { subject[0].title.must_equal "Starlight" }
+    end
+  end
 
 
   describe "::save, nested not set" do

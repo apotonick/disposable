@@ -82,9 +82,9 @@ module Disposable
       )
     end
 
-    def self.find(id)
-      new(_model.find(id))
-    end
+
+    require 'disposable/twin/finders'
+    extend Finders
 
     # hash for #update_attributes (model API): {title: "Future World", album: <Album>}
     def self.save_representer
