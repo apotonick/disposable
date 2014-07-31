@@ -132,7 +132,8 @@ module Disposable
       # song_title => model.title
       representer.representable_attrs.each do |attr|
         attr.merge!(
-          :getter => lambda { |args| send("#{args.binding[:private_name]}") },
+          :getter => lambda { |args|
+            args.represented.send("#{args.binding[:private_name]}") }, # DISCUSS: can't we do that with representable's mechanics?
         )
       end
 
