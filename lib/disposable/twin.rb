@@ -20,8 +20,8 @@ module Disposable
         Class.new(self) # By subclassing, representable_attrs.clone is called.
       end
 
-      def self.definition_class
-        Definition
+      def self.build_config
+        Config.new(Definition)
       end
 
       def twin_names
@@ -47,7 +47,8 @@ module Disposable
       options[:pass_options] = true
 
       representer_class.property(name, options, &block).tap do |definition|
-        attr_accessor name
+        define_method(name) { @fields[name.to_s] } # TODO: move to separate method.
+        define_method("#{name}=") { |value| @fields[name.to_s] = value }
       end
     end
 
@@ -56,8 +57,8 @@ module Disposable
     end
 
     # this method should only be called in finders, and considered semi-private. it should only be called once as the top stack entry.
-    def self.from(model) # TODO: private.
-      new(model)
+    def self.from(model, *args) # TODO: private.
+      new(model, *args)
     end
 
     def self.new(model={}, object_map=ObjectMap.new)
@@ -66,21 +67,30 @@ module Disposable
 
 
     # TODO: improve speed when setting up a twin.
-    def initialize(model, object_map)
-      options = {}
-      options, model = model, self.class._model.new if model.is_a?(Hash)
+    module Initialize
+      def initialize(model, object_map)
+        @fields = {}
+
+        setup!(model, object_map)
+      end
+
+      def setup!(model, object_map)
+        options = {}
+        options, model = model, self.class._model.new if model.is_a?(Hash)
 
 
-      # model, options = nil, model if model.is_a?(Hash) # sorry but i wanna have the same API as ActiveRecord here.
-      @model = model #|| self.class._model.new
+        # model, options = nil, model if model.is_a?(Hash) # sorry but i wanna have the same API as ActiveRecord here.
+        @model = model #|| self.class._model.new
 
-      object_map[@model] = self # DISCUSS: how to we handle compositions here?
+        object_map[@model] = self # DISCUSS: how to we handle compositions here?
 
-      from_hash(
-        self.class.new_representer.new(@model).to_hash(:object_map => object_map). # always read from model, even when it's new.
-        merge(options)
-      )
+        from_hash(
+          self.class.new_representer.new(@model).to_hash(:object_map => object_map). # always read from model, even when it's new.
+          merge(options)
+        )
+      end
     end
+    include Initialize # TODO: simplify so the whole thing with object map gets optional.
 
 
     require 'disposable/twin/finders'

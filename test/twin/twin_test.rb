@@ -141,4 +141,29 @@ class TwinAsTest < MiniTest::Spec
 end
 
 
+require 'disposable/twin/option'
+class TwinOptionTest < TwinTest
+  class Song < Disposable::Twin
+    include Option
+
+    property :id # DISCUSS: needed for #save.
+    property :title
+
+    option :preview?
+    option :highlight?
+  end
+
+
+  describe "::from" do
+    let (:song) { Model::Song.new(1, "Broken") }
+    let (:twin) { Song.from(song, :preview? => false) }
+
+    it { twin.id.must_equal 1 }
+    it { twin.title.must_equal "Broken" }
+    it { twin.preview?.must_equal false }
+
+    it { Song.from(song, :preview? => true, :highlight => false).preview?.must_equal true }
+  end
+end
+
 # TODO: test coercion!
