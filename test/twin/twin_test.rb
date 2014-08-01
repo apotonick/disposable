@@ -76,6 +76,20 @@ class TwinTest < MiniTest::Spec
 end
 
 
+class OverridingAccessorsTest < TwinTest
+  # overriding accessors in Twin
+  class Song < Disposable::Twin
+    property :title
+
+    def title
+      super.downcase
+    end
+  end
+
+  it { Song.from(Model::Song.new(1, "A Tale That Wasn't Right")).title.must_equal "a tale that wasn't right" }
+end
+
+
 class TwinDecoratorTest < MiniTest::Spec
   subject { TwinTest::Twin::Song.representer_class.new(nil) }
 

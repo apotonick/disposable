@@ -47,8 +47,11 @@ module Disposable
       options[:pass_options] = true
 
       representer_class.property(name, options, &block).tap do |definition|
-        define_method(name) { @fields[name.to_s] } # TODO: move to separate method.
-        define_method("#{name}=") { |value| @fields[name.to_s] = value }
+        mod = Module.new do
+          define_method(name) { @fields[name.to_s] } # TODO: move to separate method.
+          define_method("#{name}=") { |value| @fields[name.to_s] = value }
+        end
+        include mod
       end
     end
 
