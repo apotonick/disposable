@@ -1,8 +1,8 @@
 PATH
   remote: ../
   specs:
-    disposable (0.0.5)
-      representable (~> 2.0.1)
+    disposable (0.0.6)
+      representable (~> 2.0.3)
       uber
 
 GEM
@@ -55,7 +55,7 @@ GEM
     rake (10.1.0)
     rdoc (3.12.2)
       json (~> 1.4)
-    representable (2.0.1)
+    representable (2.0.3)
       multi_json
       nokogiri
       uber (~> 0.0.7)
