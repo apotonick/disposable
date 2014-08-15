@@ -13,6 +13,8 @@ class TwinCompositionTest < MiniTest::Spec
     # map ...
 
     # def id
+    # make map(name, options)
+    # option :played?
   end
 
   module Model
