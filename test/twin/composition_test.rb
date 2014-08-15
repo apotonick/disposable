@@ -1,37 +1,42 @@
-# require 'test_helper'
+require 'test_helper'
 
-# class TwinCompositionTest < MiniTest::Spec
-#   class Request < Disposable::Twin::Composition
-#     property :title, :on => :song, :as => :song_title
-#     property :id,    :on => :song, :as => :song_id
+require 'disposable/twin/composition'
 
-#     property :name,  :on => :requester
+class TwinCompositionTest < MiniTest::Spec
+  class Request < Disposable::Twin::Composition
+    property :song_title, :on => :song, :as => :title
+    property :song_id,    :on => :song, :as => :id
 
-#     # map ...
-#   end
+    property :name,       :on => :requester
+    property :id,         :on => :requester
 
-#   module Model
-#     Song      = Struct.new(:id, :title, :album)
-#     Requester = Struct.new(:id, :name)
-#   end
+    # map ...
 
-#   let (:requester) { Model::Requester.new(1, "Greg Howe") }
-#   let (:song) { Model::Song.new(2, "Extraction") }
+    # def id
+  end
 
-#   let (:request) { Request.new([:song => song, :requester => requester]) }
+  module Model
+    Song      = Struct.new(:id, :title, :album)
+    Requester = Struct.new(:id, :name)
+  end
 
-#   it { request.song_title.must_equal "Extraction" }
-#   it { request.name.must_equal "Greg Howe" }
+  let (:requester) { Model::Requester.new(1, "Greg Howe") }
+  let (:song) { Model::Song.new(2, "Extraction") }
+
+  let (:request) { Request.new(:song => song, :requester => requester) }
+
+  it { request.song_title.must_equal "Extraction" }
+  it { request.name.must_equal "Greg Howe" }
 
 
-#   describe "setter" do
-#     before do
-#       request.song_title = "Tease"
-#       request.name = "Wooten"
-#     end
+  describe "setter" do
+    before do
+      request.song_title = "Tease"
+      request.name = "Wooten"
+    end
 
-#     it { request.song_title.must_equal "Tease" }
-#     it { song.title.must_equal "Tease" }
-#     it { request.name.must_equal "Wooten" }
-#   end
-# end
+    it { request.song_title.must_equal "Tease" }
+    it { song.title.must_equal "Tease" }
+    it { request.name.must_equal "Wooten" }
+  end
+end
