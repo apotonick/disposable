@@ -26,19 +26,36 @@ class TwinTest < MiniTest::Spec
     end
   end
 
+  let (:song) { Model::Song.new(1, "Broken", nil) }
 
   describe "#initialize" do
-    let (:song) { Model::Song.new(1, "Broken", nil) }
-
     it do
       twin = Twin::Song.new(song)
       song.id = 2
       # :as maps public name
       twin.name.must_equal "Broken" # public: #name
       twin.id.must_equal 2
-
-
     end
+
+    # override property with public name in constructor.
+    it { Twin::Song.new(song, :name => "Kenny").name.must_equal "Kenny" }
+  end
+
+  describe "setter" do
+    let (:twin) { Twin::Song.new(song) }
+
+    before do
+      twin.id = 3
+      twin.name = "Lucky"
+    end
+
+    # updates twin
+    it { twin.id.must_equal 3 }
+    it { twin.name.must_equal "Lucky" }
+
+    # updates model (directly, per default)
+    it { song.id.must_equal 3 }
+    it { song.title.must_equal "Lucky" }
   end
 
 

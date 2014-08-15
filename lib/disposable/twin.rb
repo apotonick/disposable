@@ -16,8 +16,8 @@ module Disposable
 
       representer_class.property(name, options, &block).tap do |definition|
         mod = Module.new do
-          define_method(name) { read_property(name, options[:private_name]) }
-          define_method("#{name}=") { |value| @fields[name.to_s] = value } # TODO: move to separate method.
+          define_method(name)       { read_property(name, options[:private_name]) }
+          define_method("#{name}=") { |value| write_property(name, options[:private_name], value, definition[:readable]) } # TODO: this is more like prototyping.
         end
         include mod
       end
@@ -48,6 +48,11 @@ module Disposable
     def read_property(name, private_name)
       return @fields[name.to_s] if @fields.has_key?(name.to_s)
       @fields[name.to_s] = model.send(private_name)
+    end
+
+    def write_property(name, private_name, value, readable)
+      return @fields[name.to_s] = value if readable == false # FIXME: this is for Option and i'll clean this up.
+      model.send("#{private_name}=", @fields[name.to_s] = value) # this will soon be overridable so ORM Twins can delay writing till #sync or #save.
     end
 
     def from_hash(options={})
