@@ -12,9 +12,12 @@ module Disposable
   #     map( {cd: [[:id], [:name]], band: [[:id, :band_id], [:title]]} )
   #   end
   #
+  # Composition adds #initialize to the includer.
+  #
   #   album = Album.new(cd: CD.find(1), band: Band.new)
   #   album.id #=> 1
   #   album.title = "Ten Foot Pole"
+  #   album.band_id #=> nil
   #
   # It allows accessing the contained models using the `#[]` reader.
   module Composition
