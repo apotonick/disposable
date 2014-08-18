@@ -131,6 +131,31 @@ end
 
 # should #new create empty associated models?
 
+# class TwinDefaultTest < MiniTest::Spec
+#   module Model
+#     Song  = Struct.new(:number)
+#   end
+
+#   class Song < Disposable::Twin
+#     property :number, :default => 1 # FIXME: this should be :default_if_nil so it becomes clear with a model.
+#   end
+
+#   it("uuu") { Song.new(Model::Song.new(nil)).number.must_equal 1 }
+#   it { Song.new(Model::Song.new(false)).number.must_equal 1 }
+#   it { Song.new(Model::Song.new(2)).number.must_equal 2 }
+# end
+
+require 'disposable/twin/struct'
+class TwinStructTest < MiniTest::Spec
+  class Song < Disposable::Twin
+    include Struct
+    property :number, :default => 1 # FIXME: this should be :default_if_nil so it becomes clear with a model.
+  end
+
+  it { Song.new({}).number.must_equal 1 }
+  it { Song.new(:number => 2).number.must_equal 2 }
+end
+
 
 class TwinAsTest < MiniTest::Spec
   module Model
