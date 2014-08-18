@@ -47,15 +47,25 @@ module Disposable
   private
     def read_property(name, private_name)
       return @fields[name.to_s] if @fields.has_key?(name.to_s)
-      @fields[name.to_s] = model.send(private_name)
+      @fields[name.to_s] = read_from_model(private_name)
+    end
+
+    def read_from_model(getter)
+      model.send(getter)
     end
 
     def write_property(name, private_name, value, readable)
       return @fields[name.to_s] = value if readable == false # FIXME: this is for Option and i'll clean this up.
-      model.send("#{private_name}=", @fields[name.to_s] = value) # this will soon be overridable so ORM Twins can delay writing till #sync or #save.
+       # this will soon be overridable so ORM Twins can delay writing till #sync or #save.
+       @fields[name.to_s] = write_to_model(private_name, value)
     end
 
-    def from_hash(options={})
+    def write_to_model(setter, value)
+      model.send("#{setter}=", value)
+      value
+    end
+
+    def from_hash(options)
       self.class.write_representer.new(self).from_hash(options)
     end
 
