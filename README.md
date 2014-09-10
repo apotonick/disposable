@@ -26,7 +26,7 @@ Let me show you what I mean.
 
 ```ruby
 song = Song.create(title: "Savior", length: 242)
-``
+```
 
 ## Definition
 
