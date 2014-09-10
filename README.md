@@ -1,6 +1,6 @@
 # Disposable
 
-_Provides domain objects on top of your ORM layer._
+_Decorators on top of your ORM layer._
 
 ## Introduction
 
@@ -22,93 +22,46 @@ Twins may contain validations, nevertheless, in Trailblazer, validations (or "Co
 
 ## Twin
 
-Twins implement light-weight domain objects that contain business logic - no persistance logic. They have read- and write access to a persistent object (or a composition of those) and expose a sub-set of accessors to that persistent "brother", making it a "data mapper-like phantom".
+Twins implement light-weight decorators objects with a unified interface. They map objects and compositions of objects, along with optional hashes to inject additional data.
 
-Being designed to wrap persistent objects, a typical "brother" class could be an ActiveRecord one.
+Let me show you what I mean.
 
 ```ruby
-class Song < ActiveRecord::Base
-  belongs_to :album
+song = Song.create(title: "Savior", length: 242)
+``
+
+## Definition
+
+Twins need to define every field they expose.
+
+```ruby
+class Song::Twin < Disposable::Twin
+  property :title
+  property :length
+  option   :good?
 end
 ```
 
-You don't wanna work with that persistent brother directly anymore. A twin will wrap it and indirect domain from persistance.
+## Creation
 
-The twin itself has a _ridiculous_ simple API.
-
-```ruby
-class Twin::Song < Disposable::Twin
-  model ::Song                  # the persistent ActiveRecord brother class
-
-  property :title
-  property :album, twin: Album  # a nested twin.
-```
-
-
-### Creation
-
-You can create fresh, blank-slate twins yourself. They will create a new persistent object automatically.
+You need to pass model and the optional options to the twin constructor.
 
 ```ruby
-song = Twin::Song.new(title: "Justified Black Eye")
-
-#=> #<Twin::Song title: "Justified Black Eye">
+twin = Song::Twin.new(song, good?: true)
 ```
 
-This doesn't involve any database operations at all.
+## Reading
 
-
-### Finders
-
-You can use any finder/scope defined in your model to create twins.
-
-Since `::find` is pretty common, it is defined directly on the twin class.
+This will create a composition object of the actual model and the hash.
 
 ```ruby
-song = Twin::Song.find(1)
-
-#=> #<Twin::Song title: "Already Won" album: #<Twin::Album>>
+twin.title #=> "Savior"
+twin.good? #=> true
 ```
 
-This invokes the actual finder method on the model class. Every found model will simply be wrapped in its twin.
+## Writing
 
+## Renaming
 
-Any other scope or finder can be called on `finders`.
+## Compositions
 
-```ruby
-song = Twin::Song.finders.where(name: "3 O'Clock Shot")
-
-#=> [#<Twin::Song title: "3 O'Clock Shot" album: #<Twin::Album>>]
-```
-
-
-
-### Read And Write Access
-
-All attributes declared with `property` are exposed on the twin.
-
-```ruby
-song.title #=> "Already Won"
-
-song.album.name #=> "The Songs of Tony Sly: A Tribute"
-```
-
-Note that writing to the twin **does not** change any state on the persistent brother.
-
-```ruby
-song.title = "Still Winning" # no change on Song, no write to DB.
-```
-
-
-### Saving
-
-Calling `#save` will sync all properties to the brother object and advice the persistent brother to save. This works recursively, meaning that nested twins will do the same with their pendant.
-
-```ruby
-song.save # write to DB.
-```
-
-## Notes
-
-* Twins don't know anything about the underlying persistance layer.
-* Lazy-loading TBI

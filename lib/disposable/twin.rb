@@ -2,6 +2,8 @@ require 'uber/inheritable_attr'
 require 'representable/decorator'
 require 'representable/hash'
 require 'disposable/twin/representer'
+require 'disposable/twin/option'
+
 
 module Disposable
   class Twin
@@ -70,5 +72,6 @@ module Disposable
     end
 
     attr_reader :model # TODO: test
+    include Option
   end
 end

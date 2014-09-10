@@ -118,11 +118,8 @@ class TwinAsTest < MiniTest::Spec
 end
 
 
-require 'disposable/twin/option'
 class TwinOptionTest < TwinTest
   class Song < Disposable::Twin
-    include Option
-
     property :id # DISCUSS: needed for #save.
     property :title
 
