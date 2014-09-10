@@ -14,15 +14,13 @@ They give you an encapsulated alternative to delegators that many projects use t
 
 ## Why?
 
-The goal is to have business logic sitting in twin classes, while your models (ideally) contain persistence configuration, only.
-
-Beyond that, twins can be used in form objects, cells view models, representers, contracts, and actually any Ruby code :)
+The goal is to have one object that delegates reading and writing to underlying object(s). This is a fundamental concept for cells view models, representers, and reform form objects.
 
 Twins may contain validations, nevertheless, in Trailblazer, validations (or "Contracts") sit one layer above. They still can be part of your domain, though.
 
 ## Twin
 
-Twins implement light-weight decorators objects with a unified interface. They map objects and compositions of objects, along with optional hashes to inject additional data.
+Twins implement light-weight decorators objects with a unified interface. They map objects, hashes, and compositions of objects, along with optional hashes to inject additional options.
 
 Let me show you what I mean.
 
@@ -63,5 +61,29 @@ twin.good? #=> true
 
 ## Renaming
 
+## Structs
+
+If you don't have a model but a simple hash, use `Struct`.
+
+```ruby
+class Song::Twin < Disposable::Twin
+  include Struct
+  property :title
+  property :length
+end
+```
+
+Note that a hash goes into the constructor now.
+
+```ruby
+twin = Song::Twin.new(title: "Savior", good?: true)
+```
+
+
 ## Compositions
 
+## Overriding Accessors
+
+super
+
+## Used In

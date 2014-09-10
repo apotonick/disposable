@@ -72,6 +72,7 @@ module Disposable
     end
 
     attr_reader :model # TODO: test
+
     include Option
   end
 end
