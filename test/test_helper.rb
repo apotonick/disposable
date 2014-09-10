@@ -10,6 +10,6 @@ class Track
 end
 
 
-require 'active_record'
-require 'database_cleaner'
-DatabaseCleaner.strategy = :truncation
+# require 'active_record'
+# require 'database_cleaner'
+# DatabaseCleaner.strategy = :truncation

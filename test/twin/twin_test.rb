@@ -57,51 +57,6 @@ class TwinTest < MiniTest::Spec
     it { song.id.must_equal 3 }
     it { song.title.must_equal "Lucky" }
   end
-
-
-  # describe "::new" do # TODO: this creates a new model!
-  #   let(:album) { Twin::Album.new }
-  #   let (:song) { Twin::Song.new }
-
-  #   it { album.name.must_equal nil }
-  #   it { album.songs.must_equal nil }
-  #   it { song.title.must_equal nil }
-  #   it { song.album.must_equal nil }
-  # end
-
-
-  # describe "::new with arguments" do
-  #   let (:talking) { Twin::Song.new("title" => "Talking") }
-  #   let (:album) { Twin::Album.new(:name => "30 Years", :songs => [talking]) }
-  #   subject { Twin::Song.new("title" => "Broken", "album" => album) }
-
-  #   it { subject.title.must_equal "Broken" }
-  #   it { subject.album.must_equal album }
-  #   it { subject.album.name.must_equal "30 Years" }
-  #   it { album.songs.must_equal [talking] }
-  # end
-
-
-  # describe "::new with :symbols" do
-  #   subject { Twin::Song.new(:title => "Broken") }
-
-  #   it { subject.title.must_equal "Broken" }
-  #   it { subject.album.must_equal nil }
-  # end
-
-
-  # # DISCUSS: make ::from private.
-  # describe "::from" do
-  #   let (:song) { Model::Song.new(1, "Broken", album) }
-  #   let (:album) { Model::Album.new(2, "The Process Of  Belief", [Model::Song.new(3, "Dr. Stein")]) }
-
-  #   subject {Twin::Song.from(song) }
-
-  #   it { subject.title.must_equal "Broken" }
-  #   it { subject.album.must_be_kind_of Twin::Album }
-  #   it { subject.album.name.must_equal album.name }
-  #   it { subject.album.songs.first.title.must_equal "Dr. Stein" } # TODO: more tests on collections and object identity (if we need that).
-  # end
 end
 
 
@@ -125,25 +80,6 @@ class TwinDecoratorTest < MiniTest::Spec
   it { subject.twin_names.must_equal [:album] }
 end
 
-# from is as close to from_hash as possible
-# there should be #to in a perfect API, nothing else.
-
-
-# should #new create empty associated models?
-
-# class TwinDefaultTest < MiniTest::Spec
-#   module Model
-#     Song  = Struct.new(:number)
-#   end
-
-#   class Song < Disposable::Twin
-#     property :number, :default => 1 # FIXME: this should be :default_if_nil so it becomes clear with a model.
-#   end
-
-#   it("uuu") { Song.new(Model::Song.new(nil)).number.must_equal 1 }
-#   it { Song.new(Model::Song.new(false)).number.must_equal 1 }
-#   it { Song.new(Model::Song.new(2)).number.must_equal 2 }
-# end
 
 require 'disposable/twin/struct'
 class TwinStructTest < MiniTest::Spec
@@ -153,7 +89,7 @@ class TwinStructTest < MiniTest::Spec
   end
 
   it { Song.new({}).number.must_equal 1 }
-  it { Song.new(:number => 2).number.must_equal 2 }
+  it { Song.new(number: 2).number.must_equal 2 }
 end
 
 
@@ -179,16 +115,6 @@ class TwinAsTest < MiniTest::Spec
     end
   end
 
-
-  # let (:record) { Twin::Album.new(:record_name => "Veni Vidi Vicous") }
-  # subject { Twin::Song.new(:name => "Outsmarted", :record => record) }
-
-
-  # describe "::new" do # TODO: this creates a new model!
-  #   # the Twin exposes the as: API.
-  #   it { subject.name.must_equal "Outsmarted" }
-  #   it { subject.record.must_equal record }
-  # end
 end
 
 
@@ -204,27 +130,21 @@ class TwinOptionTest < TwinTest
     option :highlight?
   end
 
-
-  describe "::new" do
-    let (:song) { Model::Song.new(1, "Broken") }
-    let (:twin) { Song.new(song, :preview? => false) }
+  let (:song) { Model::Song.new(1, "Broken") }
+  let (:twin) { Song.new(song, :preview? => false) }
 
 
-    it { twin.id.must_equal 1 }
-    it { twin.title.must_equal "Broken" }
+  # properties are read from model.
+  it { twin.id.must_equal 1 }
+  it { twin.title.must_equal "Broken" }
 
-    # option is not delegated to model.
-    it {
-      twin.preview?.must_equal false }
+  # option is not delegated to model.
+  it { twin.preview?.must_equal false }
+  # not passing option means zero.
+  it { twin.highlight?.must_equal nil }
 
-    it { Song.new(song, :preview? => true, :highlight => false).preview?.must_equal true }
-  end
+  # passing both options.
+  it { Song.new(song, :preview? => true, :highlight => false).preview?.must_equal true }
 end
-
-
-
-
-
-
 
 # TODO: test coercion!

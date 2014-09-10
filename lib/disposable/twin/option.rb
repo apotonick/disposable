@@ -5,7 +5,8 @@ module Disposable::Twin::Option
 
   module ClassMethods
     def option(name, options={})
-      property(name, options.merge(:readable => false))
+      # default: nil will always set an option in the, even when not in the incoming options.
+      property(name, options.merge(:readable => false, :default => nil))
     end
   end
 end
