@@ -38,7 +38,13 @@ class TwinTest < MiniTest::Spec
     end
 
     # override property with public name in constructor.
-    it { Twin::Song.new(song, :name => "Kenny").name.must_equal "Kenny" }
+    it do
+      # override twin's value...
+      Twin::Song.new(song, :name => "Kenny").name.must_equal "Kenny"
+
+      # .. but do not write to the model!
+      song.title.must_equal "Broken"
+    end
   end
 
   describe "setter" do
@@ -53,9 +59,9 @@ class TwinTest < MiniTest::Spec
     it { twin.id.must_equal 3 }
     it { twin.name.must_equal "Lucky" }
 
-    # updates model (directly, per default)
-    it { song.id.must_equal 3 }
-    it { song.title.must_equal "Lucky" }
+    # DOES NOT update model
+    it { song.id.must_equal 1 }
+    it { song.title.must_equal "Broken" }
   end
 end
 
@@ -141,7 +147,7 @@ class TwinOptionTest < TwinTest
   it { twin.highlight?.must_equal nil }
 
   # passing both options.
-  it { Song.new(song, :preview? => true, :highlight => false).preview?.must_equal true }
+  it { Song.new(song, preview?: true, highlight?: false).preview?.must_equal true }
 end
 
 # TODO: test coercion!

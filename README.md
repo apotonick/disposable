@@ -57,7 +57,18 @@ twin.title #=> "Savior"
 twin.good? #=> true
 ```
 
+You can also override `property` values in the constructor:
+
+```ruby
+twin = Song::Twin.new(song, title: "Plasticash")
+twin.title #=> "Plasticash"
+```
+
+Let's talk about what happens to the actual model when setting values?
+
 ## Writing
+
+It doesn't happen. The model is only queried when _reading_ values. Writing only happens in additional modules: Syncing and Saving is where the values held in the twin are written to the model.
 
 ## Renaming
 

@@ -4,6 +4,10 @@ require 'representable/hash'
 require 'disposable/twin/representer'
 require 'disposable/twin/option'
 
+# Twin.new(model/composition hash, options)
+#   assign hash to @fields
+#   write: write to @fields
+#   sync/save is the only way to write back to the model.
 
 module Disposable
   class Twin
@@ -19,7 +23,7 @@ module Disposable
       representer_class.property(name, options, &block).tap do |definition|
         mod = Module.new do
           define_method(name)       { read_property(name, options[:private_name]) }
-          define_method("#{name}=") { |value| write_property(name, options[:private_name], value, definition[:readable]) } # TODO: this is more like prototyping.
+          define_method("#{name}=") { |value| write_property(name, options[:private_name], value) } # TODO: this is more like prototyping.
         end
         include mod
       end
@@ -56,15 +60,8 @@ module Disposable
       model.send(getter)
     end
 
-    def write_property(name, private_name, value, readable)
-      return @fields[name.to_s] = value if readable == false # FIXME: this is for Option and i'll clean this up.
-       # this will soon be overridable so ORM Twins can delay writing till #sync or #save.
-       @fields[name.to_s] = write_to_model(private_name, value)
-    end
-
-    def write_to_model(setter, value)
-      model.send("#{setter}=", value)
-      value
+    def write_property(name, private_name, value)
+       @fields[name.to_s] = value
     end
 
     def from_hash(options)

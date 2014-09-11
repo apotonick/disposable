@@ -38,7 +38,8 @@ class TwinCompositionTest < MiniTest::Spec
     end
 
     it { request.song_title.must_equal "Tease" }
-    it { song.title.must_equal "Tease" }
+    # no writing to model.
+    it { song.title.must_equal "Extraction" }
     it { request.name.must_equal "Wooten" }
   end
 end
