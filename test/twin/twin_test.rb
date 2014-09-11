@@ -95,12 +95,18 @@ class TwinStructTest < MiniTest::Spec
     option   :cool?
   end
 
+  # empty hash
   it { Song.new({}).number.must_equal 1 }
+  # model hash
   it { Song.new(number: 2).number.must_equal 2 }
 
-  # with hash and options.
+  # with hash and options as one hash.
   it { Song.new(number: 3, cool?: true).cool?.must_equal true }
   it { Song.new(number: 3, cool?: true).number.must_equal 3 }
+
+  # with model hash and options hash separated.
+  it { Song.new({number: 3}, {cool?: true}).cool?.must_equal true }
+  it { Song.new({number: 3}, {cool?: true}).number.must_equal 3 }
 end
 
 

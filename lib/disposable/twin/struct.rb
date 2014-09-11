@@ -4,13 +4,10 @@ module Disposable
     #
     #   Twin.new(id: 1)
     module Struct
-      def initialize(options={})
-        super
-        from_hash(options)
-      end
+      def initialize(model, options={})
+        super # call from_hash(options) # FIXME: this is wrong and already calls from_hash(options)
 
-    private
-      def read_from_model(name)
+        from_hash(model.merge(options))
       end
     end
   end
