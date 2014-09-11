@@ -12,10 +12,6 @@ module Disposable
     private
       def read_from_model(name)
       end
-
-      def write_to_model(name, value)
-        value
-      end
     end
   end
 end
