@@ -1,3 +1,7 @@
+# 0.0.7
+
+* Make disposable require representable 2.x.
+
 # 0.0.6
 
 * Add Twin::Option.
