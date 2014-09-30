@@ -3,8 +3,9 @@ require 'representable/decorator'
 require 'representable/hash'
 require 'disposable/twin/representer'
 require 'disposable/twin/option'
+require 'disposable/twin/builder'
 
-# Twin.new(model/composition hash, options)
+# Twin.new(model/composition hash/hash, options)
 #   assign hash to @fields
 #   write: write to @fields
 #   sync/save is the only way to write back to the model.
@@ -17,7 +18,7 @@ module Disposable
 
 
     def self.property(name, options={}, &block)
-      options[:private_name]  = options.delete(:as) || name
+      options[:private_name] = options.delete(:as) || name
       options[:pass_options] = true
 
       representer_class.property(name, options, &block).tap do |definition|
