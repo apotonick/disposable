@@ -1,3 +1,7 @@
+# 0.0.8
+
+* Introduce the `Twin::Builder` module to easily allow creating a twin in a host object's constructor.
+
 # 0.0.7
 
 * Make disposable require representable 2.x.

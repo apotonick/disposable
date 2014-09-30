@@ -184,6 +184,7 @@ class TwinBuilderTest < MiniTest::Spec
 
     subject { Host.new(TwinTest::Model::Song.new(1, "Saturday Night"), is_released: true) }
 
+    # model is simply the twin.
     it { subject.respond_to?(:title).must_equal false }
     it { subject.model.id.must_equal 1 }
     it { subject.model.title.must_equal "Saturday Night" }
