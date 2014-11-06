@@ -19,7 +19,7 @@ class TwinTest < MiniTest::Spec
 
     class Song < Disposable::Twin
       property :id # DISCUSS: needed for #save.
-      property :name, :as => :title
+      property :name, :from => :title
       property :album, :twin => Album
 
       # model Model::Song
@@ -32,7 +32,7 @@ class TwinTest < MiniTest::Spec
     it do
       twin = Twin::Song.new(song)
       song.id = 2
-      # :as maps public name
+      # :from maps public name
       twin.name.must_equal "Broken" # public: #name
       twin.id.must_equal 2
     end
@@ -119,14 +119,14 @@ class TwinAsTest < MiniTest::Spec
 
   module Twin
     class Album < Disposable::Twin
-      property :record_name, :as => :name
+      property :record_name, :from => :name
 
       # model Model::Album
     end
 
     class Song < Disposable::Twin
-      property :name, :as => :title
-      property :record, :twin => Album, :as => :album
+      property :name, :from => :title
+      property :record, :twin => Album, :from => :album
 
       # model Model::Song
     end

@@ -4,8 +4,8 @@ require 'disposable/twin/composition'
 
 class TwinCompositionTest < MiniTest::Spec
   class Request < Disposable::Twin::Composition
-    property :song_title, :on => :song, :as => :title
-    property :song_id,    :on => :song, :as => :id
+    property :song_title, :on => :song, :from => :title
+    property :song_id,    :on => :song, :from => :id
 
     property :name,       :on => :requester
     property :id,         :on => :requester
