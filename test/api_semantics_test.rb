@@ -7,42 +7,64 @@ module Model
   Album = Struct.new(:id, :name, :songs)
 end
 
-class Skip < OpenStruct
-end
-class Remove < Skip
+module Representable
+  class Semantics
+    class Skip < OpenStruct
+    end
+    class Remove < Skip
+    end
+
+    # Per parsed collection item, mark the to-be-populated model for removal, skipping or adding.
+    # This code is called right before #from_format is called on the model.
+    # Semantical behavior is inferred from the fragment making this code document- and format-specific.
+    class Instance
+      include Uber::Callable
+
+      def call(model, fragment, index, options)
+        if fragment["_action"] == "remove"
+          Remove.new(fragment) # the deserializer will assign {id: 2, title: "Sunlit Nights"}.
+        else
+          # the if is an optional feature!
+          if model.songs.collect { |s| s.id.to_s }.include?(fragment["id"].to_s) and fragment["_action"] != "remove"
+            Skip.new(fragment)
+          else
+            Model::Song.new
+          end
+        end
+      end
+    end
+
+    class Setter
+      include Uber::Callable
+
+      def call(model, values, options)
+        remove_items  = values.find_all { |i| i.instance_of?(Representable::Semantics::Remove) }
+        # add_items     = values.find_all { |i| i.instance_of?(Add) }.collect(&:model)
+        add_items     = values - remove_items
+
+        skip_items  = values.find_all { |i| i.instance_of?(Representable::Semantics::Skip) }
+        # add_items     = values.find_all { |i| i.instance_of?(Add) }.collect(&:model)
+        add_items     = add_items - skip_items
+
+        model.songs += add_items
+        model.songs -= remove_items.collect { |i| model.songs.find { |s| s.id.to_s == i.id.to_s } }
+      end
+    end
+  end
 end
 
 class AlbumDecorator < Representable::Decorator
   include Representable::Hash
 
   collection :songs,
-    instance:   lambda { |hash, *options|
-      if hash["_action"] == "remove"
-        Remove.new(hash) # the deserializer will assign {id: 2, title: "Sunlit Nights"}.
-      else
-        if songs.collect { |s| s.id.to_s }.include?(hash["id"].to_s) and hash["_action"] != "remove"
-          Skip.new(hash)
-        else
-          Model::Song.new
-        end
-      end
-      },
+    instance: Representable::Semantics::Instance.new,
+
+      pass_options: true,
     # skip_parse: lambda { |fragment, *args|
     #   puts "sss #{fragment.inspect}... #{songs.collect { |s| s.id.to_s }.inspect}"
     #   songs.collect { |s| s.id.to_s }.include?(fragment["id"].to_s) }, # read-only existing.
 
-    setter:     lambda { |value, options|
-      remove_items  = value.find_all { |i| i.instance_of?(Remove) }
-      # add_items     = value.find_all { |i| i.instance_of?(Add) }.collect(&:model)
-      add_items     = value - remove_items
-
-      skip_items  = value.find_all { |i| i.instance_of?(Skip) }
-      # add_items     = value.find_all { |i| i.instance_of?(Add) }.collect(&:model)
-      add_items     = add_items - skip_items
-
-      self.songs += add_items
-      self.songs -= remove_items.collect { |i| songs.find { |s| s.id.to_s == i.id.to_s } }
-     } do # add new to existing collection.
+    setter: Representable::Semantics::Setter.new do # add new to existing collection.
 
       # only add new songs
       property :title
