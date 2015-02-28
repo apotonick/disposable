@@ -14,6 +14,10 @@ module Representable
     class Remove < Skip
     end
 
+    require 'delegate'
+    class Update < SimpleDelegator
+    end
+
     # Per parsed collection item, mark the to-be-populated model for removal, skipping or adding.
     # This code is called right before #from_format is called on the model.
     # Semantical behavior is inferred from the fragment making this code document- and format-specific.
@@ -42,10 +46,9 @@ module Representable
             if res= model.songs.find { |s| s.id.to_s == fragment["id"].to_s }
               puts "$$$ #{res}"
 
-              # what if item not found by id?
+              # update existing, but somehow mark it so it does not get added, again.
 
-
-              return res
+              return Update.new(res)
             else
               Model::Song.new
             end
@@ -67,6 +70,8 @@ puts "Setter: #{values.inspect}"
         add_items     = values - remove_items
 
         skip_items  = values.find_all { |i| i.instance_of?(Representable::Semantics::Skip) }
+        skip_items  += values.find_all { |i| i.instance_of?(Representable::Semantics::Update) } # TODO: merge with above!
+
         # add_items     = values.find_all { |i| i.instance_of?(Add) }.collect(&:model)
         add_items     = add_items - skip_items
 
@@ -160,7 +165,7 @@ class ApiSemanticsWithUpdate < MiniTest::Spec
     puts decorator.represented.songs.inspect
 
 
-    decorator.represented.songs.inspect.must_equal %{[#<struct Model::Song id=2, title="Solidarity, updated!">, #<struct Model::Song id=nil, title="Capture Castles">]}
+    decorator.represented.songs.inspect.must_equal %{[#<struct Model::Song id=2, title="Solidarity, updated!">, #<struct Model::Song id=nil, title="Capture Castles">, #<struct Model::Song id=nil, title=\"Rise And Fall\">]}
   end
 end
 # [
