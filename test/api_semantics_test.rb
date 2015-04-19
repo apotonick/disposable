@@ -14,7 +14,7 @@ module Representable
 
     class SkipExisting < Semantic
       def self.call(model, fragment, index, options)
-        return unless model.songs.collect { |s| s.id.to_s }.include?(fragment["id"].to_s) #and fragment["_action"] != "remove"
+        return unless model.songs.collect { |s| s.id.to_s }.include?(fragment["id"].to_s)
 
         Skip.new(fragment)
       end
@@ -62,7 +62,9 @@ module Representable
     # remove: unlink from association
     # skip_existing
     # update_existing
-    # [add]
+    # add
+    # [destroy]
+    # [callable]
 
     # default behavior: - add_new
 
@@ -72,6 +74,7 @@ module Representable
       def call(model, fragment, index, options)
         semantics = options.binding[:semantics]
 
+        # loop through semantics, the first that returns something wins.
         semantics.each do |semantic|
           res = semantic.(model, fragment, index, options) and return res
         end
@@ -127,7 +130,7 @@ end
 
 
 
-class ApiSemantics < MiniTest::Spec
+class ApiSemanticsTest < MiniTest::Spec
   it "xxx" do
     album = Model::Album.new(1, "And So I Watch You From Afar", [Model::Song.new(2, "Solidarity"), Model::Song.new(0, "Tale That Wasn't Right")])
 
@@ -139,12 +142,41 @@ class ApiSemantics < MiniTest::Spec
     ]})
     # missing: allow updating specific/all items in collection.
 
-    puts decorator.represented.songs.inspect
-
-
     decorator.represented.songs.inspect.must_equal %{[#<struct Model::Song id=2, title="Solidarity">, #<struct Model::Song id=nil, title="Capture Castles">]}
   end
+
 end
+
+class RemoveFlagSetButNotEnabled < MiniTest::Spec
+  class AlbumDecorator < Representable::Decorator
+    include Representable::Hash
+
+    collection :songs,
+      # semantics: [:skip_existing, :add, :remove],
+      semantics: [Representable::Semantics::SkipExisting, Representable::Semantics::Add],
+
+      instance: Representable::Semantics::Instance.new,
+      pass_options: true,
+      setter: Representable::Semantics::Setter.new,
+      class: Model::Song do
+        property :title
+      end
+  end
+
+  it "doesn't remove when semantic is not enabled" do
+    album = Model::Album.new(1, "And So I Watch You From Afar", [Model::Song.new(2, "Solidarity"), Model::Song.new(0, "Tale That Wasn't Right")])
+
+    decorator = AlbumDecorator.new(album)
+    decorator.from_hash({"songs" => [
+      {"id" => 2, "title" => "Solidarity, updated!"}, # update
+      {"id" => 0, "title" => "Tale That Wasn't Right, but wrong title", "_action" => "remove"}, # delete
+      {"title" => "Rise And Fall"}
+    ]})
+
+    decorator.represented.songs.inspect.must_equal %{[#<struct Model::Song id=2, title=\"Solidarity\">, #<struct Model::Song id=0, title=\"Tale That Wasn't Right\">, #<struct Model::Song id=nil, title=\"Rise And Fall\">]}
+  end
+end
+
 
 class ApiSemanticsWithUpdate < MiniTest::Spec
   class AlbumDecorator < Representable::Decorator
