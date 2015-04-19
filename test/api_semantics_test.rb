@@ -106,8 +106,6 @@ module Representable
   end
 end
 
-# TODO: test remove when :remove semantic is not set.
-
 class AlbumDecorator < Representable::Decorator
   include Representable::Hash
 
@@ -169,7 +167,43 @@ class RemoveFlagSetButNotEnabled < MiniTest::Spec
     decorator = AlbumDecorator.new(album)
     decorator.from_hash({"songs" => [
       {"id" => 2, "title" => "Solidarity, updated!"}, # update
-      {"id" => 0, "title" => "Tale That Wasn't Right, but wrong title", "_action" => "remove"}, # delete
+      {"id" => 0, "title" => "Tale That Wasn't Right, but wrong title", "_action" => "remove"}, # delete, but don't!
+      {"title" => "Rise And Fall"}
+    ]})
+
+    decorator.represented.songs.inspect.must_equal %{[#<struct Model::Song id=2, title=\"Solidarity\">, #<struct Model::Song id=0, title=\"Tale That Wasn't Right\">, #<struct Model::Song id=nil, title=\"Rise And Fall\">]}
+  end
+end
+
+class UserCallableTest < MiniTest::Spec
+  class MyOwnSemantic < Representable::Semantics::Semantic
+    def self.call(model, fragment, index, options)
+      if fragment["title"] =~ /Solidarity/
+        return Representable::Semantics::Skip.new(fragment)
+      end
+    end
+  end
+
+  class AlbumDecorator < Representable::Decorator
+    include Representable::Hash
+
+    collection :songs,
+      semantics: [MyOwnSemantic, Representable::Semantics::Add],
+
+      instance: Representable::Semantics::Instance.new,
+      pass_options: true,
+      setter: Representable::Semantics::Setter.new,
+      class: Model::Song do
+        property :title
+      end
+  end
+
+  it do
+    album = Model::Album.new(1, "And So I Watch You From Afar", [Model::Song.new(2, "Solidarity"), Model::Song.new(0, "Tale That Wasn't Right")])
+
+    decorator = AlbumDecorator.new(album)
+    decorator.from_hash({"songs" => [
+      {"id" => 2, "title" => "Solidarity, updated!"}, # update
       {"title" => "Rise And Fall"}
     ]})
 
