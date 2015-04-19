@@ -16,8 +16,7 @@ module Representable
       def self.call(model, fragment, index, options)
         return unless model.songs.collect { |s| s.id.to_s }.include?(fragment["id"].to_s) #and fragment["_action"] != "remove"
 
-        puts "¬¬¬¬¬¬¬ skipping #{fragment}"
-        return Skip.new(fragment)
+        Skip.new(fragment)
       end
     end
 
@@ -33,18 +32,16 @@ module Representable
 
     class UpdateExisting < Semantic
       def self.call(model, fragment, index, options)
-        puts "yooo #{model.songs.inspect}"
         return unless res= model.songs.find { |s| s.id.to_s == fragment["id"].to_s }
 
-          # update existing, but somehow mark it so it does not get added, again.
-
-          return Update.new(res)
+         Update.new(res)
       end
     end
 
 
     class Skip < OpenStruct
     end
+
     class Remove < Skip
       def self.call(model, fragment, index, options)
         return unless fragment["_action"] == "remove" # TODO: check if feature enabled.
@@ -85,8 +82,6 @@ module Representable
       include Uber::Callable
 
       def call(model, values, options)
-puts "Setter: #{values.inspect}"
-
         remove_items  = values.find_all { |i| i.instance_of?(Representable::Semantics::Remove) }
         # add_items     = values.find_all { |i| i.instance_of?(Add) }.collect(&:model)
         add_items     = values - remove_items
@@ -119,12 +114,7 @@ class AlbumDecorator < Representable::Decorator
     semantics: [Representable::Semantics::Remove, Representable::Semantics::SkipExisting, Representable::Semantics::Add],
 
     instance: Representable::Semantics::Instance.new,
-
-      pass_options: true,
-    # skip_parse: lambda { |fragment, *args|
-    #   puts "sss #{fragment.inspect}... #{songs.collect { |s| s.id.to_s }.inspect}"
-    #   songs.collect { |s| s.id.to_s }.include?(fragment["id"].to_s) }, # read-only existing.
-
+    pass_options: true,
     setter: Representable::Semantics::Setter.new,
 
 
@@ -165,12 +155,8 @@ class ApiSemanticsWithUpdate < MiniTest::Spec
       semantics: [Representable::Semantics::Remove, Representable::Semantics::UpdateExisting, Representable::Semantics::Add],
 
       instance: Representable::Semantics::Instance.new,
-
-        pass_options: true,
-        class: Model::Song,
-      # skip_parse: lambda { |fragment, *args|
-      #   puts "sss #{fragment.inspect}... #{songs.collect { |s| s.id.to_s }.inspect}"
-      #   songs.collect { |s| s.id.to_s }.include?(fragment["id"].to_s) }, # read-only existing.
+      pass_options: true,
+      class: Model::Song,
 
       setter: Representable::Semantics::Setter.new do # add new to existing collection.
 
