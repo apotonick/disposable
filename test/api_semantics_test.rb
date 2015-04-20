@@ -17,11 +17,15 @@ end
 module Representable
   class Semantics
     class Semantic
+      def self.existing_item(fragment, options)
+        # return unless model.songs.collect { |s| s.id.to_s }.include?(fragment["id"].to_s)
+        options.binding.get.find { |s| s.id.to_s == fragment["id"].to_s }
+      end
     end
 
     class SkipExisting < Semantic
       def self.call(model, fragment, index, options)
-        return unless model.songs.collect { |s| s.id.to_s }.include?(fragment["id"].to_s)
+        return unless existing_item(fragment, options)
 
         Skip.new(fragment)
       end
@@ -31,15 +35,13 @@ module Representable
       def self.call(model, fragment, index, options)
         binding = options.binding.clone
         binding.instance_variable_get(:@definition).delete!(:instance) # FIXME: sucks!
-        Representable::Deserializer.new(binding).(fragment, options.user_options) # is that for :update?
-
-        #Model::Song.new # TODO: Original behaviour with :class, :extend, and so on.
+        Representable::Deserializer.new(binding).(fragment, options.user_options) # Song.new
       end
     end
 
     class UpdateExisting < Semantic
       def self.call(model, fragment, index, options)
-        return unless res= model.songs.find { |s| s.id.to_s == fragment["id"].to_s }
+        return unless res = existing_item(fragment, options)
 
          Update.new(res)
       end
