@@ -7,6 +7,13 @@ module Model
   Album = Struct.new(:id, :name, :songs)
 end
 
+# thoughts:
+# a twin should be a proxy between the incoming API instructions (form hash) and the models to write to.
+# e.g. when deleting certain items in a collection, this could be held in memory before written to DB.
+# reason: a twin can be validated (e.g. is current user allowed to remove item 1 from collection abc?)
+#         before the application state is actually altered in the DB.
+# that would open a clean workflow: API calls --> twin state change --> validation --> "rollback" / save
+
 module Representable
   class Semantics
     class Semantic
@@ -48,7 +55,6 @@ module Representable
 
         Remove.new(fragment)
       end
-
     end
 
     require 'delegate'
@@ -64,7 +70,7 @@ module Representable
     # update_existing
     # add
     # [destroy]
-    # [callable]
+    # callable
 
     # default behavior: - add_new
 
