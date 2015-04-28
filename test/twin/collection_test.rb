@@ -91,14 +91,22 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
 
   let (:album) { Album.create(name: "The Rest Is Silence") }
   let (:song1) { Song.new(title: "Snorty Pacifical Rascal") } # unsaved.
+  let (:song2) { Song.create(title: "At Any Cost") } # saved.
+  let (:twin) { Twin::Album.new(album) }
 
   it do
-    twin = Twin::Album.new(album)
     # TODO: test all writers.
     twin.songs << song1 # assuming that we add AR model here.
+    twin.songs << song2
+
+    twin.songs.size.must_equal 2
+
     twin.songs[0].must_be_instance_of Twin::Song
+    twin.songs[1].must_be_instance_of Twin::Song
+
     # twin.songs[0].persisted?.must_equal false
     twin.songs[0].send(:model).persisted?.must_equal false
+    twin.songs[1].send(:model).persisted?.must_equal true
 
     album.songs.size.must_equal 0 # nothing synced, yet.
 
@@ -110,7 +118,11 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
     album.persisted?.must_equal true
     album.name.must_equal "The Rest Is Silence"
 
-    album.songs.size.must_equal 1 # synced!
-    album.songs.first.persisted?.must_equal true
+    album.songs.size.must_equal 2 # synced!
+
+    album.songs[0].persisted?.must_equal true
+    album.songs[1].persisted?.must_equal true
+    album.songs[0].title.must_equal "Snorty Pacifical Rascal"
+    album.songs[1].title.must_equal "At Any Cost"
   end
 end
