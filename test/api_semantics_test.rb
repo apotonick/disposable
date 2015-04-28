@@ -17,7 +17,7 @@ end
 module Representable
   class Semantics
     class Semantic
-      def self.existing_item(fragment, options)
+      def self.existing_item_for(fragment, options)
         # return unless model.songs.collect { |s| s.id.to_s }.include?(fragment["id"].to_s)
         options.binding.get.find { |s| s.id.to_s == fragment["id"].to_s }
       end
@@ -25,7 +25,7 @@ module Representable
 
     class SkipExisting < Semantic
       def self.call(model, fragment, index, options)
-        return unless existing_item(fragment, options)
+        return unless existing_item_for(fragment, options)
 
         Skip.new(fragment)
       end
@@ -41,7 +41,7 @@ module Representable
 
     class UpdateExisting < Semantic
       def self.call(model, fragment, index, options)
-        return unless res = existing_item(fragment, options)
+        return unless res = existing_item_for(fragment, options)
 
          Update.new(res)
       end

@@ -18,6 +18,40 @@ module Disposable
           find_all { |attr| attr[:twin] }.
           collect { |attr| attr.name.to_sym }
       end
+
+
+
+
+       # Returns hash of all property names.
+      def self.fields(&block)
+        representable_attrs.find_all(&block).map(&:name)
+      end
+
+      def self.each(only_form=true, &block)
+        definitions = representable_attrs
+        definitions = representable_attrs.find_all { |attr| attr[:form] } if only_form
+
+        definitions.each(&block)
+        self
+      end
+    end
+
+
+    # Introduces ::representer to generate/cache transformer representers.
+    module Representer
+      def representers # keeps all transformation representers for one class.
+        @representers ||= {}
+      end
+
+      def representer(name=nil, options={}, &block)
+        return representer_class.each(&block) if name == nil
+        return representers[name] if representers[name] # don't run block as this representer is already setup for this form class.
+
+        only_forms = options[:all] ? false : true
+        base       = options[:superclass] || representer_class
+
+        representers[name] = Class.new(base).each(only_forms, &block) # let user modify representer.
+      end
     end
 
     class Definition < Representable::Definition
