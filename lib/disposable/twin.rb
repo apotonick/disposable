@@ -65,8 +65,6 @@ module Disposable
     def read_property(name, private_name)
       return @fields[name.to_s] if @fields.has_key?(name.to_s)
 
-      # TODO: make polymorphic.
-      # return @fields[name.to_s] = Collection.new(read_from_model(private_name)) if self.class.representer_class.representable_attrs.get(name).array?
       @fields[name.to_s] = read_from_model(private_name)
     end
 
@@ -94,8 +92,7 @@ module Disposable
         super(TwinCollectionActiveRecordTest::Twin::Song.new(model))
       end
 
-      def remove(model)
-        find { |twin| puts twin.inspect }
+      def delete(model)
         super(find { |twin| twin.send(:model) == model })
       end
     end
