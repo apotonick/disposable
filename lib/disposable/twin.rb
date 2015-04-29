@@ -66,7 +66,7 @@ module Disposable
       return @fields[name.to_s] if @fields.has_key?(name.to_s)
 
       # TODO: make polymorphic.
-      return @fields[name.to_s] = Collection.new(read_from_model(private_name)) if self.class.representer_class.representable_attrs.get(name).array?
+      # return @fields[name.to_s] = Collection.new(read_from_model(private_name)) if self.class.representer_class.representable_attrs.get(name).array?
       @fields[name.to_s] = read_from_model(private_name)
     end
 

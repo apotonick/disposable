@@ -19,14 +19,19 @@ class TwinCollectionTest < MiniTest::Spec
       collection :songs, :twin => lambda { |*| Song }
 
       # model Model::Album
+
+      extend Representer
+      include Setup
     end
 
     class Song < Disposable::Twin
       property :id # DISCUSS: needed for #save.
-      property :name, :as => :title
+      property :title
       property :album, :twin => Album
 
-      # model Model::Song
+      # extend Representer
+      # include Setup
+      # TODO: test nested Setup!!!!
     end
   end
 
@@ -78,6 +83,7 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
       extend Representer
       include Sync
       include Save
+      include Setup
     end
 
     class Song < Disposable::Twin
