@@ -84,6 +84,7 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
       include Sync
       include Save
       include Setup
+      include Collection::Semantics
     end
 
     class Song < Disposable::Twin
@@ -158,6 +159,19 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
   end
 
   describe "#destroy" do
+    let (:album) { Album.create(name: "The Rest Is Silence", songs: [song1]) }
 
+    it do
+      twin.songs.destroy(song1) # here, i pass in the model.
+
+      twin.songs.size.must_equal 0
+      album.songs.size.must_equal 1 # not synced, yet.
+
+      twin.save
+
+      twin.songs.size.must_equal 0
+      album.songs.size.must_equal 0
+      song1.persisted?.must_equal false
+    end
   end
 end
