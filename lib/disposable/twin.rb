@@ -14,12 +14,14 @@ module Disposable
   class Twin
     extend Uber::InheritableAttr
     inheritable_attr :representer_class
-    self.representer_class = Class.new(Decorator)
+    self.representer_class = Class.new(Decorator::Hash)
 
-
-    # FIXME: just prototyping!
+    # DISCUSS: since i started playing with Representable::Object, which is way faster than
+    # going the Hash way, i use two schema representers here. they are identical except for
+    # the engine.
+    # it would be cool to have only one, one day.
     inheritable_attr :object_representer_class
-    self.object_representer_class = Class.new(ObjectDecorator)
+    self.object_representer_class = Class.new(Decorator::Object)
 
 
     def self.property(name, options={}, &block)
@@ -33,10 +35,6 @@ module Disposable
         end
         include mod
       end
-
-
-
-
       object_representer_class.property(name, options, &block)
     end
 

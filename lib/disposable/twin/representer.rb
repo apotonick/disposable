@@ -1,14 +1,18 @@
 module Disposable
   class Twin
     class Decorator < Representable::Decorator
-      include Representable::Hash
-      include AllowSymbols
+      class Definition < Representable::Definition
+        def dynamic_options
+          super + [:twin]
+        end
+      end
 
       # DISCUSS: same in reform, is that a bug in represntable?
       def self.clone # called in inheritable_attr :representer_class.
         Class.new(self) # By subclassing, representable_attrs.clone is called.
       end
 
+      # FIXME: this is not properly used when inheriting - fix that in representable.
       def self.build_config
         Config.new(Definition)
       end
@@ -19,14 +23,6 @@ module Disposable
           collect { |attr| attr.name.to_sym }
       end
 
-
-
-
-       # Returns hash of all property names.
-      def self.fields(&block)
-        representable_attrs.find_all(&block).map(&:name)
-      end
-
       def self.each(only_nested=true, &block)
         definitions = representable_attrs
         definitions = representable_attrs.find_all { |attr| attr[:twin] } if only_nested
@@ -34,42 +30,27 @@ module Disposable
         definitions.each(&block)
         self
       end
-    end
 
-    # FIXME!
-    require "representable/object"
-    class ObjectDecorator < Representable::Decorator
-      include Representable::Object
 
-      # DISCUSS: same in reform, is that a bug in represntable?
-      def self.clone # called in inheritable_attr :representer_class.
-        Class.new(self) # By subclassing, representable_attrs.clone is called.
+      # this decorator allows hash transformations (to and from, e.g. for nested_hash).
+      class Hash < self
+        include Representable::Hash
+        include AllowSymbols
+
+        # FIXME: this sucks. fix in representable.
+        def self.build_config
+          Config.new(Definition)
+        end
       end
 
-      def self.build_config
-        Config.new(Definition)
-      end
+      require "representable/object"
+      class Object < self
+        include Representable::Object
 
-      def twin_names
-        representable_attrs.
-          find_all { |attr| attr[:twin] }.
-          collect { |attr| attr.name.to_sym }
-      end
-
-
-
-
-       # Returns hash of all property names.
-      def self.fields(&block)
-        representable_attrs.find_all(&block).map(&:name)
-      end
-
-      def self.each(only_nested=true, &block)
-        definitions = representable_attrs
-        definitions = representable_attrs.find_all { |attr| attr[:twin] } if only_nested
-
-        definitions.each(&block)
-        self
+        # FIXME: this sucks. fix in representable.
+        def self.build_config
+          Config.new(Definition)
+        end
       end
     end
 
@@ -91,10 +72,7 @@ module Disposable
       end
     end
 
-    class Definition < Representable::Definition
-      def dynamic_options
-        super + [:twin]
-      end
-    end
+
+
   end
 end
