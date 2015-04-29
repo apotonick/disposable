@@ -17,6 +17,11 @@ module Disposable
     self.representer_class = Class.new(Decorator)
 
 
+    # FIXME: just prototyping!
+    inheritable_attr :object_representer_class
+    self.object_representer_class = Class.new(ObjectDecorator)
+
+
     def self.property(name, options={}, &block)
       options[:private_name] = options.delete(:as) || name
       options[:pass_options] = true
@@ -28,6 +33,11 @@ module Disposable
         end
         include mod
       end
+
+
+
+
+      object_representer_class.property(name, options, &block)
     end
 
     def self.collection(name, options={}, &block)
@@ -82,6 +92,11 @@ module Disposable
     class Collection < Array
       def <<(model)
         super(TwinCollectionActiveRecordTest::Twin::Song.new(model))
+      end
+
+      def remove(model)
+        find { |twin| puts twin.inspect }
+        super(find { |twin| twin.send(:model) == model })
       end
     end
   end

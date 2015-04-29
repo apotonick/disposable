@@ -1,5 +1,10 @@
 require 'test_helper'
 
+# reason: unique API for collection (adding, removing, deleting, etc.)
+#         delay DB write until saving Twin
+
+# TODO: eg "after delete hook (dynamic_delete)", after_add
+
 class TwinCollectionTest < MiniTest::Spec
   module Model
     Song  = Struct.new(:id, :title, :album)
@@ -101,7 +106,7 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
 
     twin.songs.size.must_equal 2
 
-    twin.songs[0].must_be_instance_of Twin::Song
+    twin.songs[0].must_be_instance_of Twin::Song # twin wraps << added in twin.
     twin.songs[1].must_be_instance_of Twin::Song
 
     # twin.songs[0].persisted?.must_equal false
@@ -124,5 +129,24 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
     album.songs[1].persisted?.must_equal true
     album.songs[0].title.must_equal "Snorty Pacifical Rascal"
     album.songs[1].title.must_equal "At Any Cost"
+  end
+
+  # test with adding to existing collection [song1] << song2
+
+  # TODO: #remove non-existent model.
+  describe "#remove" do
+    let (:album) { Album.create(name: "The Rest Is Silence", songs: [song1]) }
+
+    it do
+      twin.songs.remove(song1) # here, i pass in the model.
+
+      twin.songs.size.must_equal 0
+
+      album.songs.size.must_equal 1
+    end
+  end
+
+  describe "#destroy" do
+
   end
 end

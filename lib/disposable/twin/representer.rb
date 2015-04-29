@@ -27,9 +27,46 @@ module Disposable
         representable_attrs.find_all(&block).map(&:name)
       end
 
-      def self.each(only_form=true, &block)
+      def self.each(only_nested=true, &block)
         definitions = representable_attrs
-        definitions = representable_attrs.find_all { |attr| attr[:form] } if only_form
+        definitions = representable_attrs.find_all { |attr| attr[:twin] } if only_nested
+
+        definitions.each(&block)
+        self
+      end
+    end
+
+    # FIXME!
+    require "representable/object"
+    class ObjectDecorator < Representable::Decorator
+      include Representable::Object
+
+      # DISCUSS: same in reform, is that a bug in represntable?
+      def self.clone # called in inheritable_attr :representer_class.
+        Class.new(self) # By subclassing, representable_attrs.clone is called.
+      end
+
+      def self.build_config
+        Config.new(Definition)
+      end
+
+      def twin_names
+        representable_attrs.
+          find_all { |attr| attr[:twin] }.
+          collect { |attr| attr.name.to_sym }
+      end
+
+
+
+
+       # Returns hash of all property names.
+      def self.fields(&block)
+        representable_attrs.find_all(&block).map(&:name)
+      end
+
+      def self.each(only_nested=true, &block)
+        definitions = representable_attrs
+        definitions = representable_attrs.find_all { |attr| attr[:twin] } if only_nested
 
         definitions.each(&block)
         self
