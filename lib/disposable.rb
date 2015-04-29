@@ -10,3 +10,4 @@ end
 # end
 
 require "disposable/twin/setup"
+require "disposable/twin/collection"
