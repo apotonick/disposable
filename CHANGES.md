@@ -1,3 +1,7 @@
+# 0.0.9
+
+* Rename `:as` to `:from`. Deprecated, this will be removed in 0.1.0.
+
 # 0.0.8
 
 * Introduce the `Twin::Builder` module to easily allow creating a twin in a host object's constructor.
