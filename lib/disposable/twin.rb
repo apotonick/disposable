@@ -63,6 +63,7 @@ module Disposable
     def read_property(name, private_name)
       return @fields[name.to_s] if @fields.has_key?(name.to_s)
 
+      # FIXME: is this used? Only when Setup is not included.
       @fields[name.to_s] = read_from_model(private_name)
     end
 
@@ -79,16 +80,27 @@ module Disposable
 
     def wrap_scalar(dfn, value)
       return value unless dfn[:twin]
-      dfn[:twin].evaluate(nil).new(value)
+      Wrapper.new(dfn).(value)
     end
 
     def wrap_collection(dfn, value)
       return value unless dfn[:twin]
-      Collection.new(dfn[:twin], value.collect { |item| wrap_scalar(dfn, item) })
+      Collection.new(Wrapper.new(dfn), value.collect { |item| wrap_scalar(dfn, item) })
     end
 
     def from_hash(options)
       self.class.write_representer.new(self).from_hash(options)
+    end
+
+
+    class Wrapper
+      def initialize(dfn)
+        @dfn = dfn
+      end
+
+      def call(value)
+        @dfn[:twin].evaluate(nil).new(value)
+      end
     end
 
     attr_reader :model # TODO: test
