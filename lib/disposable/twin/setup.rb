@@ -8,7 +8,8 @@ module Disposable
         self.class.representer(:setup, :superclass => self.class.object_representer_class) do |dfn| # only nested twins.
           dfn.merge!(
             :representable => false, # don't call #from_object, only :instance.
-            :parse_filter  => lambda { |collection, *args| Twin::Collection[*collection] }, # TODO: make this configurable in representable!
+            # FIXME: this should not apply to properties!
+            :parse_filter  => lambda { |collection, *args| Twin::Collection.new(dfn[:twin], collection) }, # TODO: make this configurable in representable!
             :instance      => lambda { |model, *args| args.last.binding[:twin].evaluate(nil).new(model) } # wrap nested properties in twin.
             # FIXME: THAT SIGNATURE SUCKS: |model, index, args| (for collections), why can't it be model, args with args.index ?
           )
