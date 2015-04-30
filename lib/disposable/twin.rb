@@ -73,19 +73,17 @@ module Disposable
 
     # assumption: collections are always initialized from Setup since we assume an empty [] for "nil"/uninitialized collections.
     def write_property(name, private_name, value, dfn)
-      value = dfn.array? ? wrap_collection(dfn, value) : wrap_scalar(dfn, value)
+      value = dfn.array? ? wrap_collection(dfn, value) : wrap_scalar(dfn, value) if dfn[:twin]
 
       @fields[name.to_s] = value
     end
 
     def wrap_scalar(dfn, value)
-      return value unless dfn[:twin]
-      Wrapper.new(dfn).(value)
+      Twinner.new(dfn).(value)
     end
 
     def wrap_collection(dfn, value)
-      return value unless dfn[:twin]
-      Collection.new(Wrapper.new(dfn), value.collect { |item| wrap_scalar(dfn, item) })
+      Collection.new(Twinner.new(dfn), value.collect { |item| wrap_scalar(dfn, item) })
     end
 
     def from_hash(options)
@@ -93,7 +91,7 @@ module Disposable
     end
 
 
-    class Wrapper
+    class Twinner
       def initialize(dfn)
         @dfn = dfn
       end

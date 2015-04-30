@@ -2,13 +2,13 @@ module Disposable
   class Twin
   # Provides collection semantics like add, delete, and more for twin collections.
     class Collection < Array
-      def initialize(wrapper, items)
+      def initialize(twinner, items)
         super(items)
-        @wrapper = wrapper
+        @twinner = twinner
       end
 
       def <<(model)
-        super(@wrapper.(model))
+        super(@twinner.(model))
       end
 
       # Remove an item from a collection. This will not destroy the model.
