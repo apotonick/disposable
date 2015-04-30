@@ -47,8 +47,6 @@ class TwinSetupTest < MiniTest::Spec
     it do
       twin = Twin::Album.new(album)
 
-      # raise twin.songs.first.inspect
-
       twin.songs.size.must_equal 2
       twin.songs.must_be_instance_of Disposable::Twin::Collection
 

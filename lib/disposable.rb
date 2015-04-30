@@ -11,3 +11,4 @@ end
 
 require "disposable/twin/setup"
 require "disposable/twin/collection"
+require "disposable/twin/sync"
