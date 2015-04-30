@@ -5,7 +5,8 @@ require "test_helper"
 class TwinSetupTest < MiniTest::Spec
   module Model
     Song  = Struct.new(:id, :title, :album)
-    Album = Struct.new(:id, :name, :songs)
+    Album = Struct.new(:id, :name, :songs, :artist)
+    Artist = Struct.new(:id)
   end
 
 
@@ -14,6 +15,7 @@ class TwinSetupTest < MiniTest::Spec
       property :id
       property :name
       collection :songs, :twin => lambda { |*| Song }
+      property :artist, twin: lambda { |*| Artist }
 
       extend Representer
       include Setup
@@ -25,13 +27,21 @@ class TwinSetupTest < MiniTest::Spec
       extend Representer
       include Setup
     end
+
+    class Artist < Disposable::Twin
+      property :id
+
+      extend Representer
+      include Setup
+    end
   end
 
 
   let (:song) { Model::Song.new(1, "Broken", nil) }
+  let (:artist) { Model::Artist.new(9) }
 
   describe "with songs: [song]" do
-    let (:album) { Model::Album.new(1, "The Rest Is Silence", [song]) }
+    let (:album) { Model::Album.new(1, "The Rest Is Silence", [song], artist) }
 
     it do
       twin = Twin::Album.new(album)
@@ -45,7 +55,7 @@ class TwinSetupTest < MiniTest::Spec
     end
   end
 
-  describe "with songs: []" do
+  describe "with songs: [] and artist: nil" do
     let (:album) { Model::Album.new(1, "The Rest Is Silence", []) }
 
     it do

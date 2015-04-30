@@ -8,7 +8,7 @@ require 'test_helper'
 class TwinCollectionTest < MiniTest::Spec
   module Model
     Song  = Struct.new(:id, :title, :album)
-    Album = Struct.new(:id, :name, :songs)
+    Album = Struct.new(:id, :name, :songs, :artist)
   end
 
 
@@ -50,24 +50,6 @@ class TwinCollectionTest < MiniTest::Spec
   end
 end
 
-# ActiveRecord::Schema.define do
-#   create_table :artists do |table|
-#     table.column :name, :string
-#     table.timestamps
-#   end
-#   create_table :songs do |table|
-#     table.column :title, :string
-#     table.column :artist_id, :integer
-#     table.column :album_id, :integer
-#     table.timestamps
-#   end
-#   create_table :albums do |table|
-#     table.column :name, :string
-#     table.timestamps
-#   end
-# end
-# Artist.new(:name => "Racer X").save
-
 require "disposable/twin/sync"
 require "disposable/twin/save"
 
@@ -77,8 +59,7 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
       property :id # DISCUSS: needed for #save.
       property :name
       collection :songs, :twin => lambda { |*| Song }
-
-      # model Model::Album
+      property :artist, twin: lambda { |*| Artist }
 
       extend Representer
       include Sync
@@ -93,11 +74,12 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
 
       # property :persisted?, readonly: true # TODO: implement that!!!! for #sync
 
-      # model Model::Song
-
       extend Representer
       include Sync
       include Save
+    end
+
+    class Artist < Disposable::Twin
     end
   end
 
