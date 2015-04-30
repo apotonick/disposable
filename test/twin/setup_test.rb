@@ -1,10 +1,8 @@
 require "test_helper"
 
-# TODO: test nested Setup!!!!
-
 class TwinSetupTest < MiniTest::Spec
   module Model
-    Song  = Struct.new(:id, :title, :album)
+    Song  = Struct.new(:id, :title, :album, :composer)
     Album = Struct.new(:id, :name, :songs, :artist)
     Artist = Struct.new(:id)
   end
@@ -23,6 +21,7 @@ class TwinSetupTest < MiniTest::Spec
 
     class Song < Disposable::Twin
       property :id
+      property :composer, :twin => lambda { |*| Artist }
 
       extend Representer
       include Setup
@@ -38,20 +37,27 @@ class TwinSetupTest < MiniTest::Spec
 
 
   let (:song) { Model::Song.new(1, "Broken", nil) }
+  let (:composer) { Model::Artist.new(2) }
+  let (:song_with_composer) { Model::Song.new(1, "Broken", nil, composer) }
   let (:artist) { Model::Artist.new(9) }
 
-  describe "with songs: [song]" do
-    let (:album) { Model::Album.new(1, "The Rest Is Silence", [song], artist) }
+  describe "with songs: [song, song{composer}]" do
+    let (:album) { Model::Album.new(1, "The Rest Is Silence", [song, song_with_composer], artist) }
 
     it do
       twin = Twin::Album.new(album)
 
       # raise twin.songs.first.inspect
 
-      twin.songs.size.must_equal 1
+      twin.songs.size.must_equal 2
+      twin.songs.must_be_instance_of Disposable::Twin::Collection
+
       twin.songs[0].must_be_instance_of Twin::Song
       twin.songs[0].id.must_equal 1
-      twin.songs.must_be_instance_of Disposable::Twin::Collection
+
+      twin.songs[1].must_be_instance_of Twin::Song
+      twin.songs[1].id.must_equal 1
+      twin.songs[1].composer.id.must_equal 2
     end
   end
 
