@@ -64,8 +64,11 @@ class TwinTest < MiniTest::Spec
       # updates twin
       twin.id.must_equal 3
       twin.name.must_equal "Lucky"
-      # setter for nested property.
-      twin.album.must_equal Twin::Album.new(album)
+
+      # setter for nested property will twin value.
+      twin.album.extend(Disposable::Comparable)
+      assert twin.album == Twin::Album.new(album) # FIXME: why does must_equal not call #== ?
+
       # setter for nested collection.
 
       # DOES NOT update model

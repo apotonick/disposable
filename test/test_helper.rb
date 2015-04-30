@@ -51,3 +51,13 @@ ActiveRecord::Base.establish_connection(
 #     table.timestamps
 #   end
 # end
+
+module Disposable::Comparable
+  def attributes(source)
+    self.class.representer_class.new(source).to_hash
+  end
+
+  def ==(other)
+    self.class == other.class and attributes(self) == attributes(other)
+  end
+end

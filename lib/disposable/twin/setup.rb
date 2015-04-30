@@ -1,11 +1,11 @@
 module Disposable
   class Twin
-    # Transforms incoming model properties. :twin properties will be twinned in #initialize.
-    # Twin collections will be wrapped with Twin::Collection for public API.
+    # Simply pass through all properties from the model to the respective twin writer method.
+    # This will result in all twin properties/collection items being twinned, and collections
+    # being Collection to expose the desired public API.
     module Setup
     private
       def setup_representer
-        # simply pass through all properties from the model to the respective twin reader method.
         self.class.representer(:setup, :superclass => self.class.object_representer_class) do |dfn| # only nested twins.
           dfn.merge!(
             :instance      => lambda { |fragment, *| fragment },
