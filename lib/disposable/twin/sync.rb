@@ -12,51 +12,25 @@ module Disposable::Twin::Sync
   def sync!(options) # semi-public.
     # options = Disposable::Representer::Options[options.merge(:form => self)] # options local for this form, only.
 
-    input = sync_hash(options)
-    # if aliased_model was a proper Twin, we could do changed? stuff there.
-
-    # options.delete(:exclude) # TODO: can we use 2 options?
-
+    sync_representer.new(model).from_object(self, options) # sync properties to Song.
     # dynamic_sync_representer.new(aliased_model).from_hash(input, options) # sync properties to Song.
     # dynamic_sync_representer.new(model).from_hash(input, options) # sync properties to Song.
-    sync_representer.new(model).from_hash(input, options) # sync properties to Song.
-
-    model
   end
 
 private
-
-  # Transforms form input into what actually gets written to model.
-  # output: {title: "Mint Car", hit: <Form>}
-  def input_representer
-    self.class.representer(:input, :all => true) do |dfn|
-      if dfn[:twin]
-        dfn.merge!(
-          :representable  => false,
-          :prepare        => lambda { |obj, *| obj },
-        )
-      else
-        dfn.merge!(:render_nil => true) # do sync nil values back to the model for scalars.
-      end
-    end
-  end
-
-  # Writes input to model.
+  # Writes twin to model.
   def sync_representer
-    self.class.representer(:sync, :all => true) do |dfn|
-
-      puts dfn.inspect
-
-      if dfn[:twin]
-        dfn.merge!(
-          :instance     => lambda { |fragment, *| fragment }, # use model's nested property for syncing.
-            # FIXME: do we allow options for #sync for nested forms?
-          :deserialize => lambda { |object, *| model = object.sync!({}) } # sync! returns the synced model.
-          # representable's :setter will do collection=([..]) or property=(..) for us on the model.
-        )
-      end
+    self.class.representer(:sync, :all => true, :superclass => self.class.object_representer_class) do |dfn|
+      dfn.merge!(
+        :instance     => lambda { |fragment, *| fragment }, # use model's nested property for syncing.
+          # FIXME: do we allow options for #sync for nested forms?
+        :deserialize => lambda { |object, *| model = object.sync!({}) } # sync! returns the synced model.
+        # representable's :setter will do collection=([..]) or property=(..) for us on the model.
+      ) if dfn[:twin]
     end
   end
+
+   # TODO: integrate features below!!!!!!
 
   # This representer inherits from sync_representer and add functionality on top of that.
   # It allows running custom dynamic blocks for properties when syncing.
