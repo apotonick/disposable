@@ -31,7 +31,7 @@ module Disposable
       representer_class.property(name, options, &block).tap do |definition|
         mod = Module.new do
           define_method(name)       { read_property(name, options[:private_name]) }
-          define_method("#{name}=") { |value| write_property(name, options[:private_name], value) } # TODO: this is more like prototyping.
+          define_method("#{name}=") { |value| write_property(name, options[:private_name], value, definition) } # TODO: this is more like prototyping.
         end
         include mod
       end
@@ -70,8 +70,21 @@ module Disposable
       model.send(getter)
     end
 
-    def write_property(name, private_name, value)
-       @fields[name.to_s] = value
+    # assumption: collections are always initialized from Setup since we assume an empty [] for "nil"/uninitialized collections.
+    def write_property(name, private_name, value, dfn)
+      value = dfn.array? ? wrap_collection(dfn, value) : wrap_scalar(dfn, value)
+
+      @fields[name.to_s] = value
+    end
+
+    def wrap_scalar(dfn, value)
+      return value unless dfn[:twin]
+      dfn[:twin].evaluate(nil).new(value)
+    end
+
+    def wrap_collection(dfn, value)
+      return value unless dfn[:twin]
+      Collection.new(dfn[:twin], value.collect { |item| wrap_scalar(dfn, item) })
     end
 
     def from_hash(options)

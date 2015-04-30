@@ -4,7 +4,8 @@ require 'test_helper'
 class TwinTest < MiniTest::Spec
   module Model
     Song  = Struct.new(:id, :title, :album)
-    Album = Struct.new(:id, :name, :songs)
+    Album = Struct.new(:id, :name, :songs, :artist)
+    Artist = Struct.new(:id)
   end
 
 
@@ -13,16 +14,20 @@ class TwinTest < MiniTest::Spec
       property :id # DISCUSS: needed for #save.
       property :name
       collection :songs, :twin => lambda { |*| Song }
-
-      # model Model::Album
+      property :artist, :twin => lambda { |*| Artist }
     end
 
     class Song < Disposable::Twin
       property :id # DISCUSS: needed for #save.
       property :name, :as => :title
       property :album, :twin => Album
+    end
 
-      # model Model::Song
+    class Artist < Disposable::Twin
+      property :id
+
+      extend Representer
+      include Setup
     end
   end
 
@@ -49,19 +54,24 @@ class TwinTest < MiniTest::Spec
 
   describe "setter" do
     let (:twin) { Twin::Song.new(song) }
+    let (:album) { Model::Album.new(1, "The Stories Are True") }
 
-    before do
+    it do
       twin.id = 3
       twin.name = "Lucky"
+      twin.album = album # this is a model, not a twin.
+
+      # updates twin
+      twin.id.must_equal 3
+      twin.name.must_equal "Lucky"
+      # setter for nested property.
+      twin.album.must_equal Twin::Album.new(album)
+      # setter for nested collection.
+
+      # DOES NOT update model
+      song.id.must_equal 1
+      song.title.must_equal "Broken"
     end
-
-    # updates twin
-    it { twin.id.must_equal 3 }
-    it { twin.name.must_equal "Lucky" }
-
-    # DOES NOT update model
-    it { song.id.must_equal 1 }
-    it { song.title.must_equal "Broken" }
   end
 end
 

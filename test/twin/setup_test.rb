@@ -56,7 +56,7 @@ class TwinSetupTest < MiniTest::Spec
   end
 
   describe "with songs: [] and artist: nil" do
-    let (:album) { Model::Album.new(1, "The Rest Is Silence", []) }
+    let (:album) { Model::Album.new(1, "The Rest Is Silence", [], nil) }
 
     it do
       twin = Twin::Album.new(album)
@@ -65,4 +65,16 @@ class TwinSetupTest < MiniTest::Spec
       twin.songs.must_be_instance_of Disposable::Twin::Collection
     end
   end
+
+  # DISCUSS: do we need to cover that (songs: nil in model)?
+  # describe "with non-existent :songs" do
+  #   let (:album) { Model::Album.new(1, "The Rest Is Silence", nil) }
+
+  #   it do
+  #     twin = Twin::Album.new(album)
+
+  #     twin.songs.size.must_equal 0
+  #     twin.songs.must_be_instance_of Disposable::Twin::Collection
+  #   end
+  # end
 end

@@ -93,6 +93,14 @@ twin = Song::Twin.new(title: "Savior", good?: true)
 
 ## Compositions
 
+## With Representers
+
+they indirect data, the twin's attributes get assigned without writing to the persistence layer, yet.
+
+## With Contracts
+
+
+
 ## Overriding Accessors
 
 super
