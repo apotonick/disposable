@@ -31,6 +31,7 @@ album = Album.last
 twin = Twin::Album.new(album)
 puts "existing songs (#{twin.songs.size}): #{twin.songs.inspect}"
 
+# this is what basically should happen in the representer, returning a Twin.
 twin.songs << Song.new
 twin.songs.last.title = "Back To Allentown"
 

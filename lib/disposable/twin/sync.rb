@@ -1,6 +1,8 @@
 # #sync!
 #   1. assign scalars to model (respecting virtual, excluded attributes)
 #   2. call sync! on nested
+#
+# Note: #sync currently implicitly saves AR objects with collections
 module Disposable::Twin::Sync
   def sync_models(options={})
     sync!(options)
