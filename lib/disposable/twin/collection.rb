@@ -4,7 +4,7 @@ module Disposable
     class Collection < Array
       def initialize(twinner, items)
         super(items)
-        @twinner = twinner
+        @twinner = twinner # DISCUSS: twin items here?
       end
 
       def <<(model)
@@ -26,6 +26,11 @@ module Disposable
 
       def save
         to_destroy.each { |twin| twin.send(:model).destroy }
+      end
+
+      # FIXME: prototyping: this is redundant logic also found in Collection.
+      def swap(twins)
+        replace(twins)
       end
 
     private

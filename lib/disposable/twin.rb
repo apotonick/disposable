@@ -98,6 +98,7 @@ module Disposable
       end
 
       def call(value)
+        puts "twinner called"
         @dfn[:twin].evaluate(nil).new(value)
       end
     end
