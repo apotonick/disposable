@@ -34,11 +34,6 @@ module Disposable
         to_destroy.each { |twin| twin.send(:model).destroy }
       end
 
-      # FIXME: prototyping: this is redundant logic also found in Collection.
-      def swap(twins)
-        replace(twins)
-      end
-
     private
       def to_destroy
         @to_destroy ||= []
