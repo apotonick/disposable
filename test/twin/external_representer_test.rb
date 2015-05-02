@@ -38,13 +38,12 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
     end
   end
 
-  # FIXME: decorated instances still contain @representable_attrs.
-
   let (:song) { Model::Song.new(1, "Broken", nil) }
   let (:composer) { Model::Artist.new(2) }
   let (:song_with_composer) { Model::Song.new(3, "Resist Stance", nil, composer) }
   let (:artist) { Model::Artist.new(9) }
 
+  # FIXME: AllowSymbol (at least in Decorator) is not treated as feature and not inherited to inlines.
 
   # ok, now let's submit a form/PUT/POST with a 3rd song plus composer.
   # this representer will/can be automatically infered from the Twin/contract.
@@ -54,19 +53,22 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
 
     property :name
     collection :songs, pass_options: true,
+
             instance: lambda { |fragment, index, options|
-              (item = options.binding.get[index]) ? item : Twin::Song.new(Model::Song.new) },
-            setter: lambda { |collection, options| songs.replace collection } do
-      include AllowSymbols
+              collection = options.binding.get
+
+              (item = collection[index]) ? item : Twin::Song.new(Model::Song.new) },
+            setter: lambda { |collection, *| songs.replace collection } do
+       include AllowSymbols
       property :id
-      property :composer do
+      property :composer, pass_options: true,
+            instance: lambda { |fragment, options|
+              (item = options.binding.get) ? item : Model::Artist.new } do
+        include AllowSymbols
         property :id
       end
     end
   end
-
-
-
 
   describe "" do
     let (:album) { Model::Album.new(nil, nil, [song, song_with_composer], artist) }
@@ -82,18 +84,24 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
         songs: [
           {id: 1}, # old
           {id: 3}, # no composer this time?
-          {id: "Talk Show"} # new one.
+          {id: "Talk Show"}, # new one.
+          {id: "Kinetic", composer: {id: "Osker"}}
         ]
       })
 
-puts "original: #{twin.songs[0].inspect}"
+puts "==> original: #{twin.songs[0].inspect}"
 
       twin.name.must_equal "Live In A Dive"
-      twin.songs.size.must_equal 3
+      twin.songs.size.must_equal 4
       twin.songs[0].id.must_equal 1
       twin.songs[0].object_id.must_equal song1_id
       twin.songs[1].id.must_equal 3
       twin.songs[2].id.must_equal "Talk Show"
+      twin.songs[3].id.must_equal "Kinetic"
+      twin.songs[3].composer.id.must_equal "Osker"
+      # composer is not attached to song model, yet.
+      twin.songs[3].send(:model).composer.must_equal nil
+
 
       # nothing has changed in the model, yet.
       album.songs.size.must_equal 2

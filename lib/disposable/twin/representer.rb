@@ -1,3 +1,7 @@
+require "representable/decorator"
+require "representable/hash"
+require "representable/hash/allow_symbols"
+
 module Disposable
   class Twin
     class Decorator < Representable::Decorator

@@ -1,6 +1,4 @@
 require 'uber/inheritable_attr'
-require 'representable/decorator'
-require 'representable/hash'
 require 'disposable/twin/representer'
 require 'disposable/twin/option'
 require 'disposable/twin/builder'
@@ -98,7 +96,6 @@ module Disposable
       end
 
       def call(value)
-        puts "twinner called"
         @dfn[:twin].evaluate(nil).new(value)
       end
     end
