@@ -1,7 +1,13 @@
 module Disposable
   class Twin
   # Provides collection semantics like add, delete, and more for twin collections.
+  # Note: this API is highly prototypical and might change soon when i know what i want.
+  #       use at your own risk! i'm not sure whether models or twins are the "main" api elements for this.
     class Collection < Array
+      def self.for_models(twinner, models)
+        new(twinner, models.collect { |model| twinner.(model) })
+      end
+
       def initialize(twinner, items)
         super(items)
         @twinner = twinner # DISCUSS: twin items here?

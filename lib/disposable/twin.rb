@@ -84,7 +84,7 @@ module Disposable
     end
 
     def wrap_collection(dfn, value)
-      Collection.new(Twinner.new(dfn), value.collect { |item| wrap_scalar(dfn, item) })
+      Collection.for_models(Twinner.new(dfn), value)
     end
 
     def from_hash(options)

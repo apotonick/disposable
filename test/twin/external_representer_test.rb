@@ -53,7 +53,6 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
     include AllowSymbols
 
     property :name
-      # TODO: if-empty!
     collection :songs, pass_options: true,
             instance: lambda { |fragment, index, options|
               (item = options.binding.get[index]) ? item : Twin::Song.new(Model::Song.new) },
