@@ -57,7 +57,7 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
             instance: lambda { |fragment, index, options|
               collection = options.binding.get
 
-              (item = collection[index]) ? item : Twin::Song.new(Model::Song.new) },
+              (item = collection[index]) ? item : collection.for_model(Model::Song.new) },
             setter: lambda { |collection, *| songs.replace collection } do
        include AllowSymbols
       property :id

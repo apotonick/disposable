@@ -17,6 +17,10 @@ module Disposable
         super(@twinner.(model))
       end
 
+      def for_model(model) # FIXME: will probably vanish, soon.
+        @twinner.(model)
+      end
+
       # Remove an item from a collection. This will not destroy the model.
       def delete(model)
         super(find { |twin| twin.send(:model) == model })
