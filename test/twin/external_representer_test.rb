@@ -7,7 +7,8 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
     Artist = Struct.new(:id)
   end
 
-
+  require "disposable/twin/sync"
+  require "disposable/twin/save"
   module Twin
     class Album < Disposable::Twin
       property :id
@@ -18,6 +19,7 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
       extend Representer
       include Setup
       include Sync
+      include Save
     end
 
     class Song < Disposable::Twin
@@ -27,6 +29,7 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
       extend Representer
       include Setup
       include Sync
+      include Save
     end
 
     class Artist < Disposable::Twin
@@ -35,6 +38,7 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
       extend Representer
       include Setup
       include Sync
+      include Save
     end
   end
 
@@ -44,6 +48,7 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
   let (:artist) { Model::Artist.new(9) }
 
   # FIXME: AllowSymbol (at least in Decorator) is not treated as feature and not inherited to inlines.
+  # TODO: prepopulation (e.g. always one composer more.) - wait, this is UI-specific and goes to Form.
 
   # ok, now let's submit a form/PUT/POST with a 3rd song plus composer.
   # this representer will/can be automatically infered from the Twin/contract.
@@ -61,6 +66,8 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
             setter: lambda { |collection, *| songs.replace collection } do
        include AllowSymbols
       property :id
+      # DISCUSS: what's a bit confusing is that for property we can add a model, in collection we need to twin it.
+      #   what about collection[index]= Model::Song.new without the :setter ?
       property :composer, pass_options: true,
             instance: lambda { |fragment, options|
               (item = options.binding.get) ? item : Model::Artist.new } do
@@ -106,6 +113,8 @@ puts "==> original: #{twin.songs[0].inspect}"
       # nothing has changed in the model, yet.
       album.songs.size.must_equal 2
 
+
+      twin.save
 
 
       # # this usually happens in Contract::Validate or in from_* in a representer
