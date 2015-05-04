@@ -98,6 +98,8 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
 
 puts "==> after parsing: #{twin.songs[2].inspect}"
 
+# now the validateable object graph is set up.
+
       twin.name.must_equal "Live In A Dive"
       twin.songs.size.must_equal 4
       twin.songs[0].id.must_equal 1
@@ -137,6 +139,38 @@ puts "==> after parsing: #{twin.songs[2].inspect}"
 
       # album.songs[1].composer.id.must_equal 3
       # album.artist.id.must_equal "Thin Lizzy"
+    end
+
+    class Form
+      def initialize(model)
+        @twin = Twin::Album.new(model)
+      end
+
+      def validate(data)
+        RepresentableDecorator.new(@twin).from_hash(data)
+
+        # TODO: do the validation.
+      end
+    end
+
+    describe "form prototyping" do
+      let (:album) { Model::Album.new(nil, nil, [song, song_with_composer], artist) }
+
+      it do
+
+        form = Form.new(album)
+
+        form.validate({
+          name: "Live In A Dive",
+          songs: [
+            {id: 1}, # old
+            {id: 3}, # no composer this time?
+            {id: "Talk Show"}, # new one.
+            {id: "Kinetic", composer: {id: "Osker"}}
+          ]
+        })
+
+      end
     end
   end
 end
