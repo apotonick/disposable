@@ -17,8 +17,9 @@ module Disposable
         super(@twinner.(model))
       end
 
-      def for_model(model) # FIXME: will probably vanish, soon.
-        @twinner.(model)
+      def insert(index, model)
+        super(index, twin = @twinner.(model))
+        twin
       end
 
       # Remove an item from a collection. This will not destroy the model.

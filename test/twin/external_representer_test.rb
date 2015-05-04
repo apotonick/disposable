@@ -62,8 +62,8 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
             instance: lambda { |fragment, index, options|
               collection = options.binding.get
 
-              (item = collection[index]) ? item : collection.for_model(Model::Song.new) },
-            setter: lambda { |collection, *| songs.replace collection } do
+              (item = collection[index]) ? item : collection.insert(index, Model::Song.new) },
+            setter: nil do
        include AllowSymbols
       property :id
       # DISCUSS: what's a bit confusing is that for property we can add a model, in collection we need to twin it.
@@ -96,7 +96,7 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
         ]
       })
 
-puts "==> original: #{twin.songs[0].inspect}"
+puts "==> after parsing: #{twin.songs[2].inspect}"
 
       twin.name.must_equal "Live In A Dive"
       twin.songs.size.must_equal 4

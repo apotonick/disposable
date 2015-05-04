@@ -157,3 +157,25 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
     end
   end
 end
+
+
+class CollectionUnitTest < MiniTest::Spec
+  module Twin
+    class Album < Disposable::Twin
+    end
+
+    class Song < Disposable::Twin
+      property :album, twin: Twin::Album do
+      end
+    end
+  end
+
+  module Model
+    Album = Struct.new(:id, :name, :songs, :artist)
+  end
+
+  it do
+    collection = Disposable::Twin::Collection.new(Disposable::Twin::Twinner.new(Twin::Song.representer_class.representable_attrs.get(:album)), [])
+    (collection.insert(0, Model::Album.new).must_be_instance_of Twin::Album)
+  end
+end
