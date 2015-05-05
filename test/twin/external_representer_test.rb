@@ -141,16 +141,42 @@ puts "==> after parsing: #{twin.songs[2].inspect}"
       # album.artist.id.must_equal "Thin Lizzy"
     end
 
+    require "reform"
+    class Contract < Reform::Contract
+      property :name
+      validates :name, presence: true
+
+      collection :songs do
+        property :id
+
+      end
+
+      validate :enough_songs?
+      def enough_songs?
+        errors.add "songs", "more songs!" if songs.size < 6
+      end
+    end
+
+    require "pp"
     class Form
       def initialize(model)
-        @twin = Twin::Album.new(model)
+        @twin = Twin::Album.new(model) # the initial object graph.
       end
 
       def validate(data)
-        RepresentableDecorator.new(@twin).from_hash(data)
+        # here, we're free to to from_json, from_xml, or whatever you want.
+        RepresentableDecorator.new(@twin).from_hash(data) # the live object graph is set up (including evtl coerced data).
 
         # TODO: do the validation.
+
+        @contract = Contract.new(@twin)
+
+        # how to expose errors? how to expose validated fields (e.g. to renderer?)
+
+        @contract.validate
       end
+
+      attr_reader :contract
     end
 
     describe "form prototyping" do
@@ -168,8 +194,9 @@ puts "==> after parsing: #{twin.songs[2].inspect}"
             {id: "Talk Show"}, # new one.
             {id: "Kinetic", composer: {id: "Osker"}}
           ]
-        })
+        }).must_equal false
 
+        form.contract.errors.messages.inspect.must_equal "{:songs=>[\"more songs!\"]}"
       end
     end
   end

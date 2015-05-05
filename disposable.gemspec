@@ -19,12 +19,13 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "uber"
-  spec.add_dependency "representable", "~> 2.0"
+  spec.add_dependency "representable", "~> 2.1.6"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "minitest", "5.4.1"
   spec.add_development_dependency "activerecord"
   spec.add_development_dependency "sqlite3"
+  spec.add_development_dependency "reform"
   # spec.add_development_dependency "database_cleaner"
 end
