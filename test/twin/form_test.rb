@@ -9,7 +9,7 @@ class FormTest < MiniTest::Spec
 
 
 
-
+  # TODO: this needs tests and should probably go to Representable. we can move tests from Reform for that.
   class Converter
     def self.from(source_class, options) # TODO: can we re-use this for all the decorator logic in #validate, etc?
       representer = Class.new(options[:superclass])
@@ -20,13 +20,10 @@ class FormTest < MiniTest::Spec
 
         if twin = dfn[:twin]
           twin = twin.evaluate(nil)
-          puts "twin::: #{twin.inspect}"
 
           dfn_options = dfn.instance_variable_get(:@options).merge(extend: from(twin.object_representer_class, options))
 
-          # puts "---- #{dfn_options[:deserializer].inspect}"
           if dfn_options[:deserializer]
-            puts "====== #{dfn_options.inspect} --> #{dfn_options[:deserializer].inspect}"
             dfn_options.merge!(dfn_options[:deserializer])
           end
 
@@ -40,6 +37,9 @@ class FormTest < MiniTest::Spec
 
   module Validate # TODO: use from reform.
     def validate(params)
+      # 1. create representer
+      # 2. deserialize on twin
+      # 3. validate twin
 
       # pp params
 
@@ -47,7 +47,7 @@ class FormTest < MiniTest::Spec
         :include    => [Representable::Hash::AllowSymbols, Representable::Hash],
         :superclass => Representable::Decorator)
 
-      pp deserializer.representable_attrs
+      # pp deserializer.representable_attrs.get(:songs).representer_module.representable_attrs.
 
       deserializer.new(self).
         # extend(Representable::Debug).
@@ -67,7 +67,6 @@ class FormTest < MiniTest::Spec
     collection :songs,
       # populate_if_empty: {},
       pass_options: true,
-      # FIXME: interferes with twin config.
       deserializer: {instance: lambda { |fragment, index, options|
               collection = options.binding.get
               (item = collection[index]) ? item : collection.insert(index, Model::Song.new) },
@@ -116,6 +115,7 @@ class FormTest < MiniTest::Spec
     # }).must_equal false
     })
 
+    # again, test the deserialization.
     twin.songs[2].must_be_kind_of Disposable::Twin
     twin.songs[2].id.must_equal "Talk Show"
     twin.songs[3].id.must_equal "Kinetic"
