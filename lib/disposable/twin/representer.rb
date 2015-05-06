@@ -5,6 +5,7 @@ require "representable/hash/allow_symbols"
 module Disposable
   class Twin
     class Decorator < Representable::Decorator
+      # Overrides representable's Definition class so we can add semantics in our representers.
       class Definition < Representable::Definition
         def dynamic_options
           super + [:twin]
@@ -15,6 +16,7 @@ module Disposable
         end
       end
 
+
       # DISCUSS: same in reform, is that a bug in represntable?
       def self.clone # called in inheritable_attr :representer_class.
         Class.new(self) # By subclassing, representable_attrs.clone is called.
@@ -23,12 +25,6 @@ module Disposable
       # FIXME: this is not properly used when inheriting - fix that in representable.
       def self.build_config
         Config.new(Definition)
-      end
-
-      def twin_names # FIXME: where do we need this?
-        representable_attrs.
-          find_all { |attr| attr[:twin] }.
-          collect { |attr| attr.name.to_sym }
       end
 
       def self.each(only_nested=true, &block)
@@ -78,14 +74,11 @@ module Disposable
         return representer_class.each(&block) if name == nil
         return representers[name] if representers[name] # don't run block as this representer is already setup for this form class.
 
-        only_forms = options[:all] ? false : true
+        only_nested = options[:all] ? false : true
         base       = options[:superclass] || representer_class
 
-        representers[name] = Class.new(base).each(only_forms, &block) # let user modify representer.
+        representers[name] = Class.new(base).each(only_nested, &block) # let user modify representer.
       end
     end
-
-
-
   end
 end

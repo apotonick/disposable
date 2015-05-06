@@ -25,7 +25,6 @@ class TwinTest < MiniTest::Spec
     class Artist < Disposable::Twin
       property :id
 
-      extend Representer
       include Setup
     end
   end
@@ -89,13 +88,6 @@ class OverridingAccessorsTest < TwinTest
   end
 
   it { Song.new(Model::Song.new(1, "A Tale That Wasn't Right")).title.must_equal "a tale that wasn't right" }
-end
-
-
-class TwinDecoratorTest < MiniTest::Spec
-  subject { TwinTest::Twin::Song.representer_class.new(nil) }
-
-  it { subject.twin_names.must_equal [:album] }
 end
 
 

@@ -16,7 +16,6 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
       collection :songs, :twin => lambda { |*| Song }
       property :artist, twin: lambda { |*| Artist }
 
-      extend Representer
       include Setup
       include Sync
       include Save
@@ -26,7 +25,6 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
       property :id
       property :composer, :twin => lambda { |*| Artist }
 
-      extend Representer
       include Setup
       include Sync
       include Save
@@ -35,7 +33,6 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
     class Artist < Disposable::Twin
       property :id
 
-      extend Representer
       include Setup
       include Sync
       include Save

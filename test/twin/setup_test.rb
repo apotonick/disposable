@@ -15,7 +15,6 @@ class TwinSetupTest < MiniTest::Spec
       collection :songs, :twin => lambda { |*| Song }
       property :artist, twin: lambda { |*| Artist }
 
-      extend Representer
       include Setup
     end
 
@@ -23,14 +22,12 @@ class TwinSetupTest < MiniTest::Spec
       property :id
       property :composer, :twin => lambda { |*| Artist }
 
-      extend Representer
       include Setup
     end
 
     class Artist < Disposable::Twin
       property :id
 
-      extend Representer
       include Setup
     end
   end
@@ -83,6 +80,7 @@ class TwinSetupTest < MiniTest::Spec
   # end
 end
 
+# test inline twin building and setup.
 class TwinSetupWithInlineTwinsTest < MiniTest::Spec
   module Model
     Song  = Struct.new(:id, :composer)
@@ -91,20 +89,17 @@ class TwinSetupWithInlineTwinsTest < MiniTest::Spec
   end
 
   class AlbumForm < Disposable::Twin
-    extend Representer
     include Setup
 
     property :id
     property :name
 
     collection :songs do # default_inline_class: Disposable::Twin
-      extend Representer
       include Setup
 
       property :id
 
       property :composer do
-        extend Representer
         include Setup
 
         property :id
@@ -112,7 +107,6 @@ class TwinSetupWithInlineTwinsTest < MiniTest::Spec
     end
 
     property :artist do
-      extend Representer
       include Setup
 
       property :id

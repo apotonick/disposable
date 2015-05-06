@@ -10,6 +10,8 @@ require 'disposable/twin/builder'
 
 module Disposable
   class Twin
+    extend Representer # include ::representer for transformator caching.
+
     extend Uber::InheritableAttr
     inheritable_attr :representer_class
     self.representer_class = Class.new(Decorator::Hash)
@@ -47,7 +49,7 @@ module Disposable
         end
         include mod
 
-        # TODO: temporary hack to make definition not look typed. maybe we should make :twin copy of :extend?
+        # TODO: temporary hack to make definition not look typed. maybe we should make :twin copy of :extend and then get everything accepting :extend?
         definition.merge!(:twin => definition[:extend].evaluate(nil)) if definition[:extend]
         definition.delete!(:extend)
       end

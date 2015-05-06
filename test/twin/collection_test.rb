@@ -20,7 +20,6 @@ class TwinCollectionTest < MiniTest::Spec
 
       # model Model::Album
 
-      extend Representer
       include Setup
     end
 
@@ -29,7 +28,6 @@ class TwinCollectionTest < MiniTest::Spec
       property :title
       property :album, :twin => Album
 
-      # extend Representer
       # include Setup
       # TODO: test nested Setup!!!!
     end
@@ -61,7 +59,6 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
       collection :songs, :twin => lambda { |*| Song }
       property :artist, twin: lambda { |*| Artist }
 
-      extend Representer
       include Sync
       include Save
       include Setup
@@ -74,7 +71,6 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
 
       # property :persisted?, readonly: true # TODO: implement that!!!! for #sync
 
-      extend Representer
       include Sync
       include Save
     end
