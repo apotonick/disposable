@@ -74,6 +74,7 @@ class ExternalRepresenterOnTwinTest < MiniTest::Spec
     end
   end
 
+  # test if external representer deserializes correctly.
   describe "" do
     let (:album) { Model::Album.new(nil, nil, [song, song_with_composer], artist) }
 
@@ -195,6 +196,60 @@ puts "==> after parsing: #{twin.songs[2].inspect}"
 
         form.contract.errors.messages.inspect.must_equal "{:songs=>[\"more songs!\"]}"
       end
+    end
+  end
+
+
+  require "roar/json/hal"
+  # test if external JSON-HAL representer deserializes correctly.
+  class JSONHALDecorator < Representable::Decorator
+    include Roar::JSON::HAL
+
+    property :name
+    collection :songs, embedded: true,
+
+           pass_options: true,
+
+            instance: lambda { |fragment, index, options|
+              collection = options.binding.get
+
+              (item = collection[index]) ? item : collection.insert(index, Model::Song.new) },
+            setter: nil do
+       include AllowSymbols
+      property :id
+      # DISCUSS: what's a bit confusing is that for property we can add a model, in collection we need to twin it.
+      #   what about collection[index]= Model::Song.new without the :setter ?
+      property :composer, pass_options: true,
+            instance: lambda { |fragment, options|
+              (item = options.binding.get) ? item : Model::Artist.new } do
+        property :id
+      end
+    end
+
+    link(:self) { "http://albums/#{represented.id}" }
+  end
+
+
+  describe "with JSON-HAL" do
+    let (:album) { Model::Album.new(11, "Live In The USA", [song, song_with_composer], artist) }
+
+    it do
+      twin = Twin::Album.new(album)
+
+      json = '{"name":"Live In The USA","_embedded":{"songs":[{"id":1},{"id":3,"composer":{"id":2}}]},"_links":{"self":{"href":"http://albums/11"}}}'
+      JSONHALDecorator.new(twin).to_json.must_equal json
+      JSONHALDecorator.new(twin).from_json('{"name":"Live In The USA","_embedded":{"songs":[{"id":1},{"id":3,"composer":{"id":2}},{"id":"Susy","composer":{"id":"CCR"}}]},"_links":{"self":{"href":"http://albums/11"}}}')
+
+      twin.name.must_equal "Live In The USA"
+      twin.songs.size.must_equal 3
+      twin.songs[0].id.must_equal 1
+      twin.songs[1].id.must_equal 3
+      twin.songs[2].id.must_equal "Susy"
+      twin.songs[2].composer.id.must_equal "CCR"
+
+
+      # nothing has changed in the model, yet.
+      album.songs.size.must_equal 2
     end
   end
 end
