@@ -90,6 +90,8 @@ class TwinSetupWithInlineTwinsTest < MiniTest::Spec
 
   class AlbumForm < Disposable::Twin
     include Setup
+    # FIXME: make that work.
+    # object_representer_class.send :register_feature, Setup # include in every inline representer (comes from representable).
 
     property :id
     property :name
@@ -128,6 +130,8 @@ class TwinSetupWithInlineTwinsTest < MiniTest::Spec
 
     twin.artist.must_be_kind_of Disposable::Twin
     twin.artist.id.must_equal 9
+
+    twin.songs.must_be_instance_of Disposable::Twin::Collection
 
     twin.songs[0].must_be_kind_of Disposable::Twin
     twin.songs[0].id.must_equal 1

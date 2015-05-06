@@ -8,6 +8,8 @@ require 'disposable/twin/builder'
 #   write: write to @fields
 #   sync/save is the only way to write back to the model.
 
+# TODO: allow setting external deserialization representer, e.g. JSON::HAL or JSONAPI.
+
 module Disposable
   class Twin
     extend Representer # include ::representer for transformator caching.
@@ -23,6 +25,11 @@ module Disposable
     inheritable_attr :object_representer_class
     self.object_representer_class = Class.new(Decorator::Object)
 
+    # DISCUSS: this could also be generated afterwards. this is the plain deserializer.
+    inheritable_attr :deserialize_representer_class
+    self.deserialize_representer_class = Class.new(Representable::Decorator)
+
+    # FIXME: implement proper inheritance of features (Setup) to inlines in object_representer_class!!!!
     def self.feature(*)
       puts "FIXME"
     end
