@@ -21,7 +21,11 @@ module Disposable
     inheritable_attr :object_representer_class
     self.object_representer_class = Class.new(Decorator::Object)
 
+    def self.feature(*)
+      puts "FIXME"
+    end
 
+    # TODO: move to Declarative, as in Representable and Reform.
     def self.property(name, options={}, &block)
       deprecate_as!(options) # TODO: remove me in 0.1.0
       options[:private_name] = options.delete(:from) || name
@@ -34,7 +38,19 @@ module Disposable
         end
         include mod
       end
-      object_representer_class.property(name, options, &block)
+
+      # FIXME: use only one representer.
+      object_representer_class.property(name, options, &block).tap do |definition|
+        mod = Module.new do
+          define_method(name)       { read_property(name, options[:private_name]) }
+          define_method("#{name}=") { |value| write_property(name, options[:private_name], value, definition) } # TODO: this is more like prototyping.
+        end
+        include mod
+
+        # TODO: temporary hack to make definition not look typed. maybe we should make :twin copy of :extend?
+        definition.merge!(:twin => definition[:extend].evaluate(nil)) if definition[:extend]
+        definition.delete!(:extend)
+      end
     end
 
     def self.collection(name, options={}, &block)
@@ -96,7 +112,7 @@ module Disposable
       end
 
       def call(value)
-        @dfn[:twin].evaluate(nil).new(value)
+        @dfn.twin_class.new(value)
       end
     end
 

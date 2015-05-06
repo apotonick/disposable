@@ -1,6 +1,5 @@
 require 'test_helper'
 
-
 class TwinTest < MiniTest::Spec
   module Model
     Song  = Struct.new(:id, :title, :album)

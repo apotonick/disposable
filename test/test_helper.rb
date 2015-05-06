@@ -1,5 +1,7 @@
 require 'disposable'
 require 'minitest/autorun'
+require "pp"
+require "representable/debug"
 
 class Track
   def initialize(options={})

@@ -9,6 +9,10 @@ module Disposable
         def dynamic_options
           super + [:twin]
         end
+
+        def twin_class
+          self[:twin].evaluate(nil) # FIXME: do we support the :twin option, and should it be wrapped?
+        end
       end
 
       # DISCUSS: same in reform, is that a bug in represntable?
@@ -21,7 +25,7 @@ module Disposable
         Config.new(Definition)
       end
 
-      def twin_names
+      def twin_names # FIXME: where do we need this?
         representable_attrs.
           find_all { |attr| attr[:twin] }.
           collect { |attr| attr.name.to_sym }
@@ -54,6 +58,11 @@ module Disposable
         # FIXME: this sucks. fix in representable.
         def self.build_config
           Config.new(Definition)
+        end
+
+        # Generate Twin classes for us when using inline ::property or ::collection.
+        def self.default_inline_class
+          Disposable::Twin
         end
       end
     end
