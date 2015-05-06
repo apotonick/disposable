@@ -33,15 +33,9 @@ module Disposable
       options[:private_name] = options.delete(:from) || name
       options[:pass_options] = true
 
-      representer_class.property(name, options, &block).tap do |definition|
-        mod = Module.new do
-          define_method(name)       { read_property(name, options[:private_name]) }
-          define_method("#{name}=") { |value| write_property(name, options[:private_name], value, definition) } # TODO: this is more like prototyping.
-        end
-        include mod
-      end
+      representer_class.property(name, options, &block)
 
-      # FIXME: use only one representer.
+      # FIXME: use only one representer. and make object_representer the authorative one, we really need the hash one only once.
       object_representer_class.property(name, options, &block).tap do |definition|
         mod = Module.new do
           define_method(name)       { read_property(name, options[:private_name]) }
