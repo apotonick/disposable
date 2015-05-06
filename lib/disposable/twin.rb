@@ -40,6 +40,13 @@ module Disposable
       options[:private_name] = options.delete(:from) || name
       options[:pass_options] = true
 
+
+      # TODO: this should be more modular.
+      options[:_readable]  = options.delete(:readable)
+      options[:_writeable] = options.delete(:writeable)
+
+
+
       representer_class.property(name, options, &block)
 
       # FIXME: use only one representer. and make object_representer the authorative one, we really need the hash one only once.
