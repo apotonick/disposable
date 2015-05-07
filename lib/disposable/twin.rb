@@ -1,7 +1,11 @@
-require 'uber/inheritable_attr'
-require 'disposable/twin/representer'
-require 'disposable/twin/option'
-require 'disposable/twin/builder'
+require "uber/inheritable_attr"
+
+require "disposable/twin/representer"
+require "disposable/twin/collection"
+require "disposable/twin/setup"
+require "disposable/twin/sync"
+require "disposable/twin/option"
+require "disposable/twin/builder"
 
 # Twin.new(model/composition hash/hash, options)
 #   assign hash to @fields
@@ -24,10 +28,6 @@ module Disposable
     # it would be cool to have only one, one day.
     inheritable_attr :object_representer_class
     self.object_representer_class = Class.new(Decorator::Object)
-
-    # DISCUSS: this could also be generated afterwards. this is the plain deserializer.
-    inheritable_attr :deserialize_representer_class
-    self.deserialize_representer_class = Class.new(Representable::Decorator)
 
     # FIXME: implement proper inheritance of features (Setup) to inlines in object_representer_class!!!!
     def self.feature(*)

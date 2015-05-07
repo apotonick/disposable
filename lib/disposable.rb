@@ -1,7 +1,6 @@
 require "disposable/version"
 
 module Disposable
-  autoload :Twin,         'disposable/twin'
   autoload :Composition,  'disposable/composition'
 end
 
@@ -9,6 +8,4 @@ end
 #   require 'disposable/facade/active_record'
 # end
 
-require "disposable/twin/setup"
-require "disposable/twin/collection"
-require "disposable/twin/sync"
+require "disposable/twin"
