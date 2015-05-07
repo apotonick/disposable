@@ -58,8 +58,14 @@ module Disposable
         include mod
 
         # TODO: temporary hack to make definition not look typed. maybe we should make :twin copy of :extend and then get everything accepting :extend?
-        definition.merge!(:twin => definition[:extend].evaluate(nil)) if definition[:extend]
-        definition.delete!(:extend)
+        if definition[:extend]
+          nested_twin = definition[:extend].evaluate(nil)
+          process_inline!(nested_twin, definition)
+          # DISCUSS: could we use build_inline's api here to inject the name feature?
+
+          definition.merge!(:twin => nested_twin)
+          definition.delete!(:extend)
+        end
       end
     end
 
@@ -109,6 +115,10 @@ module Disposable
 
     def wrap_collection(dfn, value)
       Collection.for_models(Twinner.new(dfn), value)
+    end
+
+    # DISCUSS: this method might disappear or change pretty soon.
+    def self.process_inline!(mod, definition)
     end
 
     def from_hash(options)
