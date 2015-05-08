@@ -1,5 +1,6 @@
 require "test_helper"
 
+# TODO: remove test when Reform 2.0 works.
 class FormTest < MiniTest::Spec
   module Model
     Song  = Struct.new(:id, :composer)
@@ -16,7 +17,8 @@ class FormTest < MiniTest::Spec
 
       # pp params
 
-      deserializer = Converter.from(self.class.object_representer_class,
+      require "disposable/twin/schema"
+      deserializer = Disposable::Twin::Schema.from(self.class.object_representer_class,
         :include    => [Representable::Hash::AllowSymbols, Representable::Hash],
         :superclass => Representable::Decorator)
 
