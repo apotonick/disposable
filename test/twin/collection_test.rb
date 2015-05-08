@@ -161,8 +161,7 @@ class CollectionUnitTest < MiniTest::Spec
     end
 
     class Song < Disposable::Twin
-      property :album, twin: Twin::Album do
-      end
+      property :album, twin: Twin::Album
     end
   end
 
@@ -171,7 +170,7 @@ class CollectionUnitTest < MiniTest::Spec
   end
 
   it do
-    collection = Disposable::Twin::Collection.new(Disposable::Twin::Twinner.new(Twin::Song.representer_class.representable_attrs.get(:album)), [])
+    collection = Disposable::Twin::Collection.new(Disposable::Twin::Twinner.new(Twin::Song.twin_representer_class.representable_attrs.get(:album)), [])
     (collection.insert(0, Model::Album.new).must_be_instance_of Twin::Album)
   end
 end

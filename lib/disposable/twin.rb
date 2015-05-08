@@ -52,17 +52,13 @@ module Disposable
 
 
 
-      representer_class.property(name, options, &block)
+      # hash_representer_class and object_representer_class are only a 1-level representation of the structure.
+      representer_class.property(name, options).tap do |definition|
+        definition.merge!(twin:true) if block
+      end
 
-      object_representer_class.property(name, options, &block).tap do |definition|
-        if definition[:extend]
-          nested_twin = definition[:extend].evaluate(nil)
-          process_inline!(nested_twin, definition)
-          # DISCUSS: could we use build_inline's api here to inject the name feature?
-
-          definition.merge!(:twin => nested_twin)
-          definition.delete!(:extend)
-        end # FIXME: why do we need this, here?
+      object_representer_class.property(name, options).tap do |definition|
+        definition.merge!(twin:true) if block
       end
 
       # FIXME: use only one representer. and make object_representer the authorative one, we really need the hash one only once.
