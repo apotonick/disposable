@@ -33,27 +33,10 @@ module Disposable
     self.twin_representer_class = Class.new(Decorator)
 
 
-
-
-    # FIXME: implement proper inheritance of features (Setup) to inlines in object_representer_class!!!!
-    # FIXME: use representable's feature?
-    def self.feature(*mods)
-      # return
-      puts "including #{mods}"
-      include *mods
-      puts "  finished including #{mods}"
-      mods.each { |mod| register_feature(mod) }
-    end
-
+    extend Representable::Feature # imports ::feature, which calls ::register_feature.
     def self.register_feature(mod)
-      puts "~~ registering #{mod}"
       twin_representer_class.representable_attrs[:features][mod] = true
-
-      puts "~~~ register_feature: #{object_representer_class.representable_attrs.features.inspect}"
     end
-
-
-
 
 
     # TODO: move to Declarative, as in Representable and Reform.

@@ -11,11 +11,11 @@ class FeatureTest < MiniTest::Spec
     end
   end
 
-  # module Name
-  #   def name
-  #     "Violins"
-  #   end
-  # end
+  module Instrument
+    def instrument
+      "Violins"
+    end
+  end
 
   class AlbumForm < Disposable::Twin
     include Setup
@@ -28,6 +28,7 @@ class FeatureTest < MiniTest::Spec
 
       property :composer do
         include Setup
+        feature Instrument
         property :name
       end
     end
@@ -47,24 +48,14 @@ class FeatureTest < MiniTest::Spec
   let (:form) { AlbumForm.new(album) }
 
   it do
-    pp form
     form.date.must_equal "May 16"
     form.artist.date.must_equal "May 16"
     form.songs[0].date.must_equal "May 16"
     form.songs[1].date.must_equal "May 16"
     form.songs[1].composer.date.must_equal "May 16"
+    form.songs[1].wont_be_kind_of(Instrument)
+    form.songs[1].composer.must_be_kind_of(Instrument)
+    form.songs[1].composer.instrument.must_equal "Violins"
     form.artist.date.must_equal "May 16"
   end
-
-  # it { subject.class.include?(Reform::Form::ActiveModel) }
-  # it { subject.class.include?(Reform::Form::Coercion) }
-  # it { subject.is_a?(Reform::Form::MultiParameterAttributes) }
-
-  # it { subject.band.class.include?(Reform::Form::ActiveModel) }
-  # it { subject.band.is_a?(Reform::Form::Coercion) }
-  # it { subject.band.is_a?(Reform::Form::MultiParameterAttributes) }
-
-  # it { subject.band.label.is_a?(Reform::Form::ActiveModel) }
-  # it { subject.band.label.is_a?(Reform::Form::Coercion) }
-  # it { subject.band.label.is_a?(Reform::Form::MultiParameterAttributes) }
 end
