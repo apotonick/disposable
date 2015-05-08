@@ -89,7 +89,7 @@ class TwinSetupWithInlineTwinsTest < MiniTest::Spec
   end
 
   class AlbumForm < Disposable::Twin
-    include Setup
+    feature Setup
     # FIXME: make that work.
     # object_representer_class.send :register_feature, Setup # include in every inline representer (comes from representable).
 
@@ -97,19 +97,19 @@ class TwinSetupWithInlineTwinsTest < MiniTest::Spec
     property :name
 
     collection :songs do # default_inline_class: Disposable::Twin
-      include Setup
+      # include Setup
 
       property :id
 
       property :composer do
-        include Setup
+        # include Setup
 
         property :id
       end
     end
 
     property :artist do
-      include Setup
+      # include Setup
 
       property :id
     end
