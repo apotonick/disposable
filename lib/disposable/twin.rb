@@ -29,10 +29,32 @@ module Disposable
     inheritable_attr :object_representer_class
     self.object_representer_class = Class.new(Decorator::Object)
 
+    inheritable_attr :twin_representer_class
+    self.twin_representer_class = Class.new(Decorator)
+
+
+
+
     # FIXME: implement proper inheritance of features (Setup) to inlines in object_representer_class!!!!
-    def self.feature(*)
-      puts "FIXME"
+    # FIXME: use representable's feature?
+    def self.feature(*mods)
+      # return
+      puts "including #{mods}"
+      include *mods
+      puts "  finished including #{mods}"
+      mods.each { |mod| register_feature(mod) }
     end
+
+    def self.register_feature(mod)
+      puts "~~ registering #{mod}"
+      twin_representer_class.representable_attrs[:features][mod] = true
+
+      puts "~~~ register_feature: #{object_representer_class.representable_attrs.features.inspect}"
+    end
+
+
+
+
 
     # TODO: move to Declarative, as in Representable and Reform.
     def self.property(name, options={}, &block)
@@ -49,14 +71,26 @@ module Disposable
 
       representer_class.property(name, options, &block)
 
-      # FIXME: use only one representer. and make object_representer the authorative one, we really need the hash one only once.
       object_representer_class.property(name, options, &block).tap do |definition|
+        if definition[:extend]
+          nested_twin = definition[:extend].evaluate(nil)
+          process_inline!(nested_twin, definition)
+          # DISCUSS: could we use build_inline's api here to inject the name feature?
+
+          definition.merge!(:twin => nested_twin)
+          definition.delete!(:extend)
+        end # FIXME: why do we need this, here?
+      end
+
+      # FIXME: use only one representer. and make object_representer the authorative one, we really need the hash one only once.
+      twin_representer_class.property(name, options, &block).tap do |definition|
         mod = Module.new do
           define_method(name)       { read_property(name, options[:private_name]) }
           define_method("#{name}=") { |value| write_property(name, options[:private_name], value, definition) } # TODO: this is more like prototyping.
         end
         include mod
 
+        # property -> build_inline(representable_attrs.features)
         # TODO: temporary hack to make definition not look typed. maybe we should make :twin copy of :extend and then get everything accepting :extend?
         if definition[:extend]
           nested_twin = definition[:extend].evaluate(nil)
@@ -70,7 +104,7 @@ module Disposable
     end
 
     def self.collection(name, options={}, &block)
-      property(name, options.merge(:collection => true), &block)
+      property(name, options.merge(collection: true), &block)
     end
 
 
@@ -135,6 +169,7 @@ module Disposable
         @dfn.twin_class.new(value)
       end
     end
+
 
     attr_reader :model # TODO: test
 

@@ -35,6 +35,10 @@ module Disposable
         self
       end
 
+      def self.default_inline_class
+        Disposable::Twin
+      end
+
 
       # this decorator allows hash transformations (to and from, e.g. for nested_hash).
       class Hash < self
@@ -57,7 +61,7 @@ module Disposable
         end
 
         # Generate Twin classes for us when using inline ::property or ::collection.
-        def self.default_inline_class
+        def self.default_inline_class # FIXME: do we need this?
           Disposable::Twin
         end
       end
