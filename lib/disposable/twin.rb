@@ -99,40 +99,46 @@ module Disposable
 
 
     # read/write to twin using twin's API (e.g. #record= not #album=).
+    # FIXME: where do we need this?
     def self.write_representer
       representer = Class.new(representer_class) # inherit configuration
     end
 
-  private
-    def read_property(name, private_name)
-      return @fields[name.to_s] if @fields.has_key?(name.to_s)
+    module Accessors
+    private
+      def read_property(name, private_name)
+        return @fields[name.to_s] if @fields.has_key?(name.to_s)
 
-      # FIXME: is this used? Only when Setup is not included.
-      @fields[name.to_s] = read_from_model(private_name)
+        # FIXME: is this used? Only when Setup is not included.
+        @fields[name.to_s] = read_from_model(private_name)
+      end
+
+      def read_from_model(getter)
+        model.send(getter)
+      end
+
+      # TODO: make signature nicer.
+      # assumption: collections are always initialized from Setup since we assume an empty [] for "nil"/uninitialized collections.
+      def write_property(name, private_name, value, dfn)
+        value = dfn.array? ? wrap_collection(dfn, value) : wrap_scalar(dfn, value) if dfn[:twin]
+
+        @fields[name.to_s] = value
+      end
+
+      def wrap_scalar(dfn, value)
+        Twinner.new(dfn).(value)
+      end
+
+      def wrap_collection(dfn, value)
+        Collection.for_models(Twinner.new(dfn), value)
+      end
     end
-
-    def read_from_model(getter)
-      model.send(getter)
-    end
-
-    # assumption: collections are always initialized from Setup since we assume an empty [] for "nil"/uninitialized collections.
-    def write_property(name, private_name, value, dfn)
-      value = dfn.array? ? wrap_collection(dfn, value) : wrap_scalar(dfn, value) if dfn[:twin]
-
-      @fields[name.to_s] = value
-    end
-
-    def wrap_scalar(dfn, value)
-      Twinner.new(dfn).(value)
-    end
-
-    def wrap_collection(dfn, value)
-      Collection.for_models(Twinner.new(dfn), value)
-    end
+    include Accessors
 
     # DISCUSS: this method might disappear or change pretty soon.
     def self.process_inline!(mod, definition)
     end
+
 
     def from_hash(options)
       self.class.write_representer.new(self).from_hash(options)
