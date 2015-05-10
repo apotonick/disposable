@@ -26,6 +26,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest", "5.4.1"
   spec.add_development_dependency "activerecord"
   spec.add_development_dependency "sqlite3"
-  spec.add_development_dependency "reform"
   # spec.add_development_dependency "database_cleaner"
 end
