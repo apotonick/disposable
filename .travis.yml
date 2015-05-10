@@ -4,7 +4,8 @@ rvm:
   - 2.1.2
   - 2.0.0
   - 1.9.3
-# gemfile:
+gemfile:
+  - Gemfile
   # - gemfiles/Gemfile.rails-4.1
   # - gemfiles/Gemfile.rails-4.0
   # - gemfiles/Gemfile.rails-3.2
