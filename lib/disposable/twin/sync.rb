@@ -62,7 +62,7 @@ private
   end
 
 
-  # Excludes :virtual and readonly properties from #sync in this form.
+  # Excludes :virtual and :writeable: false properties from #sync in this twin.
   module Writeable
     def sync_options(options)
       options = super
@@ -77,12 +77,16 @@ private
   # This will skip unchanged properties in #sync. To use this for all nested form do as follows.
   #
   #   class SongForm < Reform::Form
-  #     feature Synd::SkipUnchanged
+  #     feature Sync::SkipUnchanged
   module SkipUnchanged
-    def sync_hash(options)
+    def self.included(base)
+      base.send :include, Disposable::Twin::Changed
+    end
+
+    def sync_options(options)
       # DISCUSS: we currently don't track if nested forms have changed (only their attributes). that's why i include them all here, which
       # is additional sync work/slightly wrong. solution: allow forms to form.changed? not sure how to do that with collections.
-      scalars   = mapper.fields { |dfn| !dfn[:form] }
+      scalars   = self.class.object_representer_class.representable_attrs.each { |dfn| !dfn[:twin] }.collect { |dfn| dfn.name }
       unchanged = scalars - changed.keys
 
       # exclude unchanged scalars, nested forms and changed scalars still go in here!
