@@ -14,17 +14,20 @@ module Disposable::Twin::Sync
   def sync!(options) # semi-public.
     # options = Disposable::Representer::Options[options.merge(:form => self)] # options local for this form, only.
 
-    sync_representer.new(model).from_object(self, options) # sync properties to Song.
+    sync_representer.new(model).from_object(self, options) # sync properties to <Song> and returns <Song>.
     # dynamic_sync_representer.new(aliased_model).from_hash(input, options) # sync properties to Song.
+    # dynamic_sync_representer.new(model).from_hash(input, options) # sync properties to Song.
   end
 
 private
   # Writes twin to model.
   def sync_representer
-    self.class.representer(:sync, :superclass => self.class.object_representer_class) do |dfn|
+    self.class.representer(:sync, superclass: self.class.object_representer_class) do |dfn|
       dfn.merge!(
+        :instance     => lambda { |twin, *| twin },
           # FIXME: do we allow options for #sync for nested forms?
-        deserialize: lambda { |object, *| model = object.sync!({}) } # sync! returns the synced model.
+        :deserialize => lambda { |object, *| model = object.sync!({}) } # sync! returns the synced model.
+        # representable's :setter will do collection=([..]) or property=(..) for us on the model.
       )
     end
   end

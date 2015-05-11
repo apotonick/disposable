@@ -60,9 +60,13 @@ class TwinSyncTest < MiniTest::Spec
       twin.sync
 
       album.name.must_equal "Live And Dangerous"
+      album.songs[0].must_be_instance_of Model::Song
+      album.songs[1].must_be_instance_of Model::Song
       album.songs[0].title.must_equal "Southbound"
       album.songs[1].title.must_equal "The Boys Are Back In Town"
+      album.songs[1].composer.must_be_instance_of Model::Artist
       album.songs[1].composer.name.must_equal "Lynott"
+      album.artist.must_be_instance_of Model::Artist
       album.artist.name.must_equal "Thin Lizzy"
     end
 

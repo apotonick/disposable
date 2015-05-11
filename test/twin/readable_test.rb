@@ -1,30 +1,50 @@
 require 'test_helper'
 
 class ReadableTest < MiniTest::Spec
-  Credentials = Struct.new(:password) do
+  Credentials = Struct.new(:password, :credit_card) do
     def password
       raise "don't call me!"
     end
   end
 
-  class PasswordForm < Disposable::Twin
-    include Setup
-
-    property :password, readable: false
+  CreditCard = Struct.new(:name, :number) do
+    def number
+      raise "don't call me!"
+    end
   end
 
-  let (:cred) { Credentials.new("secret") }
+  class PasswordForm < Disposable::Twin
+    feature Setup
+    feature Sync
+
+    property :password, readable: false
+
+    property :credit_card do
+      property :name
+      property :number, readable: false
+    end
+  end
+
+  let (:cred) { Credentials.new("secret", CreditCard.new("Jonny", "0987654321")) }
+
   let (:twin) { PasswordForm.new(cred) }
 
   it {
-    twin.password.must_equal nil
+    twin.password.must_equal nil            # not readable.
+    twin.credit_card.name.must_equal "Jonny"
+    twin.credit_card.number.must_equal nil  # not readable.
+
     # manual setting on the twin works.
     twin.password = "123"
     twin.password.must_equal "123"
 
-    # TODO: test nested hash.
-    # twin.sync
-    # cred.password.must_equal "123"
+    twin.credit_card.number = "456"
+    twin.credit_card.number.must_equal "456"
+
+    twin.sync
+
+    # it writes, but does not read.
+    cred.inspect.must_equal '#<struct ReadableTest::Credentials password="123", credit_card=#<struct ReadableTest::CreditCard name="Jonny", number="456">>'
 
 
 
