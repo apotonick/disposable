@@ -16,19 +16,16 @@ module Disposable::Twin::Sync
 
     sync_representer.new(model).from_object(self, options) # sync properties to Song.
     # dynamic_sync_representer.new(aliased_model).from_hash(input, options) # sync properties to Song.
-    # dynamic_sync_representer.new(model).from_hash(input, options) # sync properties to Song.
   end
 
 private
   # Writes twin to model.
   def sync_representer
-    self.class.representer(:sync, :all => true, :superclass => self.class.object_representer_class) do |dfn|
+    self.class.representer(:sync, :superclass => self.class.object_representer_class) do |dfn|
       dfn.merge!(
-        :instance     => lambda { |fragment, *| fragment }, # use model's nested property for syncing.
           # FIXME: do we allow options for #sync for nested forms?
-        :deserialize => lambda { |object, *| model = object.sync!({}) } # sync! returns the synced model.
-        # representable's :setter will do collection=([..]) or property=(..) for us on the model.
-      ) if dfn[:twin]
+        deserialize: lambda { |object, *| model = object.sync!({}) } # sync! returns the synced model.
+      )
     end
   end
 

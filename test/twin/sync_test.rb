@@ -35,10 +35,11 @@ class TwinSyncTest < MiniTest::Spec
   let (:song_with_composer) { Model::Song.new(nil, composer) }
   let (:artist) { Model::Artist.new(nil) }
 
-  # with populated model.
+
   describe "#sync" do
     let (:album) { Model::Album.new(nil, [song, song_with_composer], artist) }
 
+    # with populated model.
     it do
       twin = Twin::Album.new(album)
 
