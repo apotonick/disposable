@@ -12,7 +12,7 @@ module Disposable::Twin::Sync
   # reading from fields allows using readers in form for presentation
   # and writers still pass to fields in #validate????
   def sync!(options) # semi-public.
-    # options = Disposable::Representer::Options[options.merge(:form => self)] # options local for this form, only.
+    options = sync_options(Disposable::Twin::Decorator::Options[]) # handles :_writeable.
 
     sync_representer.new(model).from_object(self, options) # sync properties to <Song> and returns <Song>.
     # dynamic_sync_representer.new(aliased_model).from_hash(input, options) # sync properties to Song.
@@ -20,6 +20,13 @@ module Disposable::Twin::Sync
   end
 
 private
+  module SyncOptions
+    def sync_options(options)
+      options
+    end
+  end
+  include SyncOptions
+
   # Writes twin to model.
   def sync_representer
     self.class.representer(:sync, superclass: self.class.object_representer_class) do |dfn|
@@ -55,25 +62,13 @@ private
   end
 
 
-  # API: semi-public.
-  module SyncHash
-    # This hash goes into the Writer that writes properties back to the model. It only contains "writeable" attributes.
-    def sync_hash(options)
-      input_representer.new(self).to_hash(options)
-    end
-  end
-  include SyncHash
-
-
   # Excludes :virtual and readonly properties from #sync in this form.
   module Writeable
-    def sync_hash(options)
-      # FIXME:
-      readonly_fields = []# mapper.fields { |dfn| dfn[:_writeable] == false }
+    def sync_options(options)
+      options = super
 
-      # options.exclude!(readonly_fields.map(&:to_sym))
-
-      super
+      protected_fields = self.class.object_representer_class.representable_attrs.find_all { |d| d[:_writeable] == false }.collect { |d| d.name.to_sym }
+      options.exclude!(protected_fields)
     end
   end
   include Writeable
