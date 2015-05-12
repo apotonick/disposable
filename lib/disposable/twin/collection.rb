@@ -39,6 +39,14 @@ module Disposable
         to_destroy.each { |twin| twin.send(:model).destroy }
       end
 
+      module Changed
+        # FIXME: this should not be included automatically, as Changed is a feature.
+        def changed?
+          find { |twin| twin.changed? }
+        end
+      end
+      include Changed
+
     private
       def to_destroy
         @to_destroy ||= []

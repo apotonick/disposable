@@ -84,32 +84,12 @@ class ChangedWithSetupTest < MiniTest::Spec
   it do
     twin.songs[1].composer.name = "Nofx"
 
+    # FIXME: Collection#changed?.
+    # twin.songs.changed?.must_equal true
+    twin.songs[1].changed?.must_equal true
+    twin.songs[0].changed?.must_equal false
+
+    twin.artist.changed?.must_equal false
+    twin.changed?.must_equal true
   end
-
-
-  # describe "#validate" do
-  #   before { form.validate(
-  #     "title" => "Five", # changed.
-  #     "hit"   => {"title"  => "The Ripper", # same, but overridden.
-  #                 "length" => "9"}, # gets coerced, then compared, so not changed.
-  #     "band"  => {"label" => {"name" => "Shrapnel Records"}} # only label.name changes.
-  #   ) }
-
-  #   it { form.changed?(:title).must_equal true }
-
-  #   # it { form.changed?(:hit).must_equal false }
-
-  #   # overridden with same value is no change.
-  #   it { form.hit.changed?(:title).must_equal false }
-  #   # coerced value is identical to form's => not changed.
-  #   it { form.hit.changed?(:length).must_equal false }
-
-  #   # it { form.changed?(:band).must_equal true }
-  #   # it { form.band.changed?(:label).must_equal true }
-  #   it { form.band.label.changed?(:name).must_equal true }
-
-  #   # not present key/value in #validate is no change.
-  #   it { form.band.label.changed?(:location).must_equal false }
-  #   # TODO: parent form changed when child has changed!
-  # end
 end
