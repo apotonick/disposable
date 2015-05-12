@@ -84,8 +84,7 @@ class ChangedWithSetupTest < MiniTest::Spec
   it do
     twin.songs[1].composer.name = "Nofx"
 
-    # FIXME: Collection#changed?.
-    # twin.songs.changed?.must_equal true
+    assert twin.songs.changed?
     twin.songs[1].changed?.must_equal true
     twin.songs[0].changed?.must_equal false
 
