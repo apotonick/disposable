@@ -44,22 +44,39 @@ private
   def dynamic_sync_representer
     self.class.representer(:dynamic_sync, superclass: sync_representer, :all => true) do |dfn|
       next unless setter = dfn[:sync]
+      dfn.merge!(:setter => Dynamic.new(dfn, setter))
+    end
+  end
 
-      setter_proc = lambda do |value, options|
-        twin = options.user_options[:twin] # every definition has access to its "parent" twin. comes from #sync!.
 
-        if options.binding[:sync] == true # sync: true will call the runtime lambda from the options hash in its own context (e.g. operation instance).
+  # Invokes the block from :sync. This is either a class lambda or from the call to #sync.
+  class Dynamic
+    include Uber::Callable
 
-          options.user_options[options.binding.name.to_sym].call(twin.send(dfn.name), options)
-          next
-        end
+    def initialize(definition, block)
+      @definition = definition
+      @block      = block
+    end
 
-        # :deserialize from sync_representer gives us the model in value, so we need to retrieve the twin, again.
+    def call(value, c, options)
+      twin = options.user_options[:twin] # every definition has access to its "parent" twin. comes from #sync!.
 
-        twin.instance_exec(twin.send(dfn.name), options, &setter) # TODO: use Uber:::Value and allow instance methods, too!
-      end
+      # sync: true will call the runtime lambda from the options hash in its own context (e.g. operation instance).
+      return runtime_proc!(twin, options) if options.binding[:sync] == true
 
-      dfn.merge!(:setter => setter_proc)
+      # :deserialize from sync_representer gives us the model in value, so we need to retrieve the twin, again.
+      property_proc!(twin, options)
+    end
+
+  private
+    # Proc from sync(title: ..).
+    def runtime_proc!(twin, options)
+      options.user_options[options.binding.name.to_sym].call(twin.send(@definition.name), options)
+    end
+
+    # Proc from property :title, sync: ..
+    def property_proc!(twin, options)
+      twin.instance_exec(twin.send(@definition.name), options, &@block) # TODO: use Uber:::Value and allow instance methods, too!
     end
   end
 
