@@ -12,11 +12,11 @@ module Disposable::Twin::Sync
   # reading from fields allows using readers in form for presentation
   # and writers still pass to fields in #validate????
   def sync!(options) # semi-public.
-    options = sync_options(Disposable::Twin::Decorator::Options[]) # handles :_writeable.
+    options_for_sync = sync_options(Disposable::Twin::Decorator::Options[options.merge(twin: self)]) # handles :_writeable.
 
-    sync_representer.new(model).from_object(self, options) # sync properties to <Song> and returns <Song>.
+    # sync_representer.new(model).from_object(self, options) # sync properties to <Song> and returns <Song>.
+    dynamic_sync_representer.new(model).from_object(self, options_for_sync) # sync properties to <Song> and returns <Song>.
     # dynamic_sync_representer.new(aliased_model).from_hash(input, options) # sync properties to Song.
-    # dynamic_sync_representer.new(model).from_hash(input, options) # sync properties to Song.
   end
 
 private
@@ -39,8 +39,6 @@ private
     end
   end
 
-   # TODO: integrate features below!!!!!!
-
   # This representer inherits from sync_representer and add functionality on top of that.
   # It allows running custom dynamic blocks for properties when syncing.
   def dynamic_sync_representer
@@ -48,13 +46,17 @@ private
       next unless setter = dfn[:sync]
 
       setter_proc = lambda do |value, options|
-        if options.binding[:sync] == true # sync: true will call the runtime lambda from the options hash.
-          options.user_options[options.binding.name.to_sym].call(value, options)
+        twin = options.user_options[:twin] # every definition has access to its "parent" twin. comes from #sync!.
+
+        if options.binding[:sync] == true # sync: true will call the runtime lambda from the options hash in its own context (e.g. operation instance).
+
+          options.user_options[options.binding.name.to_sym].call(twin.send(dfn.name), options)
           next
         end
 
-        # evaluate the :sync block in form context (should we do that everywhere?).
-        options.user_options[:form].instance_exec(value, options, &setter)
+        # :deserialize from sync_representer gives us the model in value, so we need to retrieve the twin, again.
+
+        twin.instance_exec(twin.send(dfn.name), options, &setter) # TODO: use Uber:::Value and allow instance methods, too!
       end
 
       dfn.merge!(:setter => setter_proc)
