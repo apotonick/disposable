@@ -151,6 +151,54 @@ class SyncWithDynamicOptionsTest < MiniTest::Spec
   end
 end
 
+
+class SyncWithOptionsAndSkipUnchangedTest < MiniTest::Spec
+  module Model
+    Song  = Struct.new(:title, :composer)
+    Album = Struct.new(:id, :name, :songs, :artist)
+    Artist = Struct.new(:name, :hidden_taste)
+  end
+
+
+  module Twin
+    class Album < Disposable::Twin
+      feature Setup
+      feature Sync
+      feature Sync::SkipUnchanged
+
+      property :id
+      property :name
+
+      collection :songs do # FIXME: this is called before the songs items where synced?
+        property :title
+      end
+
+      # only execute this when changed.
+      property :artist, sync: lambda { |twin, options| model.artist.name = "#{twin.artist.name}+" } do
+        property :name
+      end
+    end
+  end
+
+  let (:album) { Model::Album.new(1, "Corridors Of Power", [], artist) }
+  # let (:song) { Model::Song.new() }
+  # let (:song_with_composer) { Model::Song.new("American Jesus", composer) }
+  # let (:composer) { Model::Artist.new(nil) }
+  let (:artist) { Model::Artist.new("Bad Religion") }
+
+  it do
+    twin = Twin::Album.new(album)
+
+    twin.artist.name.must_equal "Bad Religion"
+    twin.sync
+    twin.artist.name.must_equal "Bad Religion"
+
+    twin.artist.name= "Greg Howe"
+    twin.sync
+    artist.name.must_equal "Bad Religion+"
+  end
+end
+
 # :virtual wins over :sync
 # class SyncWithVirtualTest < MiniTest::Spec
 #   Song = Struct.new(:title, :image, :band)

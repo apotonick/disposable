@@ -6,6 +6,7 @@ require "disposable/twin/setup"
 require "disposable/twin/sync"
 require "disposable/twin/option"
 require "disposable/twin/builder"
+require "disposable/twin/changed"
 
 # Twin.new(model/composition hash/hash, options)
 #   assign hash to @fields

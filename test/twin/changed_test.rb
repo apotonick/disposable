@@ -8,7 +8,6 @@ class ChangedWithSetupTest < MiniTest::Spec
     Artist = Struct.new(:name)
   end
 
-  require "disposable/twin/changed"
   module Twin
     class Album < Disposable::Twin
       feature Setup
@@ -81,14 +80,18 @@ class ChangedWithSetupTest < MiniTest::Spec
   end
 
   # nested changes should propagate up.
-  it do
+  it "zeah" do
+
+    twin.changed?.must_equal false
+
     twin.songs[1].composer.name = "Nofx"
+
+    twin.changed?.must_equal true
 
     assert twin.songs.changed?
     twin.songs[1].changed?.must_equal true
     twin.songs[0].changed?.must_equal false
 
     twin.artist.changed?.must_equal false
-    twin.changed?.must_equal true
   end
 end

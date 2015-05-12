@@ -27,15 +27,14 @@ private
 
   def _find_changed_twins! # FIXME: this will change soon. don't touch.
     # TODO: screw representers for 1-level data-transformations and use something simpler, faster?
-    nested_changed = self.class.representer_class.representable_attrs.find_all do |dfn|
+    self.class.representer_class.representable_attrs.find_all do |dfn|
       dfn[:twin]
-    end.collect do |dfn|
-      send(dfn.getter)
-    end.compact.find do |property|
-      property.changed?
-    end
+    end.each do |dfn|
+      next unless twin = send(dfn.getter)
+      next unless twin.changed?
 
-    return unless nested_changed
-    changed[:self] = true
+      changed[dfn.name] = true
+      changed["self"] = true
+    end
   end
 end
