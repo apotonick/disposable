@@ -77,11 +77,16 @@ class ChangedWithSetupTest < MiniTest::Spec
 
     twin.artist.changed?(:name).must_equal true
     twin.artist.changed?.must_equal true
+
+    # you can also ask for nested twins by name.
+    twin.changed?(:songs).must_equal true
+    twin.songs[0].changed?(:composer).must_equal false
+    twin.songs[1].changed?(:composer).must_equal true
+    twin.changed?(:artist).must_equal true
   end
 
   # nested changes should propagate up.
-  it "zeah" do
-
+  it do
     twin.changed?.must_equal false
 
     twin.songs[1].composer.name = "Nofx"
