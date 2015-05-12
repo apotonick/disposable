@@ -66,18 +66,18 @@ class ChangedWithSetupTest < MiniTest::Spec
     twin.artist.name = "No Fun At All"
 
     twin.changed?(:name).must_equal true
-    # twin.changed?.must_equal true
+    twin.changed?.must_equal true
 
-    # twin.songs[0].changed?.must_equal true
+    twin.songs[0].changed?.must_equal true
     twin.songs[0].changed?(:title).must_equal true
-    # twin.songs[1].changed?.must_equal true
+    twin.songs[1].changed?.must_equal true
     twin.songs[1].changed?(:title).must_equal true
 
     twin.songs[1].composer.changed?(:name).must_equal true
-    # twin.songs[1].composer.changed?.must_equal true
+    twin.songs[1].composer.changed?.must_equal true
 
     twin.artist.changed?(:name).must_equal true
-    # twin.artist.changed?.must_equal true
+    twin.artist.changed?.must_equal true
   end
 
   # nested changes should propagate up.
