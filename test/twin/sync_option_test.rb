@@ -156,7 +156,7 @@ class SyncWithOptionsAndSkipUnchangedTest < MiniTest::Spec
   module Model
     Song  = Struct.new(:title, :composer)
     Album = Struct.new(:id, :name, :songs, :artist)
-    Artist = Struct.new(:name, :hidden_taste)
+    Artist = Struct.new(:name)
   end
 
 
@@ -174,7 +174,7 @@ class SyncWithOptionsAndSkipUnchangedTest < MiniTest::Spec
       end
 
       # only execute this when changed.
-      property :artist, sync: lambda { |twin, options| model.artist.name = "#{twin.artist.name}+" } do
+      property :artist, sync: lambda { |artist_twin, options| model.artist.name = "#{artist_twin.name}+" } do
         property :name
       end
     end
@@ -195,7 +195,7 @@ class SyncWithOptionsAndSkipUnchangedTest < MiniTest::Spec
 
     twin.artist.name= "Greg Howe"
     twin.sync
-    artist.name.must_equal "Bad Religion+"
+    artist.name.must_equal "Greg Howe+"
   end
 end
 
