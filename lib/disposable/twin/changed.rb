@@ -1,31 +1,45 @@
 module Disposable::Twin::Changed
-  def changed?(name=nil)
-    # TODO: performance? changed should be called just once, per sync, per twin?
-    _find_changed_twins!
+  class Changes < Hash
+    def changed?(name=nil)
+      return true if name.nil? and size > 0
 
-    return true if name.nil? and changed.size > 0
-    !! changed[name.to_s]
+      !! self[name.to_s]
+    end
   end
 
+
+  def changed?(*args) # not recommended for external use?
+    changed.changed?(*args)
+  end
+
+# FIXME: can we make #changed the only public concept? so we don't need to find twice?
+
+  # this is usually called only once in Sync::SkipUnchanged, per twin.
   def changed
-    @changed ||= {}
+    _find_changed_twins!(@_changes)
+
+    @_changes
   end
 
 private
   def initialize(model, *args)
-    super # Initialize, Setup
-    @changed = {}
+    super         # Setup#initialize.
+    @_changes = Changes.new # override changed from initialize.
+  end
+
+  def _changed
+    @_changes ||= Changes.new # FIXME: why do we need to re-initialize here?
   end
 
   def write_property(name, private_name, value, dfn)
     old_value = send(name) # FIXME: what about the private_name stuff?
 
     super.tap do
-      changed[name.to_s] = old_value != value
+      _changed[name.to_s] = old_value != value
     end
   end
 
-  def _find_changed_twins! # FIXME: this will change soon. don't touch.
+  def _find_changed_twins!(changes) # FIXME: this will change soon. don't touch.
     # TODO: screw representers for 1-level data-transformations and use something simpler, faster?
     self.class.representer_class.representable_attrs.find_all do |dfn|
       dfn[:twin]
@@ -33,8 +47,7 @@ private
       next unless twin = send(dfn.getter)
       next unless twin.changed?
 
-      changed[dfn.name] = true
-      changed["self"] = true
+      changes[dfn.name] = true
     end
   end
 end
