@@ -50,8 +50,6 @@ class SkipUnchangedTest < MiniTest::Spec
     artist.instance_eval { def name=; end }
     song_with_composer.instance_eval { def title=; end }
 
-
-raise twin.changed.inspect
     twin.sync
 
     # unchanged, and no exception raised.
