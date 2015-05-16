@@ -140,6 +140,15 @@ module Disposable
     def self.process_inline!(mod, definition)
     end
 
+    # FIXME: this is experimental.
+    module ToS
+      def to_s
+        return super if self.class.name
+        "#<Twin (inline):#{object_id}>"
+      end
+    end
+    include ToS
+
 
     def from_hash(options)
       self.class.write_representer.new(self).from_hash(options)
