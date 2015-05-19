@@ -169,8 +169,16 @@ class CollectionUnitTest < MiniTest::Spec
     Album = Struct.new(:id, :name, :songs, :artist)
   end
 
+  let(:collection) { Disposable::Twin::Collection.new(Disposable::Twin::Twinner.new(Twin::Song.twin_representer_class.representable_attrs.get(:album)), []) }
+
+  # #insert(index, model)
   it do
-    collection = Disposable::Twin::Collection.new(Disposable::Twin::Twinner.new(Twin::Song.twin_representer_class.representable_attrs.get(:album)), [])
-    (collection.insert(0, Model::Album.new).must_be_instance_of Twin::Album)
+    collection.insert(0, Model::Album.new).must_be_instance_of Twin::Album
+  end
+
+  # #<<
+  it do
+    collection << Model::Album.new
+    collection[0].must_be_instance_of Twin::Album
   end
 end
