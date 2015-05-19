@@ -1,60 +1,17 @@
-# module Disposable
-#   class Twin
-#         # call save on all nested twins.
-#     def self.pre_save_representer
-#       representer = Class.new(write_representer)
-#       representer.representable_attrs.
-#         each { |attr| attr.merge!(
-#           :representable => true,
-#           :serialize => lambda do |twin, args|
-#             processed = args.user_options[:processed_map]
-
-#             twin.save(processed) unless processed[twin] # don't call save if it is already scheduled.
-#           end
-#         )}
-
-#       representer
-#     end
-
-
-#     # it's important to stress that #save is the only entry point where we hit the database after initialize.
-#     def save(processed_map=ObjectMap.new) # use that in Reform::AR.
-#       processed_map[self] = true
-
-#       pre_save = self.class.pre_save_representer.new(self)
-#       pre_save.to_hash(:include => pre_save.twin_names, :processed_map => processed_map) # #save on nested Twins.
-
-
-
-#       # what we do right now
-#       # call save on all nested twins - how does that work with dependencies (eg Album needs Song id)?
-#       # extract all ORM attributes
-#       # write to model
-
-#       sync_attrs    = self.class.save_representer.new(self).to_hash
-#       # puts "sync> #{sync_attrs.inspect}"
-#       # this is ORM-specific:
-#       model.update_attributes(sync_attrs) # this also does `album: #<Album>`
-
-#       # FIXME: sync again, here, or just id?
-#       self.id = model.id
-#     end
-#   end
-# end
 module Disposable::Twin::Save
   # Returns the result of that save invocation on the model.
   def save(options={}, &block)
     # DISCUSS: we should never hit @mapper here (which writes to the models) when a block is passed.
     return yield to_nested_hash if block_given?
 
-    sync_models # recursion
+    sync
     save!(options)
   end
 
   def save!(options={}) # FIXME.
     result = save_model
 
-    save_representer.new(self).to_hash # save! on all nested forms.
+    save_representer.new(self).to_object # save! on all nested forms.
 
     dynamic_save!(options)
 
@@ -62,7 +19,7 @@ module Disposable::Twin::Save
   end
 
   def save_model
-    model.save # TODO: implement nested (that should really be done by Twin/AR).
+    model.save
   end
 
 
@@ -75,10 +32,9 @@ module Disposable::Twin::Save
 
 private
   def save_representer
-    self.class.representer(:save) do |dfn|
+    self.class.representer(:save, superclass: self.class.object_representer_class) do |dfn|
       dfn.merge!(
-        :instance  => lambda { |form, *| form },
-        :serialize => lambda { |form, args| form.save! unless args.binding[:save] === false }
+        prepare: lambda { |form, options| form.save! unless options.binding[:save] === false }
       )
     end
   end
