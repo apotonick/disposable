@@ -45,13 +45,12 @@ class WriteableTest < MiniTest::Spec
 
     cred.inspect.must_equal '#<struct WriteableTest::Credentials password="secret", credit_card=#<struct WriteableTest::CreditCard name="Jonny", number="0987654321">>'
 
+    # test sync{}.
+    hash = {}
+    twin.sync do |nested|
+      hash = nested
+    end
 
-
-    # hash = {}
-    # twin.save do |nested|
-    #   hash = nested
-    # end
-
-    # hash.must_equal("password"=> "123")
+    hash.must_equal("password"=> "123", "credit_card"=>{"name"=>"Jonny", "number"=>"456"})
   }
 end
