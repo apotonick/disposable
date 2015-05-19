@@ -1,8 +1,5 @@
 require 'test_helper'
 
-
-require "test_helper"
-
 class SaveTest < MiniTest::Spec
   module Model
     Song  = Struct.new(:title, :composer)
@@ -53,10 +50,10 @@ class SaveTest < MiniTest::Spec
 
   let (:album) { Model::Album.new(nil, [song, song_with_composer], artist).extend(Saveable) }
 
+  let (:twin) { Twin::Album.new(album) }
+
   # with populated model.
   it do
-    twin = Twin::Album.new(album)
-
     # this usually happens in Contract::Validate or in from_* in a representer
     twin.name = "Live And Dangerous"
     twin.songs[0].title = "Southbound"
@@ -86,11 +83,15 @@ class SaveTest < MiniTest::Spec
     album.artist.saved?.must_equal true
   end
 
+  #save returns result.
+  it { twin.save.must_equal true }
+  it do
+    album.instance_eval { def save; false; end }
+    twin.save.must_equal false
+  end
 
 
-
-
-
+  # save: false
   module Twin
     class AlbumWithSaveFalse < Disposable::Twin
       feature Setup
@@ -149,15 +150,6 @@ end
 
 
 # TODO: with block
-
-#   # #save returns result (this goes into disposable soon).
-#   it { subject.save.must_equal true }
-#   it do
-#     album.instance_eval { def save; false; end }
-#     subject.save.must_equal false
-#   end
-# end
-
 
 # class SaveWithDynamicOptionsTest < MiniTest::Spec
 #   Song = Struct.new(:id, :title, :length) do
