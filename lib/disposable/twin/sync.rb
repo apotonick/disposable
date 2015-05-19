@@ -5,6 +5,8 @@
 # Note: #sync currently implicitly saves AR objects with collections
 module Disposable::Twin::Sync
   def sync_models(options={})
+    return yield to_nested_hash if block_given?
+
     sync!(options)
   end
   alias_method :sync, :sync_models
@@ -20,6 +22,25 @@ module Disposable::Twin::Sync
   end
 
 private
+  module ToNestedHash
+    def to_nested_hash(*)
+      nested_hash_representer.new(self).to_hash
+    end
+
+    def nested_hash_representer
+      self.class.representer(:nested_hash, all: true) do |dfn|
+        dfn.merge!(
+          serialize: lambda { |form, args| form.to_nested_hash },
+          representable: true # TODO: why do we need that here?
+        ) if dfn[:twin]
+
+        # dfn.merge!(:as => dfn[:private_name] || dfn.name) # FIXME: test this with composition/renaming.
+      end
+    end
+  end
+  include ToNestedHash
+
+
   module SyncOptions
     def sync_options(options)
       options

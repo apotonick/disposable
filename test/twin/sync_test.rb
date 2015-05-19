@@ -44,11 +44,7 @@ class TwinSyncTest < MiniTest::Spec
       twin = Twin::Album.new(album)
 
       # this usually happens in Contract::Validate or in from_* in a representer
-      twin.name = "Live And Dangerous"
-      twin.songs[0].title = "Southbound"
-      twin.songs[1].title = "The Boys Are Back In Town"
-      twin.songs[1].composer.name = "Lynott"
-      twin.artist.name = "Thin Lizzy"
+      fill_out!(twin)
 
       # not written to model, yet.
       album.name.must_equal nil
@@ -96,6 +92,37 @@ class TwinSyncTest < MiniTest::Spec
       album.songs[0].title.must_equal "Southbound"
       album.songs[1].title.must_equal "The Boys Are Back In Town"
       album.songs[1].composer.name.must_equal "Lynott"
+    end
+
+    # save with block creates nested_hash and doesn't sync.
+    it do
+      twin = Twin::Album.new(album)
+
+      # this usually happens in Contract::Validate or in from_* in a representer
+      fill_out!(twin)
+
+      nested_hash = nil
+      twin.sync do |hash|
+        nested_hash = hash
+      end
+
+      nested_hash.must_equal({"name"=>"Live And Dangerous", "songs"=>[{"title"=>"Southbound"}, {"title"=>"The Boys Are Back In Town", "composer"=>{"name"=>"Lynott"}}], "artist"=>{"name"=>"Thin Lizzy"}})
+
+      # nothing written to model.
+      album.name.must_equal nil
+      album.songs[0].title.must_equal nil
+      album.songs[1].title.must_equal nil
+      album.songs[1].composer.name.must_equal nil
+      album.artist.name.must_equal nil
+    end
+
+
+    def fill_out!(twin)
+      twin.name = "Live And Dangerous"
+      twin.songs[0].title = "Southbound"
+      twin.songs[1].title = "The Boys Are Back In Town"
+      twin.songs[1].composer.name = "Lynott"
+      twin.artist.name = "Thin Lizzy"
     end
   end
 end
