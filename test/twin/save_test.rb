@@ -54,13 +54,7 @@ class SaveTest < MiniTest::Spec
 
   # with populated model.
   it do
-    # this usually happens in Contract::Validate or in from_* in a representer
-    twin.name = "Live And Dangerous"
-    twin.songs[0].title = "Southbound"
-    twin.songs[1].title = "The Boys Are Back In Town"
-    twin.songs[1].composer.name = "Lynott"
-    twin.artist.name = "Thin Lizzy"
-
+    fill_out!(twin)
 
     twin.save
 
@@ -88,6 +82,36 @@ class SaveTest < MiniTest::Spec
   it do
     album.instance_eval { def save; false; end }
     twin.save.must_equal false
+  end
+
+  # with save{}.
+  it do
+    twin = Twin::Album.new(album)
+
+    # this usually happens in Contract::Validate or in from_* in a representer
+    fill_out!(twin)
+
+    nested_hash = nil
+    twin.save do |hash|
+      nested_hash = hash
+    end
+
+    nested_hash.must_equal({"name"=>"Live And Dangerous", "songs"=>[{"title"=>"Southbound"}, {"title"=>"The Boys Are Back In Town", "composer"=>{"name"=>"Lynott"}}], "artist"=>{"name"=>"Thin Lizzy"}})
+
+    # nothing written to model.
+    album.name.must_equal nil
+    album.songs[0].title.must_equal nil
+    album.songs[1].title.must_equal nil
+    album.songs[1].composer.name.must_equal nil
+    album.artist.name.must_equal nil
+
+    # nothing saved.
+    # saved?
+    album.saved?.must_equal nil
+    album.songs[0].saved?.must_equal nil
+    album.songs[1].saved?.must_equal nil
+    album.songs[1].composer.saved?.must_equal nil
+    album.artist.saved?.must_equal nil
   end
 
 
@@ -118,13 +142,7 @@ class SaveTest < MiniTest::Spec
   it do
     twin = Twin::AlbumWithSaveFalse.new(album)
 
-    # this usually happens in Contract::Validate or in from_* in a representer
-    twin.name = "Live And Dangerous"
-    twin.songs[0].title = "Southbound"
-    twin.songs[1].title = "The Boys Are Back In Town"
-    twin.songs[1].composer.name = "Lynott"
-    twin.artist.name = "Thin Lizzy"
-
+    fill_out!(twin)
 
     twin.save
 
@@ -145,6 +163,14 @@ class SaveTest < MiniTest::Spec
     album.songs[1].saved?.must_equal nil
     album.songs[1].composer.saved?.must_equal nil # doesn't get saved.
     album.artist.saved?.must_equal true
+  end
+
+  def fill_out!(twin)
+    twin.name = "Live And Dangerous"
+    twin.songs[0].title = "Southbound"
+    twin.songs[1].title = "The Boys Are Back In Town"
+    twin.songs[1].composer.name = "Lynott"
+    twin.artist.name = "Thin Lizzy"
   end
 end
 
