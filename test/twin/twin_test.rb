@@ -73,6 +73,12 @@ class TwinTest < MiniTest::Spec
       song.id.must_equal 1
       song.title.must_equal "Broken"
     end
+
+    # setters for twin properties return the twin, not the model
+    # it do
+    #   result = twin.album = album
+    #   result.must_equal twin.album
+    # end
   end
 
   # FIXME: experimental.
