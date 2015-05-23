@@ -11,6 +11,12 @@ class InheritTest < MiniTest::Spec
     class Album < Disposable::Twin
       feature Setup
 
+      property :name, fromage: :_name
+
+      collection :songs do
+        property :name
+      end
+
       property :artist do
         property :name
 
@@ -24,11 +30,20 @@ class InheritTest < MiniTest::Spec
     end
 
     class Compilation < Album
+      property :name, writeable: false, inherit: true
+
       property :artist, inherit: true do
 
       end
     end
   end
+
+  # definitions are not shared.
+  it do
+    Twin::Album.object_representer_class.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:fromage=>:_name, :private_name=>:name, :pass_options=>true, :_readable=>nil, :_writeable=>nil, :parse_filter=>[], :render_filter=>[], :as=>\"name\"}>"
+    Twin::Compilation.object_representer_class.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:fromage=>:_name, :private_name=>:name, :pass_options=>true, :_readable=>nil, :_writeable=>false, :parse_filter=>[], :render_filter=>[], :as=>\"name\", :inherit=>true}>"
+  end
+
 
   let (:album) { Model::Album.new("In The Meantime And Inbetween Time", [], Model::Artist.new) }
 

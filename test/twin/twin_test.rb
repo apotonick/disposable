@@ -96,28 +96,6 @@ class TwinTest < MiniTest::Spec
   end
 end
 
-class InheritanceTest < MiniTest::Spec
-  module Twin
-    class Album < Disposable::Twin
-      property :name, fromage: :_name
-
-      collection :songs do
-        property :name
-      end
-    end
-
-    class Compilation < Album
-      property :name, writeable: false, inherit: true
-    end
-  end
-
-  # definitions are not shared.
-  it do
-    Twin::Album.object_representer_class.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:fromage=>:_name, :private_name=>:name, :pass_options=>true, :_readable=>nil, :_writeable=>nil, :parse_filter=>[], :render_filter=>[], :as=>\"name\"}>"
-    Twin::Compilation.object_representer_class.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:fromage=>:_name, :private_name=>:name, :pass_options=>true, :_readable=>nil, :_writeable=>false, :parse_filter=>[], :render_filter=>[], :as=>\"name\", :inherit=>true}>"
-  end
-end
-
 
 class OverridingAccessorsTest < TwinTest
   # overriding accessors in Twin
