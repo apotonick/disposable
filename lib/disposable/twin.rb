@@ -79,7 +79,7 @@ module Disposable
           # DISCUSS: could we use build_inline's api here to inject the name feature?
 
           definition.merge!(:twin => nested_twin)
-          definition.delete!(:extend)
+          # definition.delete!(:extend)
         end
       end
     end
