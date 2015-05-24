@@ -118,12 +118,12 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
 
   # test with adding to existing collection [song1] << song2
 
-  # TODO: #delete non-existent model.
+  # TODO: #delete non-existent twin.
   describe "#delete" do
     let (:album) { Album.create(name: "The Rest Is Silence", songs: [song1]) }
 
     it do
-      twin.songs.delete(song1) # here, i pass in the model.
+      twin.songs.delete(twin.songs.first)
 
       twin.songs.size.must_equal 0
       album.songs.size.must_equal 1 # not synced, yet.
@@ -140,7 +140,7 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
     let (:album) { Album.create(name: "The Rest Is Silence", songs: [song1]) }
 
     it do
-      twin.songs.destroy(song1) # here, i pass in the model.
+      twin.songs.destroy(twin.songs.first)
 
       twin.songs.size.must_equal 0
       album.songs.size.must_equal 1 # not synced, yet.

@@ -13,25 +13,25 @@ module Disposable
         @twinner = twinner # DISCUSS: twin items here?
       end
 
+      # Note that this expects a model, untwinned.
       def <<(model)
         super(@twinner.(model))
       end
 
+      # Note that this expects a model, untwinned.
       def insert(index, model)
         super(index, twin = @twinner.(model))
         twin
       end
 
       # Remove an item from a collection. This will not destroy the model.
-      def delete(model)
-        super(find { |twin| twin.send(:model) == model })
+      def delete(twin)
+        super(twin)
       end
 
       # Deletes twin from collection and destroys it in #save.
-      def destroy(model)
-        twin = find { |twin| twin.send(:model) == model }
-
-        delete(model)
+      def destroy(twin)
+        delete(twin)
         to_destroy << twin
       end
 
