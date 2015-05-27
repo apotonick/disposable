@@ -72,14 +72,12 @@ module Disposable
         include mod
 
         # property -> build_inline(representable_attrs.features)
-        # TODO: temporary hack to make definition not look typed. maybe we should make :twin copy of :extend and then get everything accepting :extend?
         if definition[:extend]
           nested_twin = definition[:extend].evaluate(nil)
           process_inline!(nested_twin, definition)
           # DISCUSS: could we use build_inline's api here to inject the name feature?
 
           definition.merge!(:twin => nested_twin)
-          # definition.delete!(:extend)
         end
       end
     end
@@ -94,7 +92,7 @@ module Disposable
         @fields = {}
         @model  = model
 
-        from_hash(options) # assigns known properties from options.
+        from_hash(options) # assigns known properties from options. # TODO: this must be in Option.
       end
     end
     include Initialize

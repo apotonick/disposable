@@ -49,6 +49,10 @@ module Disposable
       end
       include Readable
 
+
+      module Expose
+
+      end
     end # Setup
   end
 end
