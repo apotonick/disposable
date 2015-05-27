@@ -40,9 +40,9 @@ class TwinTest < MiniTest::Spec
       twin.id.must_equal 2
     end
 
-    # override property with public name in constructor.
+    # allows passing options.
     it do
-      # override twin's value...
+      # override name from model..
       Twin::Song.new(song, :name => "Kenny").name.must_equal "Kenny"
 
       # .. but do not write to the model!
