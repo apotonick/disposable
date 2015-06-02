@@ -56,4 +56,14 @@ class SchemaTest < MiniTest::Spec
 
     nested_extend.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:as=>\"Name\", :deserializer=>{:skip_parse=>\"a crazy cool instance method\"}, :parse_filter=>[], :render_filter=>[], :skip_parse=>\"a crazy cool instance method\"}>"
   end
+
+  # :options_from and :include is optional
+  it do
+    decorator = Disposable::Twin::Schema.from(Representer, superclass: Representable::Decorator,
+      representer_from: lambda { |nested| nested }
+    )
+
+    decorator.representable_attrs.get(:id).inspect.must_equal "#<Representable::Definition ==>id @options={:parse_filter=>[], :render_filter=>[], :as=>\"id\"}>"
+    decorator.representable_attrs.get(:title).inspect.must_equal "#<Representable::Definition ==>title @options={:writeable=>false, :deserializer=>{:skip_parse=>\"skip lambda\"}, :parse_filter=>[], :render_filter=>[], :as=>\"title\"}>"
+  end
 end
