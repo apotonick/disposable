@@ -14,10 +14,10 @@ module Disposable::Twin::Sync
   # reading from fields allows using readers in form for presentation
   # and writers still pass to fields in #validate????
   def sync!(options) # semi-public.
-    options_ = sync_options(Disposable::Twin::Decorator::Options[options])
+    options_for_sync = sync_options(Disposable::Twin::Decorator::Options[options])
 
     self.class.bla.each do |dfn|
-      next if options_[:exclude].include?(dfn.name.to_sym)
+      next if options_for_sync[:exclude].include?(dfn.name.to_sym)
 
       model.send(dfn.setter, send(dfn.getter)) and next unless dfn[:twin]
 
@@ -44,6 +44,8 @@ private
 
     def nested_hash_representer
       self.class.representer(:nested_hash, all: true) do |dfn|
+        dfn.merge!(readable: true)
+
         dfn.merge!(
           serialize: lambda { |form, args| form.to_nested_hash },
           representable: true # TODO: why do we need that here?
@@ -71,44 +73,12 @@ private
   end
 
 
-  # Invokes the block from :sync. This is either a class lambda or from the call to #sync.
-  class Dynamic
-    include Uber::Callable
-
-    def initialize(definition, block)
-      @definition = definition
-      @block      = block
-    end
-
-    def call(value, c, options)
-      twin = options.user_options[:twin] # every definition has access to its "parent" twin. comes from #sync!.
-
-      # sync: true will call the runtime lambda from the options hash in its own context (e.g. operation instance).
-      return runtime_proc!(twin, options) if options.binding[:sync] == true
-
-      # :deserialize from sync_representer gives us the model in value, so we need to retrieve the twin, again.
-      property_proc!(twin, options)
-    end
-
-  private
-    # Proc from sync(title: ..).
-    def runtime_proc!(twin, options)
-      options.user_options[options.binding.name.to_sym].call(twin.send(@definition.name), options)
-    end
-
-    # Proc from property :title, sync: ..
-    def property_proc!(twin, options)
-      twin.instance_exec(twin.send(@definition.name), options, &@block) # TODO: use Uber:::Value and allow instance methods, too!
-    end
-  end
-
-
   # Excludes :virtual and :writeable: false properties from #sync in this twin.
   module Writeable
     def sync_options(options)
       options = super
 
-      protected_fields = self.class.bla.find_all { |d| d[:_writeable] == false }.collect { |d| d.name.to_sym }
+      protected_fields = self.class.bla.find_all { |d| d[:writeable] == false }.collect { |d| d.name.to_sym }
       options.exclude!(protected_fields)
     end
   end

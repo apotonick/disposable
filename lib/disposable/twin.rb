@@ -47,13 +47,6 @@ module Disposable
       options[:private_name] = options.delete(:from) || name
       options[:pass_options] = true
 
-
-      # TODO: this should be more modular.
-      # options[:_readable]  = options.delete(:readable)
-      options[:_writeable] = options.delete(:writeable)
-
-
-
       # hash_representer_class and object_representer_class are only a 1-level representation of the structure.
       representer_class.property(name, options).tap do |definition|
         definition.merge!(twin:true) if block

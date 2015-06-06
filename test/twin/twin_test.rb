@@ -18,7 +18,7 @@ class TwinTest < MiniTest::Spec
 
     class Song < Disposable::Twin
       property :id # DISCUSS: needed for #save.
-      property :name, :from => :title
+      property :title
       property :album, :twin => Album
     end
 
@@ -36,14 +36,14 @@ class TwinTest < MiniTest::Spec
       twin = Twin::Song.new(song)
       song.id = 2
       # :from maps public name
-      twin.name.must_equal "Broken" # public: #name
-      twin.id.must_equal 2
+      twin.title.must_equal "Broken" # public: #record_name
+      twin.id.must_equal 1
     end
 
     # override property with public name in constructor.
     it do
       # override twin's value...
-      Twin::Song.new(song, :name => "Kenny").name.must_equal "Kenny"
+      Twin::Song.new(song, :title => "Kenny").title.must_equal "Kenny"
 
       # .. but do not write to the model!
       song.title.must_equal "Broken"
@@ -56,7 +56,7 @@ class TwinTest < MiniTest::Spec
 
     it do
       twin.id = 3
-      twin.name = "Lucky"
+      twin.title = "Lucky"
       twin.album = album # this is a model, not a twin.
 
       # updates twin
@@ -111,29 +111,6 @@ class OverridingAccessorsTest < TwinTest
 end
 
 
-require 'disposable/twin/struct'
-class TwinStructTest < MiniTest::Spec
-  class Song < Disposable::Twin
-    include Struct
-    property :number, :default => 1 # FIXME: this should be :default_if_nil so it becomes clear with a model.
-    option   :cool?
-  end
-
-  # empty hash
-  it { Song.new({}).number.must_equal 1 }
-  # model hash
-  it { Song.new(number: 2).number.must_equal 2 }
-
-  # with hash and options as one hash.
-  it { Song.new(number: 3, cool?: true).cool?.must_equal true }
-  it { Song.new(number: 3, cool?: true).number.must_equal 3 }
-
-  # with model hash and options hash separated.
-  it { Song.new({number: 3}, {cool?: true}).cool?.must_equal true }
-  it { Song.new({number: 3}, {cool?: true}).number.must_equal 3 }
-end
-
-
 class TwinAsTest < MiniTest::Spec
   module Model
     Song  = Struct.new(:title, :album)
@@ -157,84 +134,4 @@ class TwinAsTest < MiniTest::Spec
   end
 
 end
-
-
-class TwinOptionTest < TwinTest
-  class Song < Disposable::Twin
-    property :id # DISCUSS: needed for #save.
-    property :title
-
-    option :preview?
-    option :highlight?
-  end
-
-  let (:song) { Model::Song.new(1, "Broken") }
-  let (:twin) { Song.new(song, :preview? => false) }
-
-
-  # properties are read from model.
-  it { twin.id.must_equal 1 }
-  it { twin.title.must_equal "Broken" }
-
-  # option is not delegated to model.
-  it { twin.preview?.must_equal false }
-  # not passing option means zero.
-  it { twin.highlight?.must_equal nil }
-
-  # passing both options.
-  it { Song.new(song, preview?: true, highlight?: false).preview?.must_equal true }
-end
-
-
-class TwinBuilderTest < MiniTest::Spec
-  class Twin < Disposable::Twin
-    property :id
-    property :title
-    option   :is_released
-  end
-
-  describe "without property setup" do
-    class Host
-      include Disposable::Twin::Builder
-
-      twin Twin
-
-      def initialize(*args)
-        @model = build_twin(*args)
-      end
-
-      attr_reader :model
-    end
-
-    subject { Host.new(TwinTest::Model::Song.new(1, "Saturday Night"), is_released: true) }
-
-    # model is simply the twin.
-    it { subject.respond_to?(:title).must_equal false }
-    it { subject.model.id.must_equal 1 }
-    it { subject.model.title.must_equal "Saturday Night" }
-    it { subject.model.is_released.must_equal true }
-  end
-
-
-  describe "without property setup" do
-    class HostWithReaders
-      include Disposable::Twin::Builder
-
-      extend Forwardable
-      twin(Twin) { |dfn| def_delegator :@model, dfn.name }
-
-      def initialize(*args)
-        @model = build_twin(*args)
-      end
-    end
-
-    subject { HostWithReaders.new(TwinTest::Model::Song.new(1, "Saturday Night"), is_released: true) }
-
-    # both twin gets created and reader method defined.
-    it { subject.id.must_equal 1 }
-    it { subject.title.must_equal "Saturday Night" }
-    it { subject.is_released.must_equal true }
-  end
-end
-
 # TODO: test coercion!

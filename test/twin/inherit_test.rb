@@ -40,8 +40,8 @@ class InheritTest < MiniTest::Spec
 
   # definitions are not shared.
   it do
-    Twin::Album.object_representer_class.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:fromage=>:_name, :private_name=>:name, :pass_options=>true, :_readable=>nil, :_writeable=>nil, :parse_filter=>[], :render_filter=>[], :as=>\"name\"}>"
-    Twin::Compilation.object_representer_class.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:fromage=>:_name, :private_name=>:name, :pass_options=>true, :_readable=>nil, :_writeable=>false, :parse_filter=>[], :render_filter=>[], :as=>\"name\", :inherit=>true}>"
+    Twin::Album.object_representer_class.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:fromage=>:_name, :private_name=>:name, :pass_options=>true, :parse_filter=>[], :render_filter=>[], :as=>\"name\"}>"
+    Twin::Compilation.object_representer_class.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:fromage=>:_name, :private_name=>:name, :pass_options=>true, :parse_filter=>[], :render_filter=>[], :as=>\"name\", :writeable=>false, :inherit=>true}>"
   end
 
 
