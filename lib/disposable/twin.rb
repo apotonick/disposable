@@ -49,7 +49,7 @@ module Disposable
 
 
       # TODO: this should be more modular.
-      options[:_readable]  = options.delete(:readable)
+      # options[:_readable]  = options.delete(:readable)
       options[:_writeable] = options.delete(:writeable)
 
 
@@ -66,10 +66,10 @@ module Disposable
       # FIXME: use only one representer. and make object_representer the authorative one, we really need the hash one only once.
       twin_representer_class.property(name, options, &block).tap do |definition|
         mod = Module.new do
-          define_method(name)       { @fields[name] }
+          define_method(name)       { @fields[name.to_s] }
+          # define_method(name)       { read_property(name) }
 
-          # define_method(name)       { read_property(name, options[:private_name]) }
-          # define_method("#{name}=") { |value| write_property(name, options[:private_name], value, definition) } # TODO: this is more like prototyping.
+          define_method("#{name}=") { |value| write_property(name, value, definition) } # TODO: this is more like prototyping.
         end
         include mod
 
@@ -90,32 +90,12 @@ module Disposable
       property(name, options.merge(collection: true), &block)
     end
 
-
-
-
-
-
     #
     def self.bla
-      @bla ||= twin_representer_class.representable_attrs[:definitions].values.collect { |dfn| dfn.name }
+      @bla ||= twin_representer_class.representable_attrs[:definitions]
     end
 
-    module Initialize
-      def initialize(model, options={})
-        @fields = {}
-
-        self.class.bla.each do |name|
-          @fields[name] = model.send(name)
-        end
-
-        @fields.merge!(options) # FIXME: hash/string.
-
-        @model  = model
-
-        # from_hash(options) # assigns known properties from options.
-      end
-    end
-    include Initialize
+    include Setup
 
 
     # read/write to twin using twin's API (e.g. #record= not #album=).
@@ -127,10 +107,7 @@ module Disposable
     module Accessors
     private
       def read_property(name, private_name)
-        return @fields[name.to_s]# if @fields.has_key?(name.to_s)
-
-        # FIXME: is this used? Only when Setup is not included.
-        # @fields[name.to_s] = read_from_model(private_name)
+        @fields[name.to_s]
       end
 
       def read_from_model(getter)
@@ -139,7 +116,8 @@ module Disposable
 
       # TODO: make signature nicer.
       # assumption: collections are always initialized from Setup since we assume an empty [] for "nil"/uninitialized collections.
-      def write_property(name, private_name, value, dfn)
+      def write_property(name, value, dfn)
+        return if dfn[:twin] and value.nil? # TODO: test me (model.composer => nil)
         value = dfn.array? ? wrap_collection(dfn, value) : wrap_scalar(dfn, value) if dfn[:twin]
 
         @fields[name.to_s] = value

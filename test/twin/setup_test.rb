@@ -91,27 +91,19 @@ class TwinSetupWithInlineTwinsTest < MiniTest::Spec
 
   class AlbumForm < Disposable::Twin
     feature Setup
-    # FIXME: make that work.
-    # object_representer_class.send :register_feature, Setup # include in every inline representer (comes from representable).
 
     property :id
     property :name
 
     collection :songs do # default_inline_class: Disposable::Twin
-      # include Setup
-
       property :id
 
       property :composer do
-        # include Setup
-
         property :id
       end
     end
 
     property :artist do
-      # include Setup
-
       property :id
     end
   end
@@ -134,6 +126,7 @@ class TwinSetupWithInlineTwinsTest < MiniTest::Spec
 
     twin.songs.must_be_instance_of Disposable::Twin::Collection
 
+    # nil nested objects work (no composer)
     twin.songs[0].must_be_kind_of Disposable::Twin
     twin.songs[0].id.must_equal 1
 

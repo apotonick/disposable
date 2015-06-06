@@ -31,7 +31,7 @@ private
     @_changes ||= Changes.new # FIXME: why do we need to re-initialize here?
   end
 
-  def write_property(name, private_name, value, dfn)
+  def write_property(name, value, dfn)
     old_value = send(name) # FIXME: what about the private_name stuff?
 
     super.tap do
