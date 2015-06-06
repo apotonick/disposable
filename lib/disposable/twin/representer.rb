@@ -40,33 +40,6 @@ module Disposable
       end
 
 
-      # this decorator allows hash transformations (to and from, e.g. for nested_hash).
-      class Hash < self
-        include Representable::Hash
-        include AllowSymbols
-
-        # FIXME: this sucks. fix in representable.
-        def self.build_config
-          Config.new(Definition)
-        end
-      end
-
-      require "representable/object"
-      class Object < self
-        include Representable::Object
-
-        # FIXME: this sucks. fix in representable.
-        def self.build_config
-          Config.new(Definition)
-        end
-
-        # Generate Twin classes for us when using inline ::property or ::collection.
-        def self.default_inline_class # FIXME: do we need this?
-          Disposable::Twin
-        end
-      end
-
-
       # TODO: check how to simplify.
       class Options < ::Hash
         def include!(names)
@@ -89,22 +62,5 @@ module Disposable
       end
     end
 
-
-    # Introduces ::representer to generate/cache transformer representers.
-    module Representer
-      def representers # keeps all transformation representers for one class.
-        @representers ||= {}
-      end
-
-      def representer(name=nil, options={}, &block)
-        return representer_class.each(&block) if name == nil
-        return representers[name] if representers[name] # don't run block as this representer is already setup for this form class.
-
-        only_nested = options[:all] ? false : true
-        base       = options[:superclass] || representer_class
-
-        representers[name] = Class.new(base).each(only_nested, &block) # let user modify representer.
-      end
-    end
   end
 end

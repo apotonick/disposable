@@ -56,7 +56,7 @@ ActiveRecord::Base.establish_connection(
 
 module Disposable::Comparable
   def attributes(source)
-    self.class.representer_class.new(source).to_hash
+    source.instance_variable_get(:@fields)
   end
 
   def ==(other)

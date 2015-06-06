@@ -16,11 +16,7 @@ require "disposable/twin/changed"
 
 module Disposable
   class Twin
-    extend Representer # include ::representer for transformator caching.
-
     extend Uber::InheritableAttr
-    inheritable_attr :representer_class
-    self.representer_class = Class.new(Decorator::Hash)
 
     inheritable_attr :twin_representer_class
     self.twin_representer_class = Class.new(Decorator)
@@ -37,11 +33,6 @@ module Disposable
       deprecate_as!(options) # TODO: remove me in 0.1.0
       options[:private_name] = options.delete(:from) || name
       options[:pass_options] = true
-
-      # hash_representer_class and object_representer_class are only a 1-level representation of the structure.
-      representer_class.property(name, options).tap do |definition|
-        definition.merge!(twin:true) if block
-      end
 
       # FIXME: use only one representer. and make object_representer the authorative one, we really need the hash one only once.
       twin_representer_class.property(name, options, &block).tap do |definition|
@@ -75,13 +66,6 @@ module Disposable
     end
 
     include Setup
-
-
-    # read/write to twin using twin's API (e.g. #record= not #album=).
-    # FIXME: where do we need this?
-    def self.write_representer
-      representer = Class.new(representer_class) # inherit configuration
-    end
 
     module Accessors
     private
