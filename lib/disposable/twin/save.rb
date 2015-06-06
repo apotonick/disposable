@@ -10,42 +10,29 @@ module Disposable::Twin::Save
   def save!(options={})
     result = save_model
 
-    save_representer.new(self).to_object # save! on all nested forms.
+    self.class.bla.each do |dfn|
+      next unless dfn[:twin]
+      next if dfn[:save] == false
+      # next if options_[:exclude].include?(dfn.name.to_sym)
 
-    dynamic_save!(options)
+      # model.send(dfn.setter, send(dfn.getter)) and next unless dfn[:twin]
+
+      if dfn[:collection]
+        arr = send(dfn.getter).collect { |nested_twin| nested_twin.save!({}) }
+        # model.send(dfn.setter, arr) # FIXME: override this for different collection syncing.
+      else
+        next if send(dfn.getter).nil?
+        nested_model = send(dfn.getter).save!({}) # sync.
+
+        # model.send(dfn.setter, nested_model)
+      end
+
+    end
 
     result
   end
 
   def save_model
     model.save
-  end
-
-
-private
-  def save_representer
-    self.class.representer(:save, superclass: self.class.object_representer_class) do |dfn|
-      dfn.merge!(
-        prepare: lambda { |form, options| form.save! unless options.binding[:save] === false }
-      )
-    end
-  end
-
-  # DISCUSS: how do we do all the nested hash, dynamic options, etc.?
-  def dynamic_save!(options)
-    return # FIXME
-    names = options.keys & changed.keys.map(&:to_sym)
-    return if names.size == 0
-
-    dynamic_save_representer.new(fields).to_hash(options.merge(:include => names))
-  end
-
-  def dynamic_save_representer
-    self.class.representer(:dynamic_save, :all => true) do |dfn|
-      dfn.merge!(
-        :serialize     => lambda { |object, options| options.user_options[options.binding.name.to_sym].call(object, options) },
-        :representable => true
-      )
-    end
   end
 end
