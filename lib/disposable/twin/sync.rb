@@ -31,20 +31,35 @@ module Disposable::Twin::Sync
     model
   end
 
+  def self.included(includer)
+    includer.extend ToNestedHash::ClassMethods
+  end
+
 private
+
   module ToNestedHash
     def to_nested_hash(*)
-      nested_hash_representer.new(self).to_hash
+      self.class.nested_hash_representer.new(self).to_hash
     end
 
-    def nested_hash_representer
-      self.class.representer(:nested_hash, all: true) do |dfn|
-        dfn.merge!(readable: true)
+    module ClassMethods
+      # Create a hash representer on-the-fly to serialize the form to a hash.
+      def nested_hash_representer
+        @nested_hash_representer ||= Class.new(twin_representer_class) do
+          include Representable::Hash
 
-        dfn.merge!(
-          serialize: lambda { |form, args| form.to_nested_hash },
-          representable: true # TODO: why do we need that here?
-        ) if dfn[:twin]
+          representable_attrs.each do |dfn|
+            dfn.merge!(readable: true) # the nested hash contains all fields.
+
+            dfn.merge!(
+              prepare:       lambda { |model, *| model }, # TODO: why do we need that here?
+              serialize:     lambda { |form, args| form.to_nested_hash },
+              # representable: true # TODO: why do we need that here?
+            ) if dfn[:twin]
+
+            self
+          end
+        end
       end
     end
   end
