@@ -58,15 +58,6 @@ private
   end
   include SyncOptions
 
-  # This representer inherits from sync_representer and add functionality on top of that.
-  # It allows running custom dynamic blocks add with :sync.
-  def dynamic_sync_representer
-    self.class.representer(:dynamic_sync, superclass: sync_representer, :all => true) do |dfn|
-      next unless setter = dfn[:sync]
-      dfn.merge!(:setter => Dynamic.new(dfn, setter))
-    end
-  end
-
 
   # Excludes :virtual and :writeable: false properties from #sync in this twin.
   module Writeable
