@@ -13,20 +13,9 @@ module Disposable::Twin::Save
     self.class.bla.each do |dfn|
       next unless dfn[:twin]
       next if dfn[:save] == false
-      # next if options_[:exclude].include?(dfn.name.to_sym)
 
-      # model.send(dfn.setter, send(dfn.getter)) and next unless dfn[:twin]
-
-      if dfn[:collection]
-        arr = send(dfn.getter).collect { |nested_twin| nested_twin.save!({}) }
-        # model.send(dfn.setter, arr) # FIXME: override this for different collection syncing.
-      else
-        next if send(dfn.getter).nil?
-        nested_model = send(dfn.getter).save!({}) # sync.
-
-        # model.send(dfn.setter, nested_model)
-      end
-
+      # call #save! on all nested twins.
+      PropertyProcessor.new(dfn, self).() { |twin| twin.save! }
     end
 
     result
@@ -34,5 +23,28 @@ module Disposable::Twin::Save
 
   def save_model
     model.save
+  end
+
+  class PropertyProcessor
+    def initialize(definition, twin)
+      @definition, @twin = definition, twin
+    end
+
+    def call(&block)
+      if @definition[:collection]
+        collection!(&block)
+      else
+        property!(&block)
+      end
+    end
+
+  private
+    def collection!
+      arr = @twin.send(@definition.getter).collect { |nested_twin| yield(nested_twin) }
+    end
+    def property!
+      twin = @twin.send(@definition.getter) or return nil
+      nested_model = yield(twin)
+    end
   end
 end

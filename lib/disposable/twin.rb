@@ -14,8 +14,6 @@ require "disposable/twin/changed"
 #   write: write to @fields
 #   sync/save is the only way to write back to the model.
 
-# TODO: allow setting external deserialization representer, e.g. JSON::HAL or JSONAPI.
-
 module Disposable
   class Twin
     extend Representer # include ::representer for transformator caching.
@@ -50,7 +48,6 @@ module Disposable
         mod = Module.new do
           define_method(name)       { @fields[name.to_s] }
           # define_method(name)       { read_property(name) }
-
           define_method("#{name}=") { |value| write_property(name, value, definition) } # TODO: this is more like prototyping.
         end
         include mod

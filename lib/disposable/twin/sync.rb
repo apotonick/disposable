@@ -21,16 +21,11 @@ module Disposable::Twin::Sync
 
       model.send(dfn.setter, send(dfn.getter)) and next unless dfn[:twin]
 
-      if dfn[:collection]
-        arr = send(dfn.getter).collect { |nested_twin| nested_twin.sync!({}) }
-        model.send(dfn.setter, arr) # FIXME: override this for different collection syncing.
-      else
-        next if send(dfn.getter).nil?
-        nested_model = send(dfn.getter).sync!({}) # sync.
+      nested_model = Disposable::Twin::Save::PropertyProcessor.new(dfn, self).() { |twin| twin.sync!({}) }
 
-        model.send(dfn.setter, nested_model)
-      end
+      next if nested_model.nil?
 
+      model.send(dfn.setter, nested_model)
     end
 
     model
@@ -97,7 +92,7 @@ private
     def sync_options(options)
       # DISCUSS: we currently don't track if nested forms have changed (only their attributes). that's why i include them all here, which
       # is additional sync work/slightly wrong. solution: allow forms to form.changed? not sure how to do that with collections.
-      scalars   = self.class.twin_representer_class.representable_attrs.each { |dfn| !dfn[:twin] }.collect { |dfn| dfn.name }
+      scalars   = self.class.bla.each { |dfn| !dfn[:twin] }.collect { |dfn| dfn.name }
       unchanged = scalars - changed.keys
 
       # exclude unchanged scalars, nested forms and changed scalars still go in here!
