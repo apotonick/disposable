@@ -14,11 +14,26 @@ module Disposable::Twin::Sync
   # reading from fields allows using readers in form for presentation
   # and writers still pass to fields in #validate????
   def sync!(options) # semi-public.
-    options_for_sync = sync_options(Disposable::Twin::Decorator::Options[options.merge(twin: self)]) # handles :_writeable.
+    options_ = sync_options(Disposable::Twin::Decorator::Options[options])
 
-    # sync_representer.new(model).from_object(self, options) # sync properties to <Song> and returns <Song>.
-    dynamic_sync_representer.new(model).from_object(self, options_for_sync) # sync properties to <Song> and returns <Song>.
-    # dynamic_sync_representer.new(aliased_model).from_hash(input, options) # sync properties to Song.
+    self.class.bla.each do |dfn|
+      next if options_[:exclude].include?(dfn.name.to_sym)
+
+      model.send(dfn.setter, send(dfn.getter)) and next unless dfn[:twin]
+
+      if dfn[:collection]
+        arr = send(dfn.getter).collect { |nested_twin| nested_twin.sync!({}) }
+        model.send(dfn.setter, arr) # FIXME: override this for different collection syncing.
+      else
+        next if send(dfn.getter).nil?
+        nested_model = send(dfn.getter).sync!({}) # sync.
+
+        model.send(dfn.setter, nested_model)
+      end
+
+    end
+
+    model
   end
 
 private
@@ -33,8 +48,6 @@ private
           serialize: lambda { |form, args| form.to_nested_hash },
           representable: true # TODO: why do we need that here?
         ) if dfn[:twin]
-
-        # dfn.merge!(:as => dfn[:private_name] || dfn.name) # FIXME: test this with composition/renaming.
       end
     end
   end
@@ -47,18 +60,6 @@ private
     end
   end
   include SyncOptions
-
-  # Writes twin to model.
-  def sync_representer
-    self.class.representer(:sync, superclass: self.class.object_representer_class) do |dfn|
-      dfn.merge!(
-        :instance     => lambda { |twin, *| twin },
-          # FIXME: do we allow options for #sync for nested forms?
-        :deserialize => lambda { |object, *| model = object.sync!({}) } # sync! returns the synced model.
-        # representable's :setter will do collection=([..]) or property=(..) for us on the model.
-      )
-    end
-  end
 
   # This representer inherits from sync_representer and add functionality on top of that.
   # It allows running custom dynamic blocks add with :sync.
@@ -107,7 +108,7 @@ private
     def sync_options(options)
       options = super
 
-      protected_fields = self.class.object_representer_class.representable_attrs.find_all { |d| d[:_writeable] == false }.collect { |d| d.name.to_sym }
+      protected_fields = self.class.bla.find_all { |d| d[:_writeable] == false }.collect { |d| d.name.to_sym }
       options.exclude!(protected_fields)
     end
   end
