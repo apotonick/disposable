@@ -48,10 +48,9 @@ module Disposable
       end
 
 
-      # TODO: check how to simplify.
       class Options < ::Hash
         def exclude!(names)
-          excludes.push(*names) #if names.size > 0
+          excludes.push(*names)
           self
         end
 
