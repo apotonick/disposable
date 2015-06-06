@@ -97,7 +97,7 @@ private
     def sync_options(options)
       # DISCUSS: we currently don't track if nested forms have changed (only their attributes). that's why i include them all here, which
       # is additional sync work/slightly wrong. solution: allow forms to form.changed? not sure how to do that with collections.
-      scalars   = self.class.object_representer_class.representable_attrs.each { |dfn| !dfn[:twin] }.collect { |dfn| dfn.name }
+      scalars   = self.class.twin_representer_class.representable_attrs.each { |dfn| !dfn[:twin] }.collect { |dfn| dfn.name }
       unchanged = scalars - changed.keys
 
       # exclude unchanged scalars, nested forms and changed scalars still go in here!

@@ -24,13 +24,6 @@ module Disposable
     inheritable_attr :representer_class
     self.representer_class = Class.new(Decorator::Hash)
 
-    # DISCUSS: since i started playing with Representable::Object, which is way faster than
-    # going the Hash way, i use two schema representers here. they are identical except for
-    # the engine.
-    # it would be cool to have only one, one day.
-    inheritable_attr :object_representer_class
-    self.object_representer_class = Class.new(Decorator::Object)
-
     inheritable_attr :twin_representer_class
     self.twin_representer_class = Class.new(Decorator)
 
@@ -49,10 +42,6 @@ module Disposable
 
       # hash_representer_class and object_representer_class are only a 1-level representation of the structure.
       representer_class.property(name, options).tap do |definition|
-        definition.merge!(twin:true) if block
-      end
-
-      object_representer_class.property(name, options).tap do |definition|
         definition.merge!(twin:true) if block
       end
 
