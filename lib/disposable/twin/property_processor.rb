@@ -1,3 +1,8 @@
+# This is similar to Representable::Serializer and allows to apply a piece of logic (the
+# block passed to #call) to every twin for this property.
+#
+# For a scalar property, this will be run once and yield the property's value.
+# For a collection, this is run per item and yields the item.
 class Disposable::Twin::PropertyProcessor
   def initialize(definition, twin)
     @definition, @twin = definition, twin
