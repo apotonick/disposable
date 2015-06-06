@@ -40,7 +40,7 @@ private
   end
 
   def _find_changed_twins!(changes) # FIXME: this will change soon. don't touch.
-    self.class.representer_class.each(twin: true) do |dfn|
+    schema.each(twin: true) do |dfn|
       next unless twin = send(dfn.getter)
       next unless twin.changed?
 

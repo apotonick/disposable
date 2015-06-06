@@ -22,6 +22,10 @@ module Disposable
     inheritable_attr :representer_class
     self.representer_class = Class.new(Decorator)
 
+    def schema
+      self.class.representer_class
+    end
+
 
     extend Representable::Feature # imports ::feature, which calls ::register_feature.
     def self.register_feature(mod)

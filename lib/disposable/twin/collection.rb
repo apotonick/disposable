@@ -56,7 +56,7 @@ module Disposable
       module Semantics
         def save
           super.tap do
-            self.class.representer_class.each(collection: true) do |dfn|
+            schema.each(collection: true) do |dfn|
               send(dfn.getter).save
             end
           end

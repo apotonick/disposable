@@ -17,7 +17,7 @@ class Disposable::Twin
     def sync!(options) # semi-public.
       options_for_sync = sync_options(Decorator::Options[options])
 
-      self.class.representer_class.each(options_for_sync) do |dfn|
+      schema.each(options_for_sync) do |dfn|
         model.send(dfn.setter, send(dfn.getter)) and next unless dfn[:twin]
 
         nested_model = PropertyProcessor.new(dfn, self).() { |twin| twin.sync!({}) }
@@ -78,7 +78,7 @@ class Disposable::Twin
       def sync_options(options)
         options = super
 
-        protected_fields = self.class.representer_class.each.find_all { |d| d[:writeable] == false }.collect { |d| d.name }
+        protected_fields = schema.each.find_all { |d| d[:writeable] == false }.collect { |d| d.name }
         options.exclude!(protected_fields)
       end
     end
@@ -97,7 +97,7 @@ class Disposable::Twin
       def sync_options(options)
         # DISCUSS: we currently don't track if nested forms have changed (only their attributes). that's why i include them all here, which
         # is additional sync work/slightly wrong. solution: allow forms to form.changed? not sure how to do that with collections.
-        scalars   = self.class.representer_class.each(scalar: true).collect { |dfn| dfn.name }
+        scalars   = schema.each(scalar: true).collect { |dfn| dfn.name }
         unchanged = scalars - changed.keys
 
         # exclude unchanged scalars, nested forms and changed scalars still go in here!

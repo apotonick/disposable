@@ -11,7 +11,7 @@ class Disposable::Twin
     def save!(options={})
       result = save_model
 
-      self.class.representer_class.each(twin: true) do |dfn|
+      schema.each(twin: true) do |dfn|
         next if dfn[:save] == false
 
         # call #save! on all nested twins.
