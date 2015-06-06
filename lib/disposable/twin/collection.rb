@@ -56,19 +56,12 @@ module Disposable
       module Semantics
         def save
           super.tap do
-            collection_save_representer.new(self).to_hash # calls #save on all collections.
+            self.class.bla.each do |dfn|
+              send(dfn.getter).save if dfn[:collection]
+            end
           end
         end
-
-      private
-        def collection_save_representer
-          self.class.representer(:collection_save) do |dfn| # only nested twins.
-            dfn.merge!(
-              :render_filter => lambda { |collection, *args| collection.save }, # songs.save
-            ) if dfn.array?
-          end
-        end
-      end
+      end # Semantics.
     end
   end
 end
