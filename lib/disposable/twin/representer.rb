@@ -32,7 +32,7 @@ module Disposable
         definitions = representable_attrs
 
         definitions.each do |dfn|
-          next if options[:exclude]    and options[:exclude].include?(dfn.name.to_sym)
+          next if options[:exclude]    and options[:exclude].include?(dfn.name)
           next if options[:scalar]     and dfn[:collection]
           next if options[:collection] and ! dfn[:collection]
           next if options[:twin]       and ! dfn[:twin]

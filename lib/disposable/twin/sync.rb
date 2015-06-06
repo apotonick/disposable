@@ -77,7 +77,7 @@ private
     def sync_options(options)
       options = super
 
-      protected_fields = self.class.representer_class.each.find_all { |d| d[:writeable] == false }.collect { |d| d.name.to_sym }
+      protected_fields = self.class.representer_class.each.find_all { |d| d[:writeable] == false }.collect { |d| d.name }
       options.exclude!(protected_fields)
     end
   end
@@ -100,7 +100,7 @@ private
       unchanged = scalars - changed.keys
 
       # exclude unchanged scalars, nested forms and changed scalars still go in here!
-      options.exclude!(unchanged.map(&:to_sym))
+      options.exclude!(unchanged)
       super
     end
   end
