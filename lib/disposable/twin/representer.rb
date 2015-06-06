@@ -50,11 +50,6 @@ module Disposable
 
       # TODO: check how to simplify.
       class Options < ::Hash
-        def include!(names)
-          includes.push(*names) #if names.size > 0
-          self
-        end
-
         def exclude!(names)
           excludes.push(*names) #if names.size > 0
           self
@@ -62,10 +57,6 @@ module Disposable
 
         def excludes
           self[:exclude] ||= []
-        end
-
-        def includes
-          self[:include] ||= []
         end
       end
     end
