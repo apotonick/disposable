@@ -18,13 +18,13 @@ module Disposable
   class Twin
     extend Uber::InheritableAttr
 
-    inheritable_attr :twin_representer_class
-    self.twin_representer_class = Class.new(Decorator)
+    inheritable_attr :representer_class
+    self.representer_class = Class.new(Decorator)
 
 
     extend Representable::Feature # imports ::feature, which calls ::register_feature.
     def self.register_feature(mod)
-      twin_representer_class.representable_attrs[:features][mod] = true
+      representer_class.representable_attrs[:features][mod] = true
     end
 
 
@@ -33,8 +33,7 @@ module Disposable
       options[:private_name] = options.delete(:from) || name
       options[:pass_options] = true
 
-      # FIXME: use only one representer. and make object_representer the authorative one, we really need the hash one only once.
-      twin_representer_class.property(name, options, &block).tap do |definition|
+      representer_class.property(name, options, &block).tap do |definition|
         mod = Module.new do
           define_method(name)       { @fields[name.to_s] }
           # define_method(name)       { read_property(name) }
@@ -50,7 +49,6 @@ module Disposable
           # DISCUSS: could we use build_inline's api here to inject the name feature?
 
           definition.merge!(:twin => nested_twin)
-          # definition.delete!(:extend)
         end
       end
     end
@@ -61,7 +59,7 @@ module Disposable
 
     #
     def self.bla
-      @bla ||= twin_representer_class.representable_attrs[:definitions]
+      @bla ||= representer_class.representable_attrs[:definitions]
     end
 
     include Setup

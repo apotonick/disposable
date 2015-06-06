@@ -31,7 +31,7 @@ module Disposable
 
       module ClassMethods
         def twin(twin_class, &block)
-          twin_class.twin_representer_class.representable_attrs.each { |dfn| yield(dfn) } if block_given?
+          twin_class.representer_class.representable_attrs.each { |dfn| yield(dfn) } if block_given?
           self.twin_class = twin_class
         end
       end

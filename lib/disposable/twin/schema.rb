@@ -10,7 +10,7 @@ class Disposable::Twin::Schema
       if twin = dfn[:twin]
         twin = twin.evaluate(nil)
 
-        dfn_options = dfn.instance_variable_get(:@options).merge(extend: from(twin.twin_representer_class, options))
+        dfn_options = dfn.instance_variable_get(:@options).merge(extend: from(twin.representer_class, options))
 
         if dfn_options[:deserializer]
           dfn_options.merge!(dfn_options[:deserializer])
