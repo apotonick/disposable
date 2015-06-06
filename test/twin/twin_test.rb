@@ -42,6 +42,7 @@ class TwinTest < MiniTest::Spec
 
     # override property with public name in constructor.
     it do
+      # FIXME: move to SetupTest.
       # override twin's value...
       Twin::Song.new(song, :title => "Kenny").title.must_equal "Kenny"
 
@@ -61,7 +62,7 @@ class TwinTest < MiniTest::Spec
 
       # updates twin
       twin.id.must_equal 3
-      twin.name.must_equal "Lucky"
+      twin.title.must_equal "Lucky"
 
       # setter for nested property will twin value.
       twin.album.extend(Disposable::Comparable)

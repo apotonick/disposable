@@ -13,8 +13,11 @@ module Disposable
 
         self.class.bla.each do |dfn|
           next if dfn[:readable] == false
-          name = dfn.name
-          send(dfn.setter, model.send(name))
+
+          name  = dfn.name
+          value = options[name.to_sym] || model.send(name)
+
+          send(dfn.setter, value)
         end
 
         @fields.merge!(options) # FIXME: hash/string. # FIXME: call writer!!!!!!!!!!

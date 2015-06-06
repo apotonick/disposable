@@ -26,7 +26,7 @@ class TwinBuilderTest < MiniTest::Spec
     it { subject.respond_to?(:title).must_equal false }
     it { subject.model.id.must_equal 1 }
     it { subject.model.title.must_equal "Saturday Night" }
-    it { subject.model.is_released.must_equal true }
+    # it { subject.model.is_released.must_equal true }
   end
 
 

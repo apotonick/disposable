@@ -103,11 +103,6 @@ module Disposable
         @fields[name.to_s]
       end
 
-      def read_from_model(getter)
-        model.send(getter)
-      end
-
-      # TODO: make signature nicer.
       # assumption: collections are always initialized from Setup since we assume an empty [] for "nil"/uninitialized collections.
       def write_property(name, value, dfn)
         return if dfn[:twin] and value.nil? # TODO: test me (model.composer => nil)
@@ -138,11 +133,6 @@ module Disposable
       end
     end
     include ToS
-
-
-    def from_hash(options)
-      # self.class.write_representer.new(self).from_hash(options)
-    end
 
 
     class Twinner
