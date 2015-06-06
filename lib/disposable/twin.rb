@@ -22,6 +22,12 @@ module Disposable
     inheritable_attr :representer_class
     self.representer_class = Class.new(Decorator)
 
+    # Returns an each'able array of all properties defined in this twin.
+    # Allows to filter using
+    #   * collection: true
+    #   * twin:       true
+    #   * scalar:     true
+    #   * exclude:    ["title", "email"]
     def schema
       self.class.representer_class
     end
