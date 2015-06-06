@@ -32,7 +32,7 @@ private
   end
 
   def write_property(name, value, dfn)
-    old_value = send(name) # FIXME: what about the private_name stuff?
+    old_value = send(name)
 
     super.tap do
       _changed[name.to_s] = old_value != value
@@ -40,8 +40,7 @@ private
   end
 
   def _find_changed_twins!(changes) # FIXME: this will change soon. don't touch.
-    # TODO: screw representers for 1-level data-transformations and use something simpler, faster?
-    self.class.representer_class.representable_attrs.find_all do |dfn|
+    self.class.bla.find_all do |dfn|
       dfn[:twin]
     end.each do |dfn|
       next unless twin = send(dfn.getter)
