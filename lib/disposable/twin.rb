@@ -57,11 +57,6 @@ module Disposable
       property(name, options.merge(collection: true), &block)
     end
 
-    #
-    def self.bla
-      @bla ||= representer_class.representable_attrs[:definitions]
-    end
-
     include Setup
 
     module Accessors

@@ -1,6 +1,5 @@
 require "representable/decorator"
 require "representable/hash"
-require "representable/hash/allow_symbols"
 
 module Disposable
   class Twin
@@ -27,12 +26,21 @@ module Disposable
         Config.new(Definition)
       end
 
-      def self.each(only_nested=true, &block)
-        definitions = representable_attrs
-        definitions = representable_attrs.find_all { |attr| attr[:twin] } if only_nested
+      def self.each(options={})
+        return representable_attrs[:definitions].values unless block_given?
 
-        definitions.each(&block)
-        self
+        definitions = representable_attrs
+
+        definitions.each do |dfn|
+          next if options[:exclude]    and options[:exclude].include?(dfn.name.to_sym)
+          next if options[:scalar]     and dfn[:collection]
+          next if options[:collection] and ! dfn[:collection]
+          next if options[:twin]       and ! dfn[:twin]
+
+          yield dfn
+        end
+
+        definitions
       end
 
       def self.default_inline_class

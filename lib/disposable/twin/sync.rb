@@ -16,9 +16,7 @@ module Disposable::Twin::Sync
   def sync!(options) # semi-public.
     options_for_sync = sync_options(Disposable::Twin::Decorator::Options[options])
 
-    self.class.bla.each do |dfn|
-      next if options_for_sync[:exclude].include?(dfn.name.to_sym)
-
+    self.class.representer_class.each(options_for_sync) do |dfn|
       model.send(dfn.setter, send(dfn.getter)) and next unless dfn[:twin]
 
       nested_model = Disposable::Twin::Save::PropertyProcessor.new(dfn, self).() { |twin| twin.sync!({}) }
@@ -45,7 +43,7 @@ private
     module ClassMethods
       # Create a hash representer on-the-fly to serialize the form to a hash.
       def nested_hash_representer
-        @nested_hash_representer ||= Class.new(twin_representer_class) do
+        @nested_hash_representer ||= Class.new(representer_class) do
           include Representable::Hash
 
           representable_attrs.each do |dfn|
@@ -79,7 +77,7 @@ private
     def sync_options(options)
       options = super
 
-      protected_fields = self.class.bla.find_all { |d| d[:writeable] == false }.collect { |d| d.name.to_sym }
+      protected_fields = self.class.representer_class.each.find_all { |d| d[:writeable] == false }.collect { |d| d.name.to_sym }
       options.exclude!(protected_fields)
     end
   end
@@ -98,7 +96,7 @@ private
     def sync_options(options)
       # DISCUSS: we currently don't track if nested forms have changed (only their attributes). that's why i include them all here, which
       # is additional sync work/slightly wrong. solution: allow forms to form.changed? not sure how to do that with collections.
-      scalars   = self.class.bla.each { |dfn| !dfn[:twin] }.collect { |dfn| dfn.name }
+      scalars   = self.class.representer_class.each(scalar: true).collect { |dfn| dfn.name }
       unchanged = scalars - changed.keys
 
       # exclude unchanged scalars, nested forms and changed scalars still go in here!

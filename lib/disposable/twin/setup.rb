@@ -11,7 +11,7 @@ module Disposable
         @fields = {}
         @model  = model
 
-        self.class.bla.each do |dfn|
+        self.class.representer_class.each do |dfn|
           next if dfn[:readable] == false
 
           name  = dfn.name

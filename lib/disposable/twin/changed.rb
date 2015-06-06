@@ -40,9 +40,7 @@ private
   end
 
   def _find_changed_twins!(changes) # FIXME: this will change soon. don't touch.
-    self.class.bla.find_all do |dfn|
-      dfn[:twin]
-    end.each do |dfn|
+    self.class.representer_class.each(twin: true) do |dfn|
       next unless twin = send(dfn.getter)
       next unless twin.changed?
 

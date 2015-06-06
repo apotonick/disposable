@@ -56,8 +56,8 @@ module Disposable
       module Semantics
         def save
           super.tap do
-            self.class.bla.each do |dfn|
-              send(dfn.getter).save if dfn[:collection]
+            self.class.representer_class.each(collection: true) do |dfn|
+              send(dfn.getter).save
             end
           end
         end

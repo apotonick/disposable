@@ -10,8 +10,7 @@ module Disposable::Twin::Save
   def save!(options={})
     result = save_model
 
-    self.class.bla.each do |dfn|
-      next unless dfn[:twin]
+    self.class.representer_class.each(twin: true) do |dfn|
       next if dfn[:save] == false
 
       # call #save! on all nested twins.
@@ -24,6 +23,8 @@ module Disposable::Twin::Save
   def save_model
     model.save
   end
+
+
 
   class PropertyProcessor
     def initialize(definition, twin)
