@@ -30,7 +30,6 @@ module Disposable
 
     # TODO: move to Declarative, as in Representable and Reform.
     def self.property(name, options={}, &block)
-      deprecate_as!(options) # TODO: remove me in 0.1.0
       options[:private_name] = options.delete(:from) || name
       options[:pass_options] = true
 
@@ -119,11 +118,5 @@ module Disposable
     attr_reader :model # TODO: test
 
     include Option
-
-    def self.deprecate_as!(options) # TODO: remove me in 0.1.0
-      return unless as = options.delete(:as)
-      options[:from] = as
-      warn "[Disposable] The :as options got renamed to :from."
-    end
   end
 end
