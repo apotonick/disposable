@@ -1,8 +1,7 @@
 module Disposable
   class Twin
-  # Provides collection semantics like add, delete, and more for twin collections.
-  # Note: this API is highly prototypical and might change soon when i know what i want.
-  #       use at your own risk! i'm not sure whether models or twins are the "main" api elements for this.
+    # Provides collection semantics like add, delete, and more for twin collections.
+    # Tracks additions and deletions in #added and #deleted.
     class Collection < Array
       def self.for_models(twinner, models)
         new(twinner, models.collect { |model| twinner.(model) })
@@ -15,17 +14,21 @@ module Disposable
 
       # Note that this expects a model, untwinned.
       def <<(model)
-        super(@twinner.(model))
+        super(twin = @twinner.(model))
+        added << twin
+        # this will return the model, anyway.
       end
 
       # Note that this expects a model, untwinned.
       def insert(index, model)
         super(index, twin = @twinner.(model))
+        added << twin
         twin
       end
 
       # Remove an item from a collection. This will not destroy the model.
       def delete(twin)
+        deleted << twin
         super(twin)
       end
 
@@ -46,6 +49,16 @@ module Disposable
         end
       end
       include Changed
+
+      # DISCUSS: am i a public concept, hard-wired into Collection?
+      def added
+        @added ||= []
+      end
+
+      # DISCUSS: am i a public concept, hard-wired into Collection?
+      def deleted
+        @deleted ||= []
+      end
 
     private
       def to_destroy

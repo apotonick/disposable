@@ -20,6 +20,8 @@ Twins may contain validations, nevertheless, in Trailblazer, validations (or "Co
 
 ## Twin
 
+Twins are only # FIXME % slower than AR alone.
+
 Twins implement light-weight decorators objects with a unified interface. They map objects, hashes, and compositions of objects, along with optional hashes to inject additional options.
 
 Let me show you what I mean.

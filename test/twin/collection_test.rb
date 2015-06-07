@@ -17,19 +17,12 @@ class TwinCollectionTest < MiniTest::Spec
       property :id # DISCUSS: needed for #save.
       property :name
       collection :songs, :twin => lambda { |*| Song }
-
-      # model Model::Album
-
-      include Setup
     end
 
     class Song < Disposable::Twin
       property :id # DISCUSS: needed for #save.
       property :title
       property :album, :twin => Album
-
-      # include Setup
-      # TODO: test nested Setup!!!!
     end
   end
 
@@ -150,6 +143,40 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
       twin.songs.size.must_equal 0
       album.songs.size.must_equal 0
       song1.persisted?.must_equal false
+    end
+  end
+
+
+  describe "#added" do
+    let (:album) { Album.create(name: "The Rest Is Silence", songs: [song1]) }
+
+    it do
+      twin = Twin::Album.new(album)
+
+      twin.songs.added.must_equal []
+      twin.songs << song2
+      twin.songs.added.must_equal [twin.songs[1]]
+      twin.songs.insert(2, song3 = Song.new)
+      twin.songs.added.must_equal [twin.songs[1], twin.songs[2]]
+
+      # TODO: what to do if we override an item (insert)?
+    end
+  end
+
+  describe "#deleted" do
+    let (:album) { Album.create(name: "The Rest Is Silence", songs: [song1, song2, song3 = Song.new]) }
+
+    it do
+      twin = Twin::Album.new(album)
+
+      twin.songs.deleted.must_equal []
+
+      twin.songs.delete(deleted1 = twin.songs[-1])
+      twin.songs.delete(deleted2 = twin.songs[-1])
+
+      twin.songs.must_equal [twin.songs[0]]
+
+      twin.songs.deleted.must_equal [deleted1, deleted2]
     end
   end
 end
