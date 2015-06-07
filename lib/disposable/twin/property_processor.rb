@@ -18,7 +18,16 @@ class Disposable::Twin::PropertyProcessor
 
 private
   def collection!
-    arr = @twin.send(@definition.getter).collect { |nested_twin| yield(nested_twin) }
+    # FIXME: the nil collection is not tested, yet!
+
+    arr = (@twin.send(@definition.getter)||
+
+
+
+
+
+
+      []).collect { |nested_twin| yield(nested_twin) }
   end
   def property!
     twin = @twin.send(@definition.getter) or return nil

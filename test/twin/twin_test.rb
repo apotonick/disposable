@@ -40,9 +40,8 @@ class TwinTest < MiniTest::Spec
       twin.id.must_equal 1
     end
 
-    # override property with public name in constructor.
+    # allows passing options.
     it do
-      # FIXME: move to SetupTest.
       # override twin's value...
       Twin::Song.new(song, :title => "Kenny").title.must_equal "Kenny"
 

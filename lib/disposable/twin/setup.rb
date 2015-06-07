@@ -23,6 +23,7 @@ module Disposable
         @fields.merge!(options) # FIXME: hash/string. # FIXME: call writer!!!!!!!!!!
         # from_hash(options) # assigns known properties from options.
       end
+
     end # Setup
   end
 end

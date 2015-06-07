@@ -4,22 +4,28 @@ class Disposable::Twin::Schema
     representer = Class.new(options[:superclass])
     representer.send :include, *options[:include]
 
-    source_class.representable_attrs.each do |dfn|
-      representer.property(dfn.name, dfn.instance_variable_get(:@options)) unless dfn[:extend]
+    source_representer = options[:representer_from].call(source_class)
 
-      if twin = dfn[:twin]
-        twin = twin.evaluate(nil)
+    source_representer.representable_attrs.each do |dfn|
+      local_options = dfn[options[:options_from]] || {} # e.g. deserializer: {..}.
+      new_options   = dfn.instance_variable_get(:@options).merge(local_options)
 
-        dfn_options = dfn.instance_variable_get(:@options).merge(extend: from(twin.representer_class, options))
-
-        if dfn_options[:deserializer]
-          dfn_options.merge!(dfn_options[:deserializer])
-        end
-
-        representer.property(dfn.name, dfn_options)
-      end
+      from_scalar!(options, dfn, new_options, representer) && next unless dfn[:extend]
+      from_inline!(options, dfn, new_options, representer)
     end
 
     representer
+  end
+
+private
+  def self.from_scalar!(options, dfn, new_options, representer)
+    representer.property(dfn.name, new_options)
+  end
+
+  def self.from_inline!(options, dfn, new_options, representer)
+    nested      = dfn[:extend].evaluate(nil) # nested now can be a Decorator, a representer module, a Form, a Twin.
+    dfn_options = new_options.merge(extend: from(nested, options))
+
+    representer.property(dfn.name, dfn_options)
   end
 end

@@ -55,7 +55,6 @@ module Disposable
         include mod
 
         # property -> build_inline(representable_attrs.features)
-        # TODO: temporary hack to make definition not look typed. maybe we should make :twin copy of :extend and then get everything accepting :extend?
         if definition[:extend]
           nested_twin = definition[:extend].evaluate(nil)
           process_inline!(nested_twin, definition)
@@ -71,6 +70,7 @@ module Disposable
     end
 
     include Setup
+
 
     module Accessors
     private
