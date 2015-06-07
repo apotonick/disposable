@@ -11,6 +11,7 @@ require "disposable/twin/option"
 require "disposable/twin/builder"
 require "disposable/twin/changed"
 require "disposable/twin/property_processor"
+require "disposable/twin/persisted"
 
 # Twin.new(model/composition hash/hash, options)
 #   assign hash to @fields

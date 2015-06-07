@@ -50,6 +50,7 @@ ActiveRecord::Base.establish_connection(
 #   end
 #   create_table :albums do |table|
 #     table.column :name, :string
+# table.column :artist_id, :integer
 #     table.timestamps
 #   end
 # end
