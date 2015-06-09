@@ -43,15 +43,16 @@ class CallbacksTest < MiniTest::Spec
     def on_update
       twins = [@twin]
 
-      twins.each do |t|
-        next if t.changed?(:persisted?) # that means it was created.
-        next unless t.changed?
-        yield
+      twins.each do |twin|
+        next if twin.changed?(:persisted?) # that means it was created.
+        next unless twin.changed?
+        yield twin
       end
     end
 
     def on_create
       twins = [@twin]
+      twins = @twin if @twin.is_a?(Array) # FIXME: FIX THIS, OF COURSE.
 
       twins.each do |twin|
         next unless twin.changed?(:persisted?) # this has to be flipped.
@@ -65,6 +66,7 @@ class CallbacksTest < MiniTest::Spec
   describe "#on_create" do
     let (:album) { Album.new }
 
+    # single twin.
     it do
       invokes = []
 
@@ -76,6 +78,68 @@ class CallbacksTest < MiniTest::Spec
       Callback.new(twin).on_create { |t| invokes << t }
       invokes.must_equal [twin]
     end
+
+    # for collections.
+    it do
+      album.songs << song1 = Song.new
+      album.songs << Song.create(title: "Run For Cover")
+      album.songs << song2 = Song.new
+      invokes = []
+
+      Callback.new(twin.songs).on_create { |t| invokes << t }
+      invokes.must_equal []
+
+      twin.save
+
+      Callback.new(twin.songs).on_create { |t| invokes << t }
+      invokes.must_equal [twin.songs[0], twin.songs[2]]
+    end
+  end
+
+  describe "#on_update" do
+    let (:album) { Album.new }
+
+    # single twin.
+    it do
+      invokes = []
+
+      Callback.new(twin).on_update { |t| invokes << t }
+      invokes.must_equal []
+
+      twin.save
+
+      Callback.new(twin).on_update { |t| invokes << t }
+      invokes.must_equal []
+
+
+      # now with the persisted album.
+      twin = AlbumTwin.new(album) # Album is persisted now.
+
+      Callback.new(twin).on_update { |t| invokes << t }
+      invokes.must_equal []
+
+      twin.save
+
+      # nothing has changed, yet.
+      Callback.new(twin).on_update { |t| invokes << t }
+      # invokes.must_equal []
+    end
+
+    # for collections.
+    # it do
+    #   album.songs << song1 = Song.new
+    #   album.songs << Song.create(title: "Run For Cover")
+    #   album.songs << song2 = Song.new
+    #   invokes = []
+
+    #   Callback.new(twin.songs).on_create { |t| invokes << t }
+    #   invokes.must_equal []
+
+    #   twin.save
+
+    #   Callback.new(twin.songs).on_create { |t| invokes << t }
+    #   invokes.must_equal [twin.songs[0], twin.songs[2]]
+    # end
   end
 
   it do
