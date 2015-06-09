@@ -18,7 +18,10 @@ class Disposable::Twin
       options_for_sync = sync_options(Decorator::Options[options])
 
       schema.each(options_for_sync) do |dfn|
-        model.send(dfn.setter, send(dfn.getter)) and next unless dfn[:twin]
+        unless dfn[:twin]
+          model.send(dfn.setter, send(dfn.getter)) # always sync the property
+          next
+        end
 
         nested_model = PropertyProcessor.new(dfn, self).() { |twin| twin.sync!({}) }
 
