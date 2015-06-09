@@ -99,4 +99,10 @@ class ChangedWithSetupTest < MiniTest::Spec
 
     twin.artist.changed?.must_equal false
   end
+
+  # setting identical value doesn't change.
+  it do
+    twin.name = "The Rest Is Silence"
+    twin.changed?.must_equal false
+  end
 end

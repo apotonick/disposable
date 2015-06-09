@@ -1,7 +1,7 @@
 module Disposable::Twin::Changed
   class Changes < Hash
     def changed?(name=nil)
-      return true if name.nil? and size > 0
+      return true if name.nil? and values.find { |val| val == true } # TODO: this could be speed-improved, of course.
 
       !! self[name.to_s]
     end
