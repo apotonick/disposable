@@ -22,6 +22,7 @@ class CallbacksTest < MiniTest::Spec
     end
   end
 
+  # - Callbacks don't have before and after. This is up to the caller.
   class Callback
     # collection :songs do
     #   after_add    :song_added! # , context: :operation
@@ -33,10 +34,47 @@ class CallbacksTest < MiniTest::Spec
       @twin = twin
     end
 
-    def after_add # how to call it once, for "all"?
+    def on_add # how to call it once, for "all"?
       @twin.added.each do |item|
         yield if item.changed?(:persisted?) # after_create
       end
+    end
+
+    def on_update
+      twins = [@twin]
+
+      twins.each do |t|
+        next if t.changed?(:persisted?) # that means it was created.
+        next unless t.changed?
+        yield
+      end
+    end
+
+    def on_create
+      twins = [@twin]
+
+      twins.each do |twin|
+        next unless twin.changed?(:persisted?) # this has to be flipped.
+        yield twin
+      end
+    end
+  end
+
+  let (:twin) { AlbumTwin.new(album) }
+
+  describe "#on_create" do
+    let (:album) { Album.new }
+
+    it do
+      invokes = []
+
+      Callback.new(twin).on_create { |t| invokes << t }
+      invokes.must_equal []
+
+      twin.save
+
+      Callback.new(twin).on_create { |t| invokes << t }
+      invokes.must_equal [twin]
     end
   end
 
@@ -56,7 +94,10 @@ class CallbacksTest < MiniTest::Spec
 
     # Callback.new(twin).(self) # operation: self, other: context
 
-    Callback.new(twin.songs).after_add { |song| flush_cache!(song) }
+    Callback.new(twin).on_update { |song| updated!(song) }
+    Callback.new(twin).on_create { |song| created!(song) }
+
+    Callback.new(twin.songs).on_add { |song| flush_cache!(song) }
 
 
 
@@ -67,6 +108,14 @@ class CallbacksTest < MiniTest::Spec
   end
       def flush_cache!(twin)
       puts "flush_cache! for #{twin}"
+    end
+
+    def updated!(twin)
+      puts "updated! #{twin}"
+    end
+
+    def created!(twin)
+      puts "created! #{twin}"
     end
 
 end

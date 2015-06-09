@@ -102,6 +102,23 @@ they indirect data, the twin's attributes get assigned without writing to the pe
 ## With Contracts
 
 
+## Callbacks
+
+Twins track state changes. This allows to execute callbacks on certain conditions.
+
+```ruby
+Callbacks.new(twin).on_create { |twin| }
+Callbacks.new(twin.songs).on_added { |twin| }
+```
+
+Callbacks in Disposable/Trailblazer are the opposite of what you've learned from Rails: Callbacks do not get triggered magically somewhere, _you_ have to invoke them explicitly.
+
+The passive mechanism will then look for twins matching that condition and invoke the attached callbacks.
+
+By inversing the control, we don't need `before_` or `after_`. This is in your hands now and depends on where you invoke your callbacks.
+
+Callbacks are discussed in [chapter 8 of the Trailblazer](http://leanpub.com/trailblazer) book.
+
 
 ## Overriding Accessors
 
