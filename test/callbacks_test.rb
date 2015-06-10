@@ -284,45 +284,45 @@ class CallbacksTest < MiniTest::Spec
     end
   end
 
+  describe "#on_delete" do
+    let (:album) { Album.new }
 
-  # it do
-  #   artist  = Artist.new
-  #   ex_song = Song.create(title: "Run For Cover")
-  #   song    = Song.new
-  #   album   = Album.new(artist: artist, songs: [ex_song, song])
+    # empty collection.
+    it do
+      invokes = []
+      Callback.new(twin.songs).on_delete { |t| invokes << t }
+      invokes.must_equal []
+    end
 
+    # collection present but nothing deleted.
+    it do
+      ex_song = Song.create(title: "Run For Cover")
+      song    = Song.new
+      album.songs = [ex_song, song]
 
-  #   twin = AlbumTwin.new(Album.new)
+      Callback.new(twin.songs).on_delete { |t| invokes << t }
+      invokes.must_equal []
+    end
 
-  #   twin.songs << ex_song
-  #   twin.songs << song
+    # items deleted.
+    it do
+      ex_song = Song.create(title: "Run For Cover")
+      song    = Song.new
+      album.songs = [ex_song, song]
 
-  #   twin.save
+      twin.songs.delete(deleted = twin.songs[0])
 
-  #   # Callback.new(twin).(self) # operation: self, other: context
+      Callback.new(twin.songs).on_delete { |t| invokes << t }
+      invokes.must_equal [deleted]
 
-  #   Callback.new(twin).on_update { |song| updated!(song) }
-  #   Callback.new(twin).on_create { |song| created!(song) }
+      twin.save
 
-  #   Callback.new(twin.songs).on_add { |song| flush_cache!(song) }
+      # still shows the deleted after save.
+      invokes = []
+      Callback.new(twin.songs).on_delete { |t| invokes << t }
+      invokes.must_equal [deleted]
+    end
+  end
 
-
-
-  #   twin.songs.added.each do |song|
-  #     puts song if song.changed?(:persisted?) # after_create
-  #     # puts song.inspect if !song.persisted?
-  #   end
-  # end
-  #     def flush_cache!(twin)
-  #     puts "flush_cache! for #{twin}"
-  #   end
-
-  #   def updated!(twin)
-  #     puts "updated! #{twin}"
-  #   end
-
-  #   def created!(twin)
-  #     puts "created! #{twin}"
-  #   end
 
 end

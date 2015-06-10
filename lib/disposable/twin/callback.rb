@@ -5,9 +5,17 @@ module Disposable::Twin::Callback
     end
 
     def on_add(state=nil) # how to call it once, for "all"?
+      # @twins can only be Collection instance.
       @twins.added.each do |item|
         yield item if state.nil?
         yield item if item.created? && state == :created # :created # DISCUSS: should we really keep that?
+      end
+    end
+
+    def on_delete
+      # @twins can only be Collection instance.
+      @twins.deleted.each do |item|
+        yield item
       end
     end
 
