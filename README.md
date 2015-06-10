@@ -109,6 +109,7 @@ Callbacks use the fact that twins track state changes. This allows to execute ca
 ```ruby
 Callbacks.new(twin).on_create { |twin| .. }
 Callbacks.new(twin.songs).on_added { |twin| .. }
+Callbacks.new(twin.songs).on_added { |twin| .. }
 ```
 
 Callbacks in Disposable/Trailblazer are the opposite of what you've learned from Rails: _Inverse Callbacks_ do not get triggered magically somewhere, _you_ have to invoke them explicitly.
@@ -120,6 +121,8 @@ By inversing the control, we don't need `before_` or `after_`. This is in your h
 Callbacks are discussed in [chapter 8 of the Trailblazer](http://leanpub.com/trailblazer) book.
 
 * `on_update`: Invoked when the underlying model was persisted, yet, at twin initialization and attributes have changed since then.
+* `on_add`: For every twin that has been added to a collection.
+* `on_add(:create)`: For every twin that has been added to a collection and got persisted. This will only pick up collection items after `sync` or `save`.
 
 ## Overriding Accessors
 
