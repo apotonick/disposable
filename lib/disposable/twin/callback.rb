@@ -1,21 +1,18 @@
 module Disposable::Twin::Callback
   class Runner
-    def initialize(twin)
-      @twin = twin
+    def initialize(twins)
+      @twins = twins.is_a?(Array) ? twins : [twins] # TODO: find that out with Collection.
     end
 
     def on_add(state=nil) # how to call it once, for "all"?
-      @twin.added.each do |item|
+      @twins.added.each do |item|
         yield item if state.nil?
         yield item if item.created? && state == :created # :created # DISCUSS: should we really keep that?
       end
     end
 
     def on_update
-      twins = [@twin]
-      twins = @twin if @twin.is_a?(Array) # FIXME: FIX THIS, OF COURSE.
-
-      twins.each do |twin|
+      @twins.each do |twin|
         next if twin.created?
         next unless twin.persisted? # only persisted can be updated.
         next unless twin.changed?
@@ -24,10 +21,7 @@ module Disposable::Twin::Callback
     end
 
     def on_create
-      twins = [@twin]
-      twins = @twin if @twin.is_a?(Array) # FIXME: FIX THIS, OF COURSE.
-
-      twins.each do |twin|
+      @twins.each do |twin|
         next unless twin.created?
         yield twin
       end
