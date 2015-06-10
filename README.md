@@ -111,7 +111,7 @@ Callbacks.new(twin).on_create { |twin| .. }
 Callbacks.new(twin.songs).on_added { |twin| .. }
 ```
 
-Callbacks in Disposable/Trailblazer are the opposite of what you've learned from Rails: Callbacks do not get triggered magically somewhere, _you_ have to invoke them explicitly.
+Callbacks in Disposable/Trailblazer are the opposite of what you've learned from Rails: _Inverse Callbacks_ do not get triggered magically somewhere, _you_ have to invoke them explicitly.
 
 The passive mechanism will then look for twins matching that condition and invoke the attached callbacks.
 

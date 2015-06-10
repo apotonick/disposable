@@ -4,9 +4,10 @@ module Disposable::Twin::Callback
       @twin = twin
     end
 
-    def on_add # how to call it once, for "all"?
+    def on_add(state=nil) # how to call it once, for "all"?
       @twin.added.each do |item|
-        yield item #if item.changed?(:persisted?) # after_create
+        yield item if state.nil?
+        yield item if item.changed?(:persisted?) && state == :created # :created # DISCUSS: should we really keep that?
       end
     end
 

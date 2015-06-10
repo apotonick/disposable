@@ -243,6 +243,47 @@ class CallbacksTest < MiniTest::Spec
     end
   end
 
+  describe "#on_add(:created)" do
+    let (:album) { Album.new }
+
+    # empty collection.
+    it do
+      invokes = []
+      Callback.new(twin.songs).on_add(:created) { |t| invokes << t }
+      invokes.must_equal []
+    end
+
+    # collection present on initialize are not added.
+    it do
+      ex_song = Song.create(title: "Run For Cover")
+      song    = Song.new
+      album.songs = [ex_song, song]
+
+      Callback.new(twin.songs).on_add(:created) { |t| invokes << t }
+      invokes.must_equal []
+    end
+
+    # items added after initialization are added.
+    it do
+      ex_song = Song.create(title: "Run For Cover")
+      song    = Song.new
+      album.songs = [ex_song]
+
+      twin.songs << song
+      twin.songs << ex_song # already created.
+
+      Callback.new(twin.songs).on_add(:created) { |t| invokes << t }
+      invokes.must_equal []
+
+      twin.save
+
+      # still shows the added after save.
+      invokes = []
+      Callback.new(twin.songs).on_add(:created) { |t| invokes << t }
+      invokes.must_equal [twin.songs[1]] # only the created is invoked.
+    end
+  end
+
 
   # it do
   #   artist  = Artist.new
