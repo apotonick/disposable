@@ -104,11 +104,11 @@ they indirect data, the twin's attributes get assigned without writing to the pe
 
 ## Callbacks
 
-Twins track state changes. This allows to execute callbacks on certain conditions.
+Callbacks use the fact that twins track state changes. This allows to execute callbacks on certain conditions.
 
 ```ruby
-Callbacks.new(twin).on_create { |twin| }
-Callbacks.new(twin.songs).on_added { |twin| }
+Callbacks.new(twin).on_create { |twin| .. }
+Callbacks.new(twin.songs).on_added { |twin| .. }
 ```
 
 Callbacks in Disposable/Trailblazer are the opposite of what you've learned from Rails: Callbacks do not get triggered magically somewhere, _you_ have to invoke them explicitly.
@@ -119,6 +119,7 @@ By inversing the control, we don't need `before_` or `after_`. This is in your h
 
 Callbacks are discussed in [chapter 8 of the Trailblazer](http://leanpub.com/trailblazer) book.
 
+* `on_update`: Invoked when the underlying model was persisted, yet, at twin initialization and attributes have changed since then.
 
 ## Overriding Accessors
 
