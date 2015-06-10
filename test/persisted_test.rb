@@ -60,4 +60,42 @@ class PersistedTest < MiniTest::Spec
     twin.songs[1].persisted?.must_equal true
     twin.songs[1].changed?(:persisted?).must_equal true
   end
+
+
+  describe "#created?" do
+    it do
+      twin = AlbumTwin.new(Album.new)
+
+      twin.created?.must_equal false
+      twin.save
+      twin.created?.must_equal true
+    end
+
+    it do
+      twin = AlbumTwin.new(Album.create)
+
+      twin.created?.must_equal false
+      twin.save
+      twin.created?.must_equal false
+    end
+  end
+
+
+  # describe "#updated?" do
+  #   it do
+  #     twin = AlbumTwin.new(Album.new)
+
+  #     twin.updated?.must_equal false
+  #     twin.save
+  #     twin.updated?.must_equal false
+  #   end
+
+  #   it do
+  #     twin = AlbumTwin.new(Album.create)
+
+  #     twin.updated?.must_equal false
+  #     twin.save
+  #     twin.updated?.must_equal true
+  #   end
+  # end
 end
