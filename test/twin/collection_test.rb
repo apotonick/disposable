@@ -127,6 +127,12 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
       album.songs.size.must_equal 0
       song1.persisted?.must_equal true
     end
+
+    # non-existant delete.
+    it do
+      twin.songs.delete("non-existant") # won't delete anything.
+      twin.songs.size.must_equal 1
+    end
   end
 
   describe "#destroy" do
@@ -177,6 +183,12 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
       twin.songs.must_equal [twin.songs[0]]
 
       twin.songs.deleted.must_equal [deleted1, deleted2]
+    end
+
+    # non-existant delete.
+    it do
+      twin.songs.delete("non-existant") # won't delete anything.
+      twin.songs.deleted.must_equal []
     end
   end
 end

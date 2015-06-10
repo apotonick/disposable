@@ -28,8 +28,9 @@ module Disposable
 
       # Remove an item from a collection. This will not destroy the model.
       def delete(twin)
-        deleted << twin
-        super(twin)
+        super(twin).tap do |res|
+          deleted << twin if res
+        end
       end
 
       # Deletes twin from collection and destroys it in #save.
