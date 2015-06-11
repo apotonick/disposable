@@ -101,6 +101,34 @@ they indirect data, the twin's attributes get assigned without writing to the pe
 
 ## With Contracts
 
+## Collections
+
+Define collections using `::collection`.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+  collection :songs do
+
+  end
+```
+
+### API
+
+The API is identical to `Array` with the following additions.
+
+* `#<<(model)` adds item, wraps it in twin and tracks it via `#added`.
+* `#insert(i, model)`, see `#<<`.
+* `#delete(twin)`, removes twin from collection and tracks via `#deleted`.
+* `#destroy(twin)`, removes twin from collection and tracks via `#deleted` and `#to_destroy` for destruction in `#save`.
+
+### Semantics
+
+Include `Twin::Collection::Semantics`.
+
+Semantics are extensions to the pure Ruby array behavior and designed to deal with persistence layers like ActiveRecord or ROM.
+
+* `#save` will call `destroy` on all models marked for destruction in `to_destroy`. Tracks destruction via `#destroyed`.
+
 
 ## Callbacks
 
@@ -123,6 +151,10 @@ Callbacks are discussed in [chapter 8 of the Trailblazer](http://leanpub.com/tra
 * `on_update`: Invoked when the underlying model was persisted, yet, at twin initialization and attributes have changed since then.
 * `on_add`: For every twin that has been added to a collection.
 * `on_add(:create)`: For every twin that has been added to a collection and got persisted. This will only pick up collection items after `sync` or `save`.
+
+* `on_delete`: For every item that has been deleted from a collection.
+* `on_destroy`: For every item that has been removed from a collection and physically destroyed.
+
 
 ## Overriding Accessors
 
