@@ -324,5 +324,58 @@ class CallbacksTest < MiniTest::Spec
     end
   end
 
+  describe "#on_destroy" do
+    let (:album) { Album.new }
+
+    # empty collection.
+    it do
+      invokes = []
+      Callback.new(twin.songs).on_destroy { |t| invokes << t }
+      invokes.must_equal []
+    end
+
+    # collection present but nothing deleted.
+    it do
+      ex_song = Song.create(title: "Run For Cover")
+      song    = Song.new
+      album.songs = [ex_song, song]
+
+      Callback.new(twin.songs).on_destroy { |t| invokes << t }
+      invokes.must_equal []
+    end
+
+    # items deleted, doesn't trigger on_destroy.
+    it do
+      ex_song = Song.create(title: "Run For Cover")
+      song    = Song.new
+      album.songs = [ex_song, song]
+
+      twin.songs.delete(deleted = twin.songs[0])
+
+      Callback.new(twin.songs).on_destroy { |t| invokes << t }
+      invokes.must_equal []
+    end
+
+    # items destroyed.
+    it do
+      ex_song = Song.create(title: "Run For Cover")
+      song    = Song.new
+      album.songs = [ex_song, song]
+
+      twin.songs.destroy(deleted = twin.songs[0])
+
+      Callback.new(twin.songs).on_destroy { |t| invokes << t }
+      invokes.must_equal []
+
+      twin.extend(Disposable::Twin::Collection::Semantics) # now #save will destroy.
+      twin.save
+
+      # still shows the deleted after save.
+      invokes = []
+      Callback.new(twin.songs).on_destroy { |t| invokes << t }
+      invokes.must_equal [deleted]
+    end
+  end
+
 
 end

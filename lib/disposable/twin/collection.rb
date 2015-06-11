@@ -39,8 +39,8 @@ module Disposable
         to_destroy << twin
       end
 
-      def save
-        to_destroy.each { |twin| twin.send(:model).destroy }
+      def save # only gets called when Collection::Semantics mixed in.
+        destroy!
       end
 
       module Changed
@@ -61,16 +61,28 @@ module Disposable
         @deleted ||= []
       end
 
+      # DISCUSS: am i a public concept, hard-wired into Collection?
+      def destroyed
+        @destroyed ||= []
+      end
+
     private
       def to_destroy
         @to_destroy ||= []
+      end
+
+      def destroy!
+        to_destroy.each do |twin|
+          twin.send(:model).destroy
+          destroyed << twin
+        end
       end
 
 
       module Semantics
         def save
           super.tap do
-            schema.each(collection: true) do |dfn|
+            schema.each(collection: true) do |dfn| # save on every collection.
               send(dfn.getter).save
             end
           end

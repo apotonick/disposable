@@ -19,6 +19,12 @@ module Disposable::Twin::Callback
       end
     end
 
+    def on_destroy
+      @twins.destroyed.each do |item|
+        yield item
+      end
+    end
+
     def on_update
       @twins.each do |twin|
         next if twin.created?
