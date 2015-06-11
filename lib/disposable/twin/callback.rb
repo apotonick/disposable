@@ -1,5 +1,5 @@
 module Disposable::Twin::Callback
-  class Runner
+  class Dispatch
     def initialize(twins)
       @twins = twins.is_a?(Array) ? twins : [twins] # TODO: find that out with Collection.
     end

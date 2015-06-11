@@ -30,7 +30,7 @@ class CallbacksTest < MiniTest::Spec
   end
 
   # - Callbacks don't have before and after. This is up to the caller.
-  Callback = Disposable::Twin::Callback::Runner
+  Callback = Disposable::Twin::Callback::Dispatch
     # collection :songs do
     #   after_add    :song_added! # , context: :operation
     #   after_create :notify_album!
