@@ -1,3 +1,7 @@
+# Callback is designed to work with twins under the hood since twins track events
+# like "adding" or "deleted". However, it could run with other model layers, too.
+# For example, when you manage to make ActiveRecord track those events, you won't need a
+# twin layer underneath.
 module Disposable::Twin::Callback
   class Dispatch
     def initialize(twins)
