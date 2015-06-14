@@ -9,8 +9,10 @@ module Disposable
 
       def initialize(twinner, items)
         super(items)
-        @twinner = twinner # DISCUSS: twin items here?
+        @twinner  = twinner # DISCUSS: twin items here?
+        @original = items
       end
+      attr_reader :original # TODO: test me and rethink me.
 
       # Note that this expects a model, untwinned.
       def <<(model)
