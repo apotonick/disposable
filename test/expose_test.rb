@@ -8,10 +8,10 @@ class ExposeTest < MiniTest::Spec
 
   module Twin
     class Album < Disposable::Twin
-      property :id,      on: :album
-      property :name,    on: :album
-      property :band_id, on: :band
-      property :title,   on: :band
+      property :id,                 on: :album
+      property :name,               on: :album
+      property :band_id, from: :id, on: :band
+      property :title,              on: :band
     end
 
     class AlbumExpose < Disposable::Expose
