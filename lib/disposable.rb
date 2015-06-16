@@ -1,7 +1,8 @@
 require "disposable/version"
 
 module Disposable
-  autoload :Composition,  'disposable/composition'
+  autoload :Composition,  "disposable/composition"
+  autoload :Expose,       "disposable/expose"
 end
 
 # if defined?(ActiveRecord)
