@@ -17,6 +17,7 @@ module Disposable
         representer.representable_attrs.each do |definition|
           process_definition!(definition)
         end
+        self
       end
 
     private

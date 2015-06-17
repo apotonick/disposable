@@ -1,26 +1,19 @@
 module Disposable
   class Twin
-    class Composition
-      include Disposable::Composition
-
-      extend Uber::InheritableAttr
-      inheritable_attr :twin_classes
-      self.twin_classes = {}
-
-      # this creates one Twin per composed.
-      def self.property(name, options, &block)
-        twin_classes[options[:on]] ||= Class.new(Twin)
-        twin_classes[options[:on]].property(name, options, &block)
-
-        map options[:on] => [[name]] # why is Composition::map so awkward?
+    module Composition
+      module ClassMethods
+        def composition
+          @composition ||= Class.new(Disposable::Composition).from(representer_class)
+        end
       end
-      # TODO: test and implement ::collection
 
-      def initialize(composed)
-        twins = {}
-        composed.each { |name, model| twins[name] = self.class.twin_classes[name].new(model) }
+      def self.included(base)
+        base.extend(ClassMethods)
+      end
 
-        super(twins)
+
+      def initialize(*args)
+        super self.class.composition.new(*args)
       end
     end
   end
