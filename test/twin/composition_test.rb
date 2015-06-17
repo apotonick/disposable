@@ -1,16 +1,18 @@
 require 'test_helper'
 
+# Disposable::Twin::Composition.
 class TwinCompositionTest < MiniTest::Spec
   class Request < Disposable::Twin
     include Sync
     include Save
     include Composition
 
-    property :song_title, :on => :song, :from => :title
-    property :song_id,    :on => :song, :from => :id
+    property :song_title, on: :song, from: :title
+    property :song_id,    on: :song, from: :id
 
-    property :name,       :on => :requester
-    property :id,         :on => :requester
+    property :name,       on: :requester
+    property :id,         on: :requester
+    property :captcha,    readable: false, writeable: false, on: :requester # TODO: allow both, virtual with and without :on.
   end
 
   module Model
@@ -51,5 +53,24 @@ class TwinCompositionTest < MiniTest::Spec
 
     song.saved?.must_equal true
     requester.saved?.must_equal true
+  end
+
+  # save with block.
+  it do
+    request.song_title = "Tease"
+    request.name = "Wooten"
+    request.captcha = "Awesome!"
+
+    # does not write to model.
+    song.title.must_equal "Extraction"
+    requester.name.must_equal "Greg Howe"
+
+
+    nested_hash = nil
+    request.save do |hash|
+      nested_hash = hash
+    end
+
+    nested_hash.must_equal(:song=>{"title"=>"Tease", "id"=>2}, :requester=>{"name"=>"Wooten", "id"=>1, "captcha"=>"Awesome!"})
   end
 end

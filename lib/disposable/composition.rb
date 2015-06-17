@@ -24,7 +24,7 @@ module Disposable
         instance_variable_set(:"@#{name}", model)
       end
 
-      @_models = models.values
+      @_models = models
     end
 
     # Allows accessing the contained models.
@@ -34,10 +34,16 @@ module Disposable
 
     module Save
       def save
-        @_models.each(&:save) # FIXME: block?
+        @_models.values.each(&:save) # FIXME: block?
       end
     end
     include Save
+
+
+    def each(&block)
+      # TODO: test me.
+      @_models.each(&block)
+    end
 
   private
     def self.accessors!(public_name, private_name, definition)
@@ -45,16 +51,5 @@ module Disposable
       define_method("#{public_name}")  { self[model].send("#{private_name}") }
       define_method("#{public_name}=") { |*args| self[model].send("#{private_name}=", *args) }
     end
-
-
-
-
-  #   # Allows multiplexing method calls to all composed models.
-  #   def each(&block)
-  #     _models.each(&block)
-  #   end
-
-  # private
-  #   attr_reader :_models
   end
 end

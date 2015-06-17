@@ -52,11 +52,11 @@ class Disposable::Twin
 
             representable_attrs.each do |dfn|
               dfn.merge!(readable: true) # the nested hash contains all fields.
+              dfn.merge!(as: dfn[:private_name]) # nested hash keys by model property names.
 
               dfn.merge!(
                 prepare:       lambda { |model, *| model }, # TODO: why do we need that here?
                 serialize:     lambda { |form, args| form.to_nested_hash },
-                # representable: true # TODO: why do we need that here?
               ) if dfn[:twin]
 
               self

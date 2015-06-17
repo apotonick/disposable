@@ -2,6 +2,7 @@ require "test_helper"
 require "disposable/expose"
 require "disposable/composition"
 
+# Disposable::Expose.
 class ExposeTest < MiniTest::Spec
   module Model
     Album = Struct.new(:id, :name)
@@ -22,8 +23,10 @@ class ExposeTest < MiniTest::Spec
   subject { AlbumExpose.new(album) }
 
   describe "readers" do
-    it { subject.id.must_equal 1 }
-    it { subject.title.must_equal "Dick Sandwich" }
+    it  do
+      subject.id.must_equal 1
+      subject.title.must_equal "Dick Sandwich"
+    end
   end
 
 
@@ -41,6 +44,7 @@ class ExposeTest < MiniTest::Spec
 end
 
 
+# Disposable::Composition.
 class ExposeCompositionTest < MiniTest::Spec
   module Model
     Band  = Struct.new(:id)
