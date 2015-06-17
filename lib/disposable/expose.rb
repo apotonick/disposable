@@ -1,4 +1,16 @@
 module Disposable
+  # Expose allows renaming properties in order to expose a different API.
+  # It can be configured from any Representable schema.
+  #
+  #   class AlbumTwin < Disposable::Twin
+  #     property :name, from: :title
+  #   end
+  #
+  #   class AlbumExpose < Disposable::Expose
+  #     from AlbumTwin
+  #   end
+  #
+  #   AlbumExpose.new(OpenStruct.new(title: "AFI")).name #=> "AFI"
   class Expose
     class << self
       def from(representer)
