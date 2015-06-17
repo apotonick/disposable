@@ -31,24 +31,13 @@ class SaveTest < MiniTest::Spec
   end
 
 
-  module Saveable
-    def save
-      @saved = true
-    end
-
-    def saved?
-      @saved
-    end
-  end
+  let (:song) { Model::Song.new().extend(Disposable::Saveable) }
+  let (:composer) { Model::Artist.new(nil).extend(Disposable::Saveable) }
+  let (:song_with_composer) { Model::Song.new(nil, composer).extend(Disposable::Saveable) }
+  let (:artist) { Model::Artist.new(nil).extend(Disposable::Saveable) }
 
 
-  let (:song) { Model::Song.new().extend(Saveable) }
-  let (:composer) { Model::Artist.new(nil).extend(Saveable) }
-  let (:song_with_composer) { Model::Song.new(nil, composer).extend(Saveable) }
-  let (:artist) { Model::Artist.new(nil).extend(Saveable) }
-
-
-  let (:album) { Model::Album.new(nil, [song, song_with_composer], artist).extend(Saveable) }
+  let (:album) { Model::Album.new(nil, [song, song_with_composer], artist).extend(Disposable::Saveable) }
 
   let (:twin) { Twin::Album.new(album) }
 
@@ -179,7 +168,7 @@ end
 
 # class SaveWithDynamicOptionsTest < MiniTest::Spec
 #   Song = Struct.new(:id, :title, :length) do
-#     include Saveable
+#     include Disposable::Saveable
 #   end
 
 #   class SongForm < Reform::Form

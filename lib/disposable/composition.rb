@@ -19,6 +19,26 @@ module Disposable
   #
   # It allows accessing the contained models using the `#[]` reader.
   class Composition < Expose
+    def initialize(models)
+      models.each do |name, model|
+        instance_variable_set(:"@#{name}", model)
+      end
+
+      @_models = models.values
+    end
+
+    # Allows accessing the contained models.
+    def [](name)
+      instance_variable_get("@#{name}")
+    end
+
+    module Save
+      def save
+        @_models.each(&:save) # FIXME: block?
+      end
+    end
+    include Save
+
   private
     def self.accessors!(public_name, private_name, definition)
       model = definition[:on]
@@ -27,18 +47,7 @@ module Disposable
     end
 
 
-    def initialize(models)
-      models.each do |name, model|
-        instance_variable_set(:"@#{name}", model)
-      end
 
-      # @_models = models.values
-    end
-
-    # Allows accessing the contained models.
-    def [](name)
-      instance_variable_get(:"@#{name}")
-    end
 
   #   # Allows multiplexing method calls to all composed models.
   #   def each(&block)

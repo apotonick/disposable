@@ -1,4 +1,6 @@
 require "test_helper"
+require "disposable/expose"
+require "disposable/composition"
 
 class ExposeTest < MiniTest::Spec
   module Model

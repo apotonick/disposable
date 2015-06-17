@@ -1,47 +1,37 @@
-# require 'test_helper'
+require 'test_helper'
 
-# class FromTest < MiniTest::Spec
-#   module Model
-#     Song  = Struct.new(:title, :composer)
-#     Album = Struct.new(:name, :songs, :artist)
-#     Artist = Struct.new(:name)
-#   end
-
-
-#   module Twin
-#     class Album < Disposable::Twin
-#       feature Setup
-#       feature Sync
-#       feature Save
-
-#       property :full_name, from: :name
-
-#       # collection :songs do
-#       #   property :title
-
-#       #   property :composer do
-#       #     property :name
-#       #   end
-#       # end
-
-#       # property :artist do
-#       #   property :name
-#       # end
-#     end
-#   end
+class FromTest < MiniTest::Spec
+  module Model
+    Album = Struct.new(:name, :composer)
+    Artist = Struct.new(:realname)
+  end
 
 
-#   let (:song) { Model::Song.new() }
-#   let (:composer) { Model::Artist.new(nil) }
-#   let (:song_with_composer) { Model::Song.new(nil, composer) }
-#   let (:artist) { Model::Artist.new(nil) }
+  module Twin
+    class Album < Disposable::Twin
+      feature Sync
+      feature Save
+      feature Disposable::Twin::Expose
+
+      property :full_name, from: :name
+
+      property :artist, from: :composer do
+        property :name, from: :realname
+      end
+    end
+  end
 
 
-#   let (:album) { Model::Album.new("The Sufferer And The Witness", [song, song_with_composer], artist) }
+  let (:composer) { Model::Artist.new("AFI").extend(Disposable::Saveable) }
+  let (:album)    { Model::Album.new("Black Sails In The Sunset", composer).extend(Disposable::Saveable) }
+  let (:twin)     { Twin::Album.new(album) }
 
-#   it do
-#     twin = Twin::Album.new(album)
+  it do
+    twin.full_name.must_equal "Black Sails In The Sunset"
+    twin.artist.name.must_equal "AFI"
 
-#     twin.full_name.must_equal "The Sufferer And The Witness"
-#   end
-# end
+    twin.save
+
+
+  end
+end

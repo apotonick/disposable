@@ -38,5 +38,12 @@ module Disposable
     def initialize(model)
       @model = model
     end
+
+    module Save
+      def save
+        @model.save # FIXME: block?
+      end
+    end
+    include Save
   end
 end

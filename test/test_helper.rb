@@ -55,12 +55,25 @@ ActiveRecord::Base.establish_connection(
 #   end
 # end
 
-module Disposable::Comparable
-  def attributes(source)
-    source.instance_variable_get(:@fields)
+module Disposable
+  module Comparable
+    def attributes(source)
+      source.instance_variable_get(:@fields)
+    end
+
+    def ==(other)
+      self.class == other.class and attributes(self) == attributes(other)
+    end
   end
 
-  def ==(other)
-    self.class == other.class and attributes(self) == attributes(other)
+  module Saveable
+    def save
+      @saved = true
+    end
+
+    def saved?
+      @saved
+    end
   end
 end
+
