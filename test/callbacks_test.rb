@@ -378,4 +378,73 @@ class CallbacksTest < MiniTest::Spec
   end
 
 
+  describe "#on_change" do
+    let (:album) { Album.new }
+
+    # after initialization
+    it do
+      Callback.new(twin).on_change { |t| invokes << t }
+      invokes.must_equal []
+    end
+
+    # save, without any attributes changed. unpersisted before.
+    it do
+      twin = AlbumTwin.new(Album.create)
+
+      twin.save
+
+      Callback.new(twin).on_change { |t| invokes << t }
+      invokes.must_equal [] # nothing has changed, not even persisted?.
+    end
+
+    # save, without any attributes changed. persisted before.
+    it do
+      twin.save
+
+      Callback.new(twin).on_change { |t| invokes << t }
+      invokes.must_equal [twin]
+    end
+
+    # before and after save, with attributes changed
+    it do
+      # state change, but not persisted, yet.
+      twin.name = "Run For Cover"
+      invokes = []
+      Callback.new(twin).on_change { |t| invokes << t }
+      invokes.must_equal [twin]
+
+      twin.save
+
+      invokes = []
+      Callback.new(twin).on_change { |t| invokes << t }
+      invokes.must_equal [twin]
+    end
+
+    # for scalars: on_change(:email).
+    it do
+      Callback.new(twin).on_change(:name) { |t| invokes << t }
+      invokes.must_equal []
+
+      twin.name = "Unforgiven"
+
+      Callback.new(twin).on_change(:name) { |t| invokes << t }
+      invokes.must_equal [twin]
+    end
+
+    # for collections.
+    # it do
+    #   album.songs << song1 = Song.new
+    #   album.songs << Song.create(title: "Run For Cover")
+    #   album.songs << song2 = Song.new
+    #   invokes = []
+
+    #   Callback.new(twin.songs).on_change { |t| invokes << t }
+    #   invokes.must_equal []
+
+    #   twin.save
+
+    #   Callback.new(twin.songs).on_change { |t| invokes << t }
+    #   invokes.must_equal [twin.songs[0], twin.songs[2]]
+    # end
+  end
 end

@@ -44,5 +44,17 @@ module Disposable::Twin::Callback
         yield twin
       end
     end
+
+    def on_change(name=nil)
+      @twins.each do |twin|
+        if name
+          yield twin if twin.changed?(name)
+          next
+        end
+
+        next unless twin.changed?
+        yield twin
+      end
+    end
   end
 end

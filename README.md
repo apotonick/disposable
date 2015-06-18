@@ -155,6 +155,8 @@ Callbacks are discussed in [chapter 8 of the Trailblazer](http://leanpub.com/tra
 * `on_delete`: For every item that has been deleted from a collection.
 * `on_destroy`: For every item that has been removed from a collection and physically destroyed.
 
+* `on_change`: For every item that has changed attributes. When `persisted?` has flippend, this will be triggered, too.
+* `on_change(:email)`: When the scalar field changed.
 
 ## Overriding Accessors
 
