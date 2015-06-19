@@ -14,6 +14,8 @@ class Disposable::Twin
 
     # reading from fields allows using readers in form for presentation
     # and writers still pass to fields in #validate????
+
+    # Sync all scalar attributes, call sync! on nested and return model.
     def sync!(options) # semi-public.
       options_for_sync = sync_options(Decorator::Options[options])
 
