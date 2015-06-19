@@ -5,8 +5,8 @@ module Disposable
   class Twin
     module Expose
       module ClassMethods
-        def expose
-          @expose ||= Class.new(Disposable::Expose).from(representer_class)
+        def expose_class
+          @expose_class ||= Class.new(Disposable::Expose).from(representer_class)
         end
       end
 
@@ -16,15 +16,15 @@ module Disposable
 
 
       def initialize(*args)
-        super self.class.expose.new(*args)
+        super self.class.expose_class.new(*args)
       end
     end
 
 
     module Composition
       module ClassMethods
-        def expose
-          @expose ||= Class.new(Disposable::Composition).from(representer_class)
+        def expose_class
+          @expose_class ||= Class.new(Disposable::Composition).from(representer_class)
         end
       end
 
