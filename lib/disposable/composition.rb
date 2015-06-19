@@ -1,23 +1,17 @@
 module Disposable
-  # Composition delegates accessors to models as per configuration.
+  # Composition allows renaming properties and combining one or more objects
+  # in order to expose a different API.
+  # It can be configured from any Representable schema.
   #
-  # Composition doesn't know anything but methods (readers and writers) to expose and the mappings to
-  # the internal models. Optionally, it knows about renamings such as mapping `#song_id` to `song.id`.
-  #
-  #   class Album
-  #     include Disposable::Composition
-  #
-  #     map( {cd: [[:id], [:name]], band: [[:id, :band_id], [:title]]} )
+  #   class AlbumTwin < Disposable::Twin
+  #     property :name, on: :artist
   #   end
   #
-  # Composition adds #initialize to the includer.
+  #   class AlbumExpose < Disposable::Composition
+  #     from AlbumTwin
+  #   end
   #
-  #   album = Album.new(cd: CD.find(1), band: Band.new)
-  #   album.id #=> 1
-  #   album.title = "Ten Foot Pole"
-  #   album.band_id #=> nil
-  #
-  # It allows accessing the contained models using the `#[]` reader.
+  #   AlbumExpose.new(artist: OpenStruct.new(name: "AFI")).name #=> "AFI"
   class Composition < Expose
     def initialize(models)
       models.each do |name, model|

@@ -12,6 +12,15 @@ module Disposable
         @model  = model
         @mapper = mapper_for(model) # mapper for model.
 
+        setup_properties!(model, options)
+      end
+
+    private
+      def mapper_for(model)
+        model
+      end
+
+      def setup_properties!(model, options)
         schema.each do |dfn|
           next if dfn[:readable] == false
 
@@ -23,11 +32,6 @@ module Disposable
 
         @fields.merge!(options) # FIXME: hash/string. # FIXME: call writer!!!!!!!!!!
         # from_hash(options) # assigns known properties from options.
-      end
-
-    private
-      def mapper_for(model)
-        model
       end
     end # Setup
   end
