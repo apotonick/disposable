@@ -21,7 +21,7 @@ class Disposable::Twin
 
       schema.each(options_for_sync) do |dfn|
         unless dfn[:twin]
-          model.send(dfn.setter, send(dfn.getter)) # always sync the property
+          mapper.send(dfn.setter, send(dfn.getter)) # always sync the property
           next
         end
 
@@ -29,7 +29,7 @@ class Disposable::Twin
 
         next if nested_model.nil?
 
-        model.send(dfn.setter, nested_model)
+        mapper.send(dfn.setter, nested_model) # @model.artist = <Artist>
       end
 
       model

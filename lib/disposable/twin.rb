@@ -122,7 +122,12 @@ module Disposable
     end
 
 
-    attr_reader :model # TODO: test
+  private
+    module ModelReaders
+      attr_reader :model # #model is a private concept.
+      attr_reader :mapper
+    end
+    include ModelReaders
 
     include Option
   end

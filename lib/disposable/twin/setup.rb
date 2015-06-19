@@ -10,12 +10,13 @@ module Disposable
       def initialize(model, options={})
         @fields = {}
         @model  = model
+        @mapper = mapper_for(model) # mapper for model.
 
         schema.each do |dfn|
           next if dfn[:readable] == false
 
           name  = dfn.name
-          value = options[name.to_sym] || model.send(name)
+          value = options[name.to_sym] || mapper.send(name) # model.title.
 
           send(dfn.setter, value)
         end
@@ -24,6 +25,10 @@ module Disposable
         # from_hash(options) # assigns known properties from options.
       end
 
+    private
+      def mapper_for(model)
+        model
+      end
     end # Setup
   end
 end

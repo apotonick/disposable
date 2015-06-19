@@ -32,17 +32,9 @@ module Disposable
       instance_variable_get("@#{name}")
     end
 
-    module Save
-      def save
-        @_models.values.each(&:save) # FIXME: block?
-      end
-    end
-    include Save
-
-
     def each(&block)
       # TODO: test me.
-      @_models.each(&block)
+      @_models.values.each(&block)
     end
 
   private

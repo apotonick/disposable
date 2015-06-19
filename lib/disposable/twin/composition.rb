@@ -8,16 +8,18 @@ module Disposable
         def expose_class
           @expose_class ||= Class.new(Disposable::Expose).from(representer_class)
         end
-      end
+      end # ClassMethods.
 
       def self.included(base)
         base.extend(ClassMethods)
       end
 
-
-      def initialize(*args)
-        super self.class.expose_class.new(*args)
+      module Initialize
+        def mapper_for(*args)
+          self.class.expose_class.new(*args)
+        end
       end
+      include Initialize
     end
 
 
@@ -29,7 +31,7 @@ module Disposable
       end
 
       def self.included(base)
-        base.send(:include, Disposable::Twin::Expose)
+        base.send(:include, Expose::Initialize)
         base.extend(ClassMethods)
       end
 
@@ -42,6 +44,11 @@ module Disposable
         end
 
         hash
+      end
+
+    private
+      def save_model
+        mapper.each(&:save) # goes through all models in Composition.
       end
     end
   end
