@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "uber"
   spec.add_dependency "representable", ">= 2.2.1", "<= 2.3.0"
+  spec.add_dependency "hooks"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"

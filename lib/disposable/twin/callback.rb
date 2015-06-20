@@ -2,7 +2,44 @@
 # like "adding" or "deleted". However, it could run with other model layers, too.
 # For example, when you manage to make ActiveRecord track those events, you won't need a
 # twin layer underneath.
+require "hooks"
+
 module Disposable::Twin::Callback
+  class Group < Representable::Decorator
+
+    include Hooks
+    define_hook :on_add
+    define_hook :on_change
+    define_hook :on_create
+    define_hook :on_update
+
+    def self.default_inline_class
+      Group
+    end
+
+    def call(options={})
+      # FIXME: this is not in the order it was added.
+
+      # puts "@@@@@ #{represented.inspect}"
+      Disposable::Twin::Callback::Dispatch.new(represented).on_change{ |twin| run_hook :on_change, self }
+      Disposable::Twin::Callback::Dispatch.new(represented).on_create{ |twin| run_hook :on_create, self }
+      Disposable::Twin::Callback::Dispatch.new(represented).on_update{ |twin| run_hook :on_update, self }
+
+      representable_attrs.each do |definition|
+        twin = represented.send(definition.getter)
+
+        if definition.array?
+          Disposable::Twin::Callback::Dispatch.new(twin).on_add{ |twin| run_hook :on_add, twin }
+          Disposable::Twin::Callback::Dispatch.new(twin).on_delete{ |twin| run_hook :on_delete, self }
+        end
+
+        # TODO: for scalar properties!
+
+        Group.new(twin).()
+      end
+    end
+  end
+
   class Dispatch
     def initialize(twins)
       @twins = twins.is_a?(Array) ? twins : [twins] # TODO: find that out with Collection.
