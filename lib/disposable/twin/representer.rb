@@ -15,12 +15,6 @@ module Disposable
         end
       end
 
-
-      # DISCUSS: same in reform, is that a bug in represntable?
-      def self.clone # called in inheritable_attr :representer_class.
-        Class.new(self) # By subclassing, representable_attrs.clone is called.
-      end
-
       # FIXME: this is not properly used when inheriting - fix that in representable.
       def self.build_config
         Config.new(Definition)
