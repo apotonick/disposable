@@ -3,6 +3,14 @@
 # For example, when you manage to make ActiveRecord track those events, you won't need a
 # twin layer underneath.
 module Disposable::Twin::Callback
+  # Order matters.
+  #   on_change :change!
+  #   collection :songs do
+  #     on_add :notify_album!
+  #     on_add :reset_song!
+  #
+  # you can call collection :songs again, with :inherit. TODO: verify.
+
   class Group
     # TODO: make this easier via declarable.
     extend Uber::InheritableAttr
@@ -17,11 +25,15 @@ module Disposable::Twin::Callback
     end
 
     def self.property(*args, &block)
-      representer_class.property(*args, &block)
+      representer_class.property(*args, &block).tap do |dfn|
+        hooks << ["property", dfn]
+      end
     end
 
     def self.collection(*args, &block)
-      representer_class.collection(*args, &block)
+      representer_class.collection(*args, &block).tap do |dfn|
+        hooks << ["property", dfn]
+      end
     end
 
 
@@ -48,19 +60,19 @@ module Disposable::Twin::Callback
       self.class.hooks.each do |cfg|
         event, args = cfg
 
+        if event == "property" # FIXME: make nicer.
+          definition = args
+          twin = @twin.send(definition.getter) # album.songs
+          # TODO: for scalar properties!
+
+          # Group.new(twin).()
+          @invocations += definition.representer_module.new(twin).().invocations
+          next
+        end
+
         res = callback!(event, args)
 
         invocations << res
-      end
-
-      self.class.representer_class.representable_attrs.each do |definition|
-        twin = @twin.send(definition.getter) # album.songs
-
-        # TODO: what if collection must be run before on_update ?
-        # TODO: for scalar properties!
-
-        # Group.new(twin).()
-        @invocations += definition.representer_module.new(twin).().invocations
       end
 
       self
@@ -86,7 +98,6 @@ module Disposable::Twin::Callback
 
     def call(event, method, *args, &block) # FIXME: as long as we only support method, pass in here.
       send(event, *args, &block)
-      puts "Dispatch result: #{@invocations.inspect}"
       [event, method, @invocations]
     end
 
