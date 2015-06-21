@@ -4,6 +4,8 @@ require "pp"
 
 class CallbackGroupTest < MiniTest::Spec
   class Group < Disposable::Twin::Callback::Group
+    attr_reader :output
+
     on_change :change!
 
     collection :songs do
@@ -13,11 +15,11 @@ class CallbackGroupTest < MiniTest::Spec
       # on_delete :notify_deleted_author! # in Update!
 
       def notify_album!(twin)
-        puts "added to songs: #{twin.inspect}"
+        @output = "added to songs"
       end
 
       def reset_song!(twin)
-        puts "added to songs, reseting: #{twin.inspect}"
+        @output << "added to songs, reseting"
       end
     end
 
@@ -28,7 +30,7 @@ class CallbackGroupTest < MiniTest::Spec
     on_update :expire_cache!
 
     def change!(twin)
-      puts "Album has changed!   -@@@@@ #{twin.inspect}"
+      @output = "Album has changed!"
     end
   end
 
@@ -84,5 +86,47 @@ class CallbackGroupTest < MiniTest::Spec
       [:on_create, :expire_cache!, []],
       [:on_update, :expire_cache!, []],
     ]
+
+    group.output.must_equal "Album has changed!"
+  end
+
+  # context.
+  class Operation
+    attr_reader :output
+
+    def change!(twin)
+      @output = "changed!"
+    end
+
+    def notify_album!(twin)
+      @output << "notify_album!"
+    end
+
+    def reset_song!(twin)
+      @output << "reset_song!"
+    end
+  end
+
+  it do
+    twin = AlbumTwin.new(Album.new)
+    twin.songs << Song.new(title: "Dead To Me")
+
+    twin.name = "Dear Landlord"
+
+    group = Group.new(twin).(context: context = Operation.new)
+    # Disposable::Twin::Callback::Dispatch.new(twin).on_change{ |twin| puts twin;puts }
+
+    # pp group.invocations
+
+    group.invocations.must_equal [
+      [:on_change, :change!, [twin]],
+      [:on_add, :notify_album!, [twin.songs[0]]],
+      [:on_add, :reset_song!,   [twin.songs[0]]],
+      [:on_change, :rehash_name!, []],
+      [:on_create, :expire_cache!, []],
+      [:on_update, :expire_cache!, []],
+    ]
+
+    context.output.must_equal "changed!notify_album!reset_song!"
   end
 end

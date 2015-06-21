@@ -65,11 +65,11 @@ module Disposable::Twin::Callback
           twin = @twin.send(definition.getter) # album.songs
 
           # Group.new(twin).()
-          @invocations += definition.representer_module.new(twin).().invocations
+          @invocations += definition.representer_module.new(twin).(options).invocations
           next
         end
 
-        res = callback!(event, args)
+        res = callback!(event, options, args)
 
         invocations << res
       end
@@ -79,9 +79,9 @@ module Disposable::Twin::Callback
 
   private
     # Runs one callback.
-    def callback!(event, args)
+    def callback!(event, options, args)
       method      = args[0]
-      context     = self
+      context     = options[:context] || self # TODO: test me.
 
       options = args[1..-1]
 
