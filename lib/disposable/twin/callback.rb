@@ -63,7 +63,6 @@ module Disposable::Twin::Callback
         if event == "property" # FIXME: make nicer.
           definition = args
           twin = @twin.send(definition.getter) # album.songs
-          # TODO: for scalar properties!
 
           # Group.new(twin).()
           @invocations += definition.representer_module.new(twin).().invocations
