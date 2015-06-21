@@ -8,6 +8,14 @@ class CallbackGroupTest < MiniTest::Spec
       on_add :reset_song!
 
       # on_delete :notify_deleted_author! # in Update!
+
+      def notify_album!(twin)
+        puts "added to songs: #{twin.inspect}"
+      end
+
+      def reset_song!(twin)
+        puts "added to songs, reseting: #{twin.inspect}"
+      end
     end
 
     # property :email, on_change(:rehash_email!)
@@ -17,7 +25,7 @@ class CallbackGroupTest < MiniTest::Spec
     on_update :expire_cache!
 
     def change!(twin)
-      puts "-@@@@@ #{twin.inspect}"
+      puts "Album has changed!   -@@@@@ #{twin.inspect}"
     end
   end
 

@@ -2,40 +2,63 @@
 # like "adding" or "deleted". However, it could run with other model layers, too.
 # For example, when you manage to make ActiveRecord track those events, you won't need a
 # twin layer underneath.
-require "hooks"
-
 module Disposable::Twin::Callback
-  class Group < Representable::Decorator
-
-    include Hooks
-    define_hook :on_add
-    define_hook :on_change
-    define_hook :on_create
-    define_hook :on_update
-
-    def self.default_inline_class
-      Group
+  class Group
+    # TODO: make this easier via declarable.
+    extend Uber::InheritableAttr
+    inheritable_attr :representer_class
+    self.representer_class = Class.new(Representable::Decorator) do
+      def self.default_inline_class
+        Group
+      end
     end
 
-    def call(options={})
-      # FIXME: this is not in the order it was added.
+    def self.feature(*args)
+    end
 
-      # puts "@@@@@ #{represented.inspect}"
-      Disposable::Twin::Callback::Dispatch.new(represented).on_change{ |twin| run_hook :on_change, self }
-      Disposable::Twin::Callback::Dispatch.new(represented).on_create{ |twin| run_hook :on_create, self }
-      Disposable::Twin::Callback::Dispatch.new(represented).on_update{ |twin| run_hook :on_update, self }
+    def self.property(*args, &block)
+      representer_class.property(*args, &block)
+    end
 
-      representable_attrs.each do |definition|
-        twin = represented.send(definition.getter)
+    def self.collection(*args, &block)
+      representer_class.collection(*args, &block)
+    end
 
-        if definition.array?
-          Disposable::Twin::Callback::Dispatch.new(twin).on_add{ |twin| run_hook :on_add, twin }
-          Disposable::Twin::Callback::Dispatch.new(twin).on_delete{ |twin| run_hook :on_delete, self }
+
+    def initialize(twin)
+      @twin = twin
+    end
+
+    inheritable_attr :hooks
+    self.hooks = []
+
+    class << self
+      %w(on_add on_delete on_destroy on_update on_create on_change).each do |event|
+        define_method event do |*args|
+          hooks << [event.to_sym, args]
         end
+      end
+    end
+
+
+    def call(options={})
+      self.class.hooks.each do |cfg|
+        event, args = cfg
+        method      = args.first
+        context     = self
+
+        puts event
+        # TODO: Use Option::Value here.
+        Disposable::Twin::Callback::Dispatch.new(@twin).send( event) { |twin| context.send(method, twin) }
+      end
+
+      self.class.representer_class.representable_attrs.each do |definition|
+        twin = @twin.send(definition.getter)
 
         # TODO: for scalar properties!
 
-        Group.new(twin).()
+        # Group.new(twin).()
+        definition.representer_module.new(twin).()
       end
     end
   end
