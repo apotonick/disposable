@@ -27,7 +27,10 @@ module Disposable::Twin::Callback
 
     def initialize(twin)
       @twin = twin
+      @invocations = []
     end
+
+    attr_reader :invocations
 
     inheritable_attr :hooks
     self.hooks = []
@@ -44,76 +47,102 @@ module Disposable::Twin::Callback
     def call(options={})
       self.class.hooks.each do |cfg|
         event, args = cfg
-        method      = args.first
-        context     = self
 
-        puts event
-        # TODO: Use Option::Value here.
-        Disposable::Twin::Callback::Dispatch.new(@twin).send( event) { |twin| context.send(method, twin) }
+        res = callback!(event, args)
+
+        invocations << res
       end
 
       self.class.representer_class.representable_attrs.each do |definition|
-        twin = @twin.send(definition.getter)
+        twin = @twin.send(definition.getter) # album.songs
 
+        # TODO: what if collection must be run before on_update ?
         # TODO: for scalar properties!
 
         # Group.new(twin).()
-        definition.representer_module.new(twin).()
+        @invocations += definition.representer_module.new(twin).().invocations
       end
+
+      self
+    end
+
+  private
+    # Runs one callback.
+    def callback!(event, args)
+      method      = args.first
+      context     = self
+
+      # TODO: Use Option::Value here.
+      Disposable::Twin::Callback::Dispatch.new(@twin).(event, method) { |twin| context.send(method, twin) }
     end
   end
 
+  # Invokes callback for one event, e.g. on_add(:relax!).
   class Dispatch
     def initialize(twins)
       @twins = twins.is_a?(Array) ? twins : [twins] # TODO: find that out with Collection.
+      @invocations = []
     end
 
-    def on_add(state=nil) # how to call it once, for "all"?
+    def call(event, method, *args, &block) # FIXME: as long as we only support method, pass in here.
+      send(event, *args, &block)
+      puts "Dispatch result: #{@invocations.inspect}"
+      [event, method, @invocations]
+    end
+
+    def on_add(state=nil, &block) # how to call it once, for "all"?
       # @twins can only be Collection instance.
       @twins.added.each do |item|
-        yield item if state.nil?
-        yield item if item.created? && state == :created # :created # DISCUSS: should we really keep that?
+        run!(item, &block) if state.nil?
+        run!(item, &block) if item.created? && state == :created # :created # DISCUSS: should we really keep that?
       end
     end
 
-    def on_delete
+    def on_delete(&block)
       # @twins can only be Collection instance.
       @twins.deleted.each do |item|
-        yield item
+        run!(item, &block)
       end
     end
 
-    def on_destroy
+    def on_destroy(&block)
       @twins.destroyed.each do |item|
-        yield item
+        run!(item, &block)
       end
     end
 
-    def on_update
+    def on_update(&block)
       @twins.each do |twin|
         next if twin.created?
         next unless twin.persisted? # only persisted can be updated.
         next unless twin.changed?
-        yield twin
+        run!(twin, &block)
       end
     end
 
-    def on_create
+    def on_create(&block)
       @twins.each do |twin|
         next unless twin.created?
-        yield twin
+        run!(twin, &block)
       end
     end
 
-    def on_change(name=nil)
+    def on_change(name=nil, &block)
       @twins.each do |twin|
         if name
-          yield twin if twin.changed?(name)
+          run!(twin, &block) if twin.changed?(name)
           next
         end
 
         next unless twin.changed?
-        yield twin
+        run!(twin, &block)
+      end
+    end
+
+  private
+    def run!(twin, &block)
+      yield(twin).tap do |res|
+        @invocations << twin
       end
     end
   end

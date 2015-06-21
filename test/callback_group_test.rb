@@ -1,5 +1,6 @@
 require "test_helper"
 require "disposable/twin/callback"
+require "pp"
 
 class CallbackGroupTest < MiniTest::Spec
   class Group < Disposable::Twin::Callback::Group
@@ -48,11 +49,10 @@ class CallbackGroupTest < MiniTest::Spec
 
   # empty.
   it do
-    twin = AlbumTwin.new(Album.new)
-    twin.songs << Song.new(title: "Dead To Me")
-    twin.songs << Song.new(title: "Diesel Boy")
+    album = Album.new(songs: [Song.new(title: "Dead To Me"), Song.new(title: "Diesel Boy")])
+    twin  = AlbumTwin.new(album)
 
-    Group.new(twin).()
+    Group.new(twin).().invocations.must_equal [[:on_change, :change!, []], [:on_create, :expire_cache!, []], [:on_update, :expire_cache!, []], [:on_add, :notify_album!, []], [:on_add, :reset_song!, []]]
   end
 
   it do
@@ -63,7 +63,17 @@ class CallbackGroupTest < MiniTest::Spec
     # FIXME #<< SHOULD change!
     twin.name = "Dear Landlord"
 
-    Group.new(twin).()
+    group = Group.new(twin).()
     # Disposable::Twin::Callback::Dispatch.new(twin).on_change{ |twin| puts twin;puts }
+
+    # pp group.invocations
+
+    group.invocations.must_equal [
+      [:on_change, :change!, [twin]],
+      [:on_create, :expire_cache!, []],
+      [:on_update, :expire_cache!, []],
+      [:on_add, :notify_album!, [twin.songs[0], twin.songs[1]]],
+      [:on_add, :reset_song!,   [twin.songs[0], twin.songs[1]]],
+    ]
   end
 end
