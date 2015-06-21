@@ -422,12 +422,12 @@ class CallbacksTest < MiniTest::Spec
 
     # for scalars: on_change(:email).
     it do
-      Callback.new(twin).on_change(:name) { |t| invokes << t }
+      Callback.new(twin).on_change(property: :name) { |t| invokes << t }
       invokes.must_equal []
 
       twin.name = "Unforgiven"
 
-      Callback.new(twin).on_change(:name) { |t| invokes << t }
+      Callback.new(twin).on_change(property: :name) { |t| invokes << t }
       invokes.must_equal [twin]
     end
 

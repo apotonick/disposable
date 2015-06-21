@@ -21,7 +21,7 @@ class CallbackGroupTest < MiniTest::Spec
       end
     end
 
-    # property :email, on_change(:rehash_email!)
+    on_change :rehash_name!, property: :title
 
 
     on_create :expire_cache! # on_change
@@ -58,6 +58,7 @@ class CallbackGroupTest < MiniTest::Spec
       [:on_change, :change!, []],
       [:on_add, :notify_album!, []],
       [:on_add, :reset_song!, []],
+      [:on_change, :rehash_name!, []],
       [:on_create, :expire_cache!, []],
       [:on_update, :expire_cache!, []],
     ]
@@ -79,6 +80,7 @@ class CallbackGroupTest < MiniTest::Spec
       [:on_change, :change!, [twin]],
       [:on_add, :notify_album!, [twin.songs[0], twin.songs[1]]],
       [:on_add, :reset_song!,   [twin.songs[0], twin.songs[1]]],
+      [:on_change, :rehash_name!, []],
       [:on_create, :expire_cache!, []],
       [:on_update, :expire_cache!, []],
     ]

@@ -81,11 +81,13 @@ module Disposable::Twin::Callback
   private
     # Runs one callback.
     def callback!(event, args)
-      method      = args.first
+      method      = args[0]
       context     = self
 
+      options = args[1..-1]
+
       # TODO: Use Option::Value here.
-      Disposable::Twin::Callback::Dispatch.new(@twin).(event, method) { |twin| context.send(method, twin) }
+      Disposable::Twin::Callback::Dispatch.new(@twin).(event, method, *options) { |twin| context.send(method, twin) }
     end
   end
 
@@ -138,7 +140,9 @@ module Disposable::Twin::Callback
       end
     end
 
-    def on_change(name=nil, &block)
+    def on_change(options={}, &block)
+      name = options[:property]
+
       @twins.each do |twin|
         if name
           run!(twin, &block) if twin.changed?(name)
