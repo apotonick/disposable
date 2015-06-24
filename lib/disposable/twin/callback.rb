@@ -29,12 +29,15 @@ module Disposable::Twin::Callback
     end
 
     def self.property(name, options={}, &block)
+      # NOTE: while the API will stay the same, it's very likely i'm gonna use Declarative::Config here instead
+      # of maintaining two stacks of callbacks.
       inherit = options[:inherit] # FIXME: this is deleted in ::property.
+
       representer_class.property(name, options, &block).tap do |dfn|
         if inherit
           return hooks.find { |cfg| cfg[0]=="property" && cfg[1].name == dfn.name }[1] = dfn
         end
-        hooks << ["property", dfn] unless inherit
+        hooks << ["property", dfn]
       end
     end
 
