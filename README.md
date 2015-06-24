@@ -130,23 +130,34 @@ Semantics are extensions to the pure Ruby array behavior and designed to deal wi
 * `#save` will call `destroy` on all models marked for destruction in `to_destroy`. Tracks destruction via `#destroyed`.
 
 
-## Callbacks
+## Imperative Callbacks
+
+Note: [Chapter 8 of the Trailblazer](http://leanpub.com/trailblazer) book is dedicated to callbacks and discusses them in great detail.
 
 Callbacks use the fact that twins track state changes. This allows to execute callbacks on certain conditions.
 
 ```ruby
-Callbacks.new(twin).on_create { |twin| .. }
-Callbacks.new(twin.songs).on_added { |twin| .. }
-Callbacks.new(twin.songs).on_added { |twin| .. }
+Callback.new(twin).on_create { |twin| .. }
+Callback.new(twin.songs).on_add { |twin| .. }
+Callback.new(twin.songs).on_add { |twin| .. }
 ```
 
-Callbacks in Disposable/Trailblazer are the opposite of what you've learned from Rails: _Inverse Callbacks_ do not get triggered magically somewhere, _you_ have to invoke them explicitly.
+It works as follows.
 
-The passive mechanism will then look for twins matching that condition and invoke the attached callbacks.
+1. Twins track state changes, like _"item added to collection (`on_add`)"_ or _"property changed (`on_change`)"_.
+2. You decide when to invoke one or a group of callbacks. This is why there's no `before_save` and the like anymore.
+3. You also decide _what_ events to consider by calling the respective events only, like `on_add`.
+4. The `Callback` will now find out which properties of the twin are affected and exectue your passed code for each of them.
+
+This is called _Imperative Callback_ and the opposite of what you've learned from Rails.
 
 By inversing the control, we don't need `before_` or `after_`. This is in your hands now and depends on where you invoke your callbacks.
 
-Callbacks are discussed in [chapter 8 of the Trailblazer](http://leanpub.com/trailblazer) book.
+## Events
+
+The following events are available in `Callback`.
+
+Don't confuse that with event triggering, though! Callbacks are passive, calling an event method means the callback will look for twins that have tracked the respective event (e.g. an twin has `change`d).
 
 * `on_update`: Invoked when the underlying model was persisted, yet, at twin initialization and attributes have changed since then.
 * `on_add`: For every twin that has been added to a collection.
@@ -158,8 +169,81 @@ Callbacks are discussed in [chapter 8 of the Trailblazer](http://leanpub.com/tra
 * `on_change`: For every item that has changed attributes. When `persisted?` has flippend, this will be triggered, too.
 * `on_change(:email)`: When the scalar field changed.
 
+
+## Callback Groups
+
+In order to simplify grouping callbacks and allowing a nested map we got `Callback::Group`.
+
+```ruby
+class AfterSave < Disposable::Callback::Group
+  on_change :expire_cache!
+
+  collection :songs do
+    on_add :notify_album!
+    on_add :reset_song!
+  end
+
+  on_update :rehash_name!, property: :title
+
+  property :artist do
+    on_change :sing!
+  end
+end
+```
+
+Calling that group on a twin will invoke all callbacks that apply, in the order they were added.
+
+```ruby
+AfterSave.new(twin).(context: self)
+```
+
+Methods like `:sing!` will be invoked on the `:context` object. Likewise, nested properties will be retrieved by simply calling the getter on the twin, like `twin.songs`.
+
+Again, only the events that match will be invoked. If the top level twin hasn't changed, `expire_cache!` won't be invoked. This works by simply using `Callback` under the hood.
+
+## Callback Inheritance
+
+You can inherit groups, add and remove callbacks.
+
+```ruby
+class EnhancedAfterSave < AfterSave
+  on_change :redo!
+
+  collection :songs do
+    on_add :rewind!
+  end
+
+  remove! :on_change, :expire_cache!
+end
+```
+
+The callbacks will be _appended_ to the existing chain.
+
+Instead of appending, you may also refine existing callbacks.
+
+```ruby
+class EnhancedAfterSave < AfterSave
+  collection :songs, inherit: true do
+    on_delete :rewind!
+  end
+end
+```
+
+This will add the `rewind!` callback to the `songs` property, resulting in the following chain.
+
+```ruby
+collection :songs do
+    on_add    :notify_album!
+    on_add    :reset_song!
+    on_delete :rewind!
+  end
+```
+
 ## Overriding Accessors
 
 super
 
 ## Used In
+
+* [Reform](https://github.com/apotonick/reform) forms are based on twins and add a little bit of form decoration on top. Every nested form is a twin.
+* [Trailblazer](https://github.com/apotonick/trailblazer) uses twins as decorators and callbacks in operations to structure business logic.
