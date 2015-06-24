@@ -139,13 +139,16 @@ class CallbackGroupInheritanceTest < MiniTest::Spec
       on_add :reset_song!
     end
     on_change :rehash_name!, property: :title
+    property :artist do
+      on_change :sing!
+    end
   end
 
   class EmptyGroup < Group
   end
 
   it do
-    EmptyGroup.hooks.size.must_equal 3
+    EmptyGroup.hooks.size.must_equal 4
   end
 
   class EnhancedGroup < Group
@@ -156,23 +159,26 @@ class CallbackGroupInheritanceTest < MiniTest::Spec
   end
 
   it do
-    Group.hooks.size.must_equal 3
-    EnhancedGroup.hooks.size.must_equal 5
-    EnhancedGroup.hooks[4][1].representer_module.hooks.to_s.must_equal "[[:on_add, [:rewind!]]]"
+    Group.hooks.size.must_equal 4
+    EnhancedGroup.hooks.size.must_equal 6
+    EnhancedGroup.hooks[5][1].representer_module.hooks.to_s.must_equal "[[:on_add, [:rewind!]]]"
   end
 
   class EnhancedWithInheritGroup < EnhancedGroup
     collection :songs, inherit: true do # finds first.
       on_add :eat!
     end
+    property :artist, inherit: true do
+      on_delete :yell!
+    end
   end
 
   it do
-    Group.hooks.size.must_equal 3
-    EnhancedGroup.hooks.size.must_equal 5
-    EnhancedGroup.hooks[4][1].representer_module.hooks.to_s.must_equal "[[:on_add, [:rewind!]]]"
-    # EnhancedWithInheritGroup.hooks[4][1].representer_module.hooks.to_s.must_equal ""
-    EnhancedWithInheritGroup.hooks.size.must_equal 5
+    Group.hooks.size.must_equal 4
+    EnhancedGroup.hooks.size.must_equal 6
+    EnhancedGroup.hooks[5][1].representer_module.hooks.to_s.must_equal "[[:on_add, [:rewind!]]]"
+    EnhancedWithInheritGroup.hooks.size.must_equal 6
     EnhancedWithInheritGroup.hooks[1][1].representer_module.hooks.to_s.must_equal "[[:on_add, [:rewind!]], [:on_add, [:eat!]]]"
+    EnhancedWithInheritGroup.hooks[3][1].representer_module.hooks.to_s.must_equal "[[:on_change, [:sing!]], [:on_delete, [:yell!]]]"
   end
 end

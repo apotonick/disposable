@@ -24,15 +24,13 @@ module Disposable::Twin::Callback
     def self.feature(*args)
     end
 
-    def self.property(*args, &block)
-      representer_class.property(*args, &block).tap do |dfn| # TODO: implement for property.
-        hooks << ["property", dfn]
-      end
+    def self.collection(name, options={}, &block)
+      property(name, options.merge(collection: true), &block)
     end
 
-    def self.collection(name, options={}, &block)
+    def self.property(name, options={}, &block)
       inherit = options[:inherit] # FIXME: this is deleted in ::property.
-      representer_class.collection(name, options, &block).tap do |dfn|
+      representer_class.property(name, options, &block).tap do |dfn|
         if inherit
           return hooks.find { |cfg| cfg[0]=="property" && cfg[1].name == dfn.name }[1] = dfn
         end
