@@ -2,7 +2,7 @@
 # like "adding" or "deleted". However, it could run with other model layers, too.
 # For example, when you manage to make ActiveRecord track those events, you won't need a
 # twin layer underneath.
-module Disposable::Twin::Callback
+module Disposable::Callback
   # Order matters.
   #   on_change :change!
   #   collection :songs do
@@ -31,6 +31,7 @@ module Disposable::Twin::Callback
     def self.property(name, options={}, &block)
       # NOTE: while the API will stay the same, it's very likely i'm gonna use Declarative::Config here instead
       # of maintaining two stacks of callbacks.
+      # it should have a Definition per callback where the representer_module will be a nested Group or a Callback.
       inherit = options[:inherit] # FIXME: this is deleted in ::property.
 
       representer_class.property(name, options, &block).tap do |dfn|
@@ -88,11 +89,13 @@ module Disposable::Twin::Callback
       options = args[1..-1]
 
       # TODO: Use Option::Value here.
-      Disposable::Twin::Callback::Dispatch.new(@twin).(event, method, *options) { |twin| context.send(method, twin) }
+      Dispatch.new(@twin).(event, method, *options) { |twin| context.send(method, twin) }
     end
   end
 
+
   # Invokes callback for one event, e.g. on_add(:relax!).
+  # Implements the binding between the Callback API (on_change) and the underlying layer (twin/AR/etc.).
   class Dispatch
     def initialize(twins)
       @twins = twins.is_a?(Array) ? twins : [twins] # TODO: find that out with Collection.

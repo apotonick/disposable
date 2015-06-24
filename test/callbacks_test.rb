@@ -1,5 +1,5 @@
 require "test_helper"
-require "disposable/twin/callback"
+require "disposable/callback"
 
 class CallbacksTest < MiniTest::Spec
   before do
@@ -30,7 +30,7 @@ class CallbacksTest < MiniTest::Spec
   end
 
   # - Callbacks don't have before and after. This is up to the caller.
-  Callback = Disposable::Twin::Callback::Dispatch
+  Callback = Disposable::Callback::Dispatch
     # collection :songs do
     #   after_add    :song_added! # , context: :operation
     #   after_create :notify_album!

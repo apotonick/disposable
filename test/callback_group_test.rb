@@ -1,9 +1,9 @@
 require "test_helper"
-require "disposable/twin/callback"
+require "disposable/callback"
 require "pp"
 
 class CallbackGroupTest < MiniTest::Spec
-  class Group < Disposable::Twin::Callback::Group
+  class Group < Disposable::Callback::Group
     attr_reader :output
 
     on_change :change!
@@ -74,7 +74,7 @@ class CallbackGroupTest < MiniTest::Spec
     twin.name = "Dear Landlord"
 
     group = Group.new(twin).()
-    # Disposable::Twin::Callback::Dispatch.new(twin).on_change{ |twin| puts twin;puts }
+    # Disposable::Callback::Dispatch.new(twin).on_change{ |twin| puts twin;puts }
 
     # pp group.invocations
 
@@ -114,7 +114,7 @@ class CallbackGroupTest < MiniTest::Spec
     twin.name = "Dear Landlord"
 
     group = Group.new(twin).(context: context = Operation.new)
-    # Disposable::Twin::Callback::Dispatch.new(twin).on_change{ |twin| puts twin;puts }
+    # Disposable::Callback::Dispatch.new(twin).on_change{ |twin| puts twin;puts }
 
     # pp group.invocations
 
@@ -132,7 +132,7 @@ class CallbackGroupTest < MiniTest::Spec
 end
 
 class CallbackGroupInheritanceTest < MiniTest::Spec
-  class Group < Disposable::Twin::Callback::Group
+  class Group < Disposable::Callback::Group
     on_change :change!
     collection :songs do
       on_add :notify_album!
