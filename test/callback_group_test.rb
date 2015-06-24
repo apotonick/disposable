@@ -130,3 +130,49 @@ class CallbackGroupTest < MiniTest::Spec
     context.output.must_equal "changed!notify_album!reset_song!"
   end
 end
+
+class CallbackGroupInheritanceTest < MiniTest::Spec
+  class Group < Disposable::Twin::Callback::Group
+    on_change :change!
+    collection :songs do
+      on_add :notify_album!
+      on_add :reset_song!
+    end
+    on_change :rehash_name!, property: :title
+  end
+
+  class EmptyGroup < Group
+  end
+
+  it do
+    EmptyGroup.hooks.size.must_equal 3
+  end
+
+  class EnhancedGroup < Group
+    on_change :redo!
+    collection :songs do
+      on_add :rewind!
+    end
+  end
+
+  it do
+    Group.hooks.size.must_equal 3
+    EnhancedGroup.hooks.size.must_equal 5
+    EnhancedGroup.hooks[4][1].representer_module.hooks.to_s.must_equal "[[:on_add, [:rewind!]]]"
+  end
+
+  class EnhancedWithInheritGroup < EnhancedGroup
+    collection :songs, inherit: true do # finds first.
+      on_add :eat!
+    end
+  end
+
+  it do
+    Group.hooks.size.must_equal 3
+    EnhancedGroup.hooks.size.must_equal 5
+    EnhancedGroup.hooks[4][1].representer_module.hooks.to_s.must_equal "[[:on_add, [:rewind!]]]"
+    # EnhancedWithInheritGroup.hooks[4][1].representer_module.hooks.to_s.must_equal ""
+    EnhancedWithInheritGroup.hooks.size.must_equal 5
+    EnhancedWithInheritGroup.hooks[1][1].representer_module.hooks.to_s.must_equal "[[:on_add, [:rewind!]], [:on_add, [:eat!]]]"
+  end
+end

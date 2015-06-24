@@ -25,14 +25,18 @@ module Disposable::Twin::Callback
     end
 
     def self.property(*args, &block)
-      representer_class.property(*args, &block).tap do |dfn|
+      representer_class.property(*args, &block).tap do |dfn| # TODO: implement for property.
         hooks << ["property", dfn]
       end
     end
 
-    def self.collection(*args, &block)
-      representer_class.collection(*args, &block).tap do |dfn|
-        hooks << ["property", dfn]
+    def self.collection(name, options={}, &block)
+      inherit = options[:inherit] # FIXME: this is deleted in ::property.
+      representer_class.collection(name, options, &block).tap do |dfn|
+        if inherit
+          return hooks.find { |cfg| cfg[0]=="property" && cfg[1].name == dfn.name }[1] = dfn
+        end
+        hooks << ["property", dfn] unless inherit
       end
     end
 
@@ -64,14 +68,11 @@ module Disposable::Twin::Callback
           definition = args
           twin = @twin.send(definition.getter) # album.songs
 
-          # Group.new(twin).()
-          @invocations += definition.representer_module.new(twin).(options).invocations
+          @invocations += definition.representer_module.new(twin).(options).invocations # Group.new(twin).()
           next
         end
 
-        res = callback!(event, options, args)
-
-        invocations << res
+        invocations << callback!(event, options, args)
       end
 
       self
