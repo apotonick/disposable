@@ -8,7 +8,7 @@ class SchemaTest < MiniTest::Spec
 
     property :id
     property :title, writeable: false, deserializer: {skip_parse: "skip lambda"}
-    property :songs, readable: false, deserializer: {skip_parse: "another lambda", music: true} do
+    property :songs, readable: false, deserializer: {skip_parse: "another lambda", music: true, writeable: false} do
       property :name, as: "Name", deserializer: {skip_parse: "a crazy cool instance method"}
     end
   end
@@ -48,7 +48,7 @@ class SchemaTest < MiniTest::Spec
     songs = decorator.representable_attrs.get(:songs)
     options = songs.instance_variable_get(:@options)
     nested_extend = options.delete(:extend)
-    options.inspect.must_equal "{:readable=>false, :deserializer=>{:skip_parse=>\"another lambda\", :music=>true}, :parse_filter=>[], :render_filter=>[], :as=>\"songs\", :_inline=>true, :skip_parse=>\"another lambda\", :music=>true}"
+    options.inspect.must_equal "{:readable=>false, :deserializer=>{:skip_parse=>\"another lambda\", :music=>true, :writeable=>false}, :parse_filter=>[], :render_filter=>[], :as=>\"songs\", :_inline=>true, :skip_parse=>\"another lambda\", :music=>true, :writeable=>false}"
 
     # nested works.
     nested_extend.new(nil).hello.must_equal "hello"
