@@ -15,9 +15,13 @@ module Disposable::Callback
     # TODO: make this easier via declarable.
     extend Uber::InheritableAttr
     inheritable_attr :representer_class
+
+    # class << self
+    #   include Representable::Cloneable
+    # end
     self.representer_class = Class.new(Representable::Decorator) do
       def self.default_inline_class
-        Group
+        Group.extend Representable::Cloneable
       end
     end
 
@@ -35,11 +39,13 @@ module Disposable::Callback
       inherit = options[:inherit] # FIXME: this is deleted in ::property.
 
       representer_class.property(name, options, &block).tap do |dfn|
-        if inherit
-          return hooks.find { |cfg| cfg[0]=="property" && cfg[1].name == dfn.name }[1] = dfn
-        end
-        hooks << ["property", dfn]
+        return if inherit
+        hooks << ["property", dfn.name]
       end
+    end
+
+    def self.remove!(event, callback)
+      hooks.delete hooks.find { |cfg| cfg[0] == event && cfg[1][0] == callback }
     end
 
 
@@ -67,7 +73,9 @@ module Disposable::Callback
         event, args = cfg
 
         if event == "property" # FIXME: make nicer.
-          definition = args
+
+
+          definition = self.class.representer_class.representable_attrs.get(args)
           twin = @twin.send(definition.getter) # album.songs
 
           @invocations += definition.representer_module.new(twin).(options).invocations # Group.new(twin).()

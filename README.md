@@ -172,7 +172,7 @@ Don't confuse that with event triggering, though! Callbacks are passive, calling
 
 ## Callback Groups
 
-In order to simplify grouping callbacks and allowing a nested map we got `Callback::Group`.
+`Callback::Group` simplifies grouping callbacks and allows nesting.
 
 ```ruby
 class AfterSave < Disposable::Callback::Group
