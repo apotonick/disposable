@@ -4,19 +4,25 @@ _Decorators on top of your ORM layer._
 
 ## Introduction
 
-Disposable gives you "_Twins_" which are domain objects, decoupled from ActiveRecord, DataMapper or whatever ORM you use.
+Disposable gives you "_Twins_" which are domain objects, decoupled from ActiveRecord, ROM or whatever ORM you use.
 
-Twins are non-persistent domain objects. That is reflected in the name of the gem. However, they can read and write values from a persistent object.
+Twins are non-persistent domain objects. That is reflected in the name of the gem. However, they can read from and write values to a persistent object. Goal is to abstract the persistence layer until data is synced to the model.
 
-Twins are an integral part of the [Trailblazer](https://github.com/apotonick/trailblazer) architectural style which provides clean layering of concerns.
+* Twins help you design your domain layer without being restricted to your database layout by giving you composition, structs.
+* Change tracking for fields and nested structures.
+* Imperative callbacks
+* Collection semantics
 
-They give you an encapsulated alternative to delegators that many projects use to separate domain and persistence and help you restricting the domain API.
+## API
 
-## Why?
+Their public API is inbelievably simple.
 
-The goal is to have one object that delegates reading and writing to underlying object(s). This is a fundamental concept for cells view models, representers, and reform form objects.
+1. `Twin::new` creates and populates the twin.
+1. `Twin#"reader"` returns the value or nested twin of the property.
+1. `Twin#"writer=(v)"` writes the value to the twin, not the model.
+1. `Twin#sync` writes all values to the model.
+1. `Twin#save` writes all values to the model and calls `save` on configured models.
 
-Twins may contain validations, nevertheless, in Trailblazer, validations (or "Contracts") sit one layer above. They still can be part of your domain, though.
 
 ## Twin
 
@@ -24,77 +30,159 @@ Twins are only # FIXME % slower than AR alone.
 
 Twins implement light-weight decorators objects with a unified interface. They map objects, hashes, and compositions of objects, along with optional hashes to inject additional options.
 
-Let me show you what I mean.
+Every twin is based on a defined schema.
 
 ```ruby
-song = Song.create(title: "Savior", length: 242)
-```
-
-## Definition
-
-Twins need to define every field they expose.
-
-```ruby
-class Song::Twin < Disposable::Twin
+class AlbumTwin < Disposable::Twin
   property :title
-  property :length
-  option   :good?
+  property :playable?, virtual: true # context-sensitive, e.g. current_user dependent.
+
+  collection :songs do
+    property :name
+    property :index
+  end
+
+  property :artist do
+    property :full_name
+  end
 end
 ```
 
-## Creation
+## Constructor
 
-You need to pass model and the optional options to the twin constructor.
+Twins get populated from the decorated models.
 
 ```ruby
-twin = Song::Twin.new(song, good?: true)
+Song   = Struct.new(:name, :index)
+Artist = Struct.new(:full_name)
+Album  = Struct.new(:title, :songs, :artist)
 ```
 
-++++++ builders
+You need to pass model and the facultative options to the twin constructor.
 
-## Reading
+```ruby
+album = Album.new("Nice Try")
+twin  = AlbumTwin.new(album, playable?: true)
+```
+
+## Readers
 
 This will create a composition object of the actual model and the hash.
 
 ```ruby
-twin.title #=> "Savior"
-twin.good? #=> true
+twin.name      #=> "Nice Try"
+twin.playable? #=> true
 ```
 
 You can also override `property` values in the constructor:
 
 ```ruby
-twin = Song::Twin.new(song, title: "Plasticash")
+twin = AlbumTwin.new(album, title: "Plasticash")
 twin.title #=> "Plasticash"
 ```
 
-Let's talk about what happens to the actual model when setting values?
+## Writers
 
-## Writing
-
-It doesn't happen. The model is only queried when _reading_ values. Writing only happens in additional modules: Syncing and Saving is where the values held in the twin are written to the model.
-
-## Renaming
-
-## Structs
-
-If you don't have a model but a simple hash, use `Struct`.
+Writers change values on the twin and are _not_ propagated to the model.
 
 ```ruby
-class Song::Twin < Disposable::Twin
-  include Struct
-  property :title
-  property :length
+twin.name = "Skamobile"
+twin.name  #=> "Skamobile"
+album.name #=> "Nice Try"
+```
+
+Writers on nested twins will "twin" the value.
+
+```ruby
+twin.songs #=> []
+twin.songs << Song.new("Adondo", 1)
+twin.songs = [<Twin::Song name="Adondo" index=1 model=<Song ..>>]
+album.songs #=> []
+```
+
+The added twin is _not_ passed to the model. Note that the nested song is a twin, not the model itself.
+
+## Sync
+
+Given the above state change on the twin, here is what happens after calling `#sync`.
+
+```ruby
+album.name  #=> "Nice Try"
+album.songs #=> []
+
+twin.sync
+
+album.name  #=> "Skamobile"
+album.songs #=> [<Song name="Adondo" index=1>]
+```
+
+`#sync` writes all configured attributes back to the models using public setters as `album.name=` or `album.songs=`. This is recursive and will sync the entire object graph.
+
+Note that `sync` might already trigger saving the model as persistence layers like ActiveRecord can't deal with `collection= []` and instantly persist that.
+
+You may implement your syncing manually by passing a block to `sync`.
+
+```ruby
+twin.sync do |hash|
+  hash #=> {
+  #  "name"      => "Skamobile",
+  #  "playable?" => true,
+  #  "songs"     => [{"name"=>"Adondo"...}..]
+  # }
 end
 ```
 
-Note that a hash goes into the constructor now.
+This will _not_ write anything to the models.
+
+## Save
+
+Calling `#save` will do `sync` plus calling `save` on all nested models. This implies that the models need to implement `save`.
 
 ```ruby
-twin = Song::Twin.new(title: "Savior", good?: true)
+twin.save
+#=> album.save
+#=>      .songs[0].save
+
 ```
 
+## Nested Twin
 
+Nested objects can be declared with an inline twin.
+
+```ruby
+property :artist do
+  property :full_name
+end
+```
+
+The setter will automatically "twin" the model.
+
+```ruby
+twin.artist = Artist.new
+twin.artist #=> <Twin::Artist model=<Artist ..>>
+```
+
+You can also specify nested objects with an explicit class.
+
+```ruby
+property :artist, twin: TwinArtist
+```
+
+## Collections
+
+Collections can be defined analogue to `property`. The exposed API is the `Array` API.
+
+* `twin.songs = [..]` will override the existing value and "twin" every item.
+* `twin.songs << Song.new` will add and twin.
+* `twin.insert(0, Song.new)` will insert at the specified position and twin.
+
+You can also delete, replace and move items.
+
+* `twin.songs.delete( twin.songs[0] )`
+
+None of these operations is propagated to the model.
+
+## Renaming
 ## Compositions
 
 ## With Representers
