@@ -135,6 +135,8 @@ end
 
 Invoking `sync` with block will _not_ write anything to the models.
 
+Needs to be included explicitly (`Sync`).
+
 ## Save
 
 Calling `#save` will do `sync` plus calling `save` on all nested models. This implies that the models need to implement `#save`.
@@ -145,6 +147,8 @@ twin.save
 #=>      .songs[0].save
 
 ```
+
+Needs to be included explicitly (`Save`).
 
 ## Nested Twin
 
@@ -252,7 +256,94 @@ twin.created? #=> false
 This will only return true when the `persisted?` field has flipped.
 
 ## Renaming
-## Compositions
+
+The `Expose` module allows renaming properties.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+  feature Expose
+
+  property :song_title, from: :title
+```
+
+The public accessor is now `song_title` whereas the model's accessor needs to be `title`.
+
+```ruby
+album = OpenStruct.new(title: "Run For Cover")
+AlbumTwin.new(album).song_title #=> "Run For Cover"
+```
+
+## Composition
+
+Compositions of objects can be mapped, too.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+  feature Composition
+
+  property :id,    on: :album
+  property :title, on: :album
+  property :songs, on: :cd
+  property :cd_id, on: :cd, from: :id
+```
+
+When initializing a composition, you have to pass a hash that contains the composees.
+
+```ruby
+AlbumTwin.new(album: album, cd: CD.find(1))
+```
+
+Note that renaming works here, too.
+
+## Struct
+
+[FIXME: Coming soon!]
+
+Twins can also map hash properties, e.g. from a deeply nested serialized JSON column.
+
+```ruby
+album.permissions #=> {admin: {read: true, write: true}, user: {destroy: false}}
+```
+
+Map that using the `:struct` option.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+  feature Struct
+
+  property :permissions, struct: true do
+    property :admin, struct: true, do
+      property :read
+      property :write
+    end
+
+    property :user # you don't have to use :struct everywhere!
+  end
+```
+
+You get fully object-oriented access to your properties.
+
+```ruby
+twin.permissions.admin.read #=> true
+```
+
+Note that you do not have to use `:struct` everywhere.
+
+```ruby
+twin.permissions.user #=> {destroy: false}
+```
+
+Of course, this works for writing, too.
+
+```ruby
+twin.permissions.admin.read = :MAYBE
+```
+
+After `sync`ing, you will find a hash in the model.
+
+```ruby
+album.permissions #=> {admin: {read: :MAYBE, write: true}, user: {destroy: false}}
+```
 
 ## With Representers
 
