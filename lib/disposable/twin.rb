@@ -75,10 +75,6 @@ module Disposable
 
     module Accessors
     private
-      def read_property(name, private_name)
-        @fields[name.to_s]
-      end
-
       # assumption: collections are always initialized from Setup since we assume an empty [] for "nil"/uninitialized collections.
       def write_property(name, value, dfn)
         return if dfn[:twin] and value.nil? # TODO: test me (model.composer => nil)
