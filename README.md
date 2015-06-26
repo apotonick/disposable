@@ -4,11 +4,11 @@ _Decorators on top of your ORM layer._
 
 ## Introduction
 
-Disposable is the missing API of ActiveRecord*. Its mission is to
+Disposable is the missing API of ActiveRecord*. The mission:
 
 * Maintain a manipulatable object graph that is a copy/map of a persistent structure.
 * Prevent any write to the persistence layer until you say `sync`.
-* Help designing your domain layer without being restricted to database layouts.
+* Help designing your domain layer without being restricted to database layouts ([renaming](#renaming), [compositions](#composition), [hash fields](#struct)).
 * Provide additional behavior like [change tracking](#change-tracking), [imperative callbacks](#imperative-callbacks) and [collection semantics](#collection-semantics).
 
 
@@ -309,7 +309,7 @@ Map that using the `:struct` option.
 
 ```ruby
 class AlbumTwin < Disposable::Twin
-  feature Struct
+  include Struct
 
   property :permissions, struct: true do
     property :admin, struct: true, do
@@ -456,10 +456,10 @@ This will add the `rewind!` callback to the `songs` property, resulting in the f
 
 ```ruby
 collection :songs do
-    on_add    :notify_album!
-    on_add    :reset_song!
-    on_delete :rewind!
-  end
+  on_add    :notify_album!
+  on_add    :reset_song!
+  on_delete :rewind!
+end
 ```
 
 ## Builders
