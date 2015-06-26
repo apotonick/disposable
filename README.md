@@ -50,6 +50,8 @@ You need to pass model and the optional options to the twin constructor.
 twin = Song::Twin.new(song, good?: true)
 ```
 
+++++++ builders
+
 ## Reading
 
 This will create a composition object of the actual model and the hash.
@@ -238,6 +240,8 @@ collection :songs do
     on_delete :rewind!
   end
 ```
+
+## Builders
 
 ## Overriding Accessors
 

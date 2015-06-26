@@ -1,45 +1,29 @@
+require "uber/builder"
+
 module Disposable
   class Twin
-    # Allows setting a twin class for a host object (e.g. a cell, a form, or a representer) using ::twin
-    # and imports a method #build_twin to initialize this twin.
+    # Allows building different twin classes.
     #
     # Example:
     #
     #   class SongTwin < Disposable::Twin
-    #     properties :id, :title
-    #     option :is_released
-    #   end
-    #
-    #   class Cell
-    #     include Disposable::Twin::Builder
-    #     twin SongTwin
-    #
-    #     def initialize(model, options)
-    #       @twin = build_twin(model, options)
+    #     include Builder
+    #     builds ->(model, options) do
+    #       return Hit       if model.is_a? Model::Hit
+    #       return Evergreen if options[:evergreen]
     #     end
     #   end
     #
-    # An optional block passed to ::twin will be called per property yielding the Definition instance.
+    #   SongTwin.build(Model::Hit.new) #=> <Hit>
     module Builder
       def self.included(base)
         base.class_eval do
-          extend Uber::InheritableAttr
-          inheritable_attr :twin_class
-          extend ClassMethods
+          include Uber::Builder
+
+          def self.build(model, options={}) # semi-public.
+            class_builder.call(model, options).new(model, options) # Uber::Builder::class_builder.
+          end
         end
-      end
-
-      module ClassMethods
-        def twin(twin_class, &block)
-          twin_class.representer_class.representable_attrs.each { |dfn| yield(dfn) } if block_given?
-          self.twin_class = twin_class
-        end
-      end
-
-    private
-
-      def build_twin(*args)
-        self.class.twin_class.new(*args)
       end
     end
   end

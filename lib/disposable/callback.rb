@@ -73,8 +73,6 @@ module Disposable::Callback
         event, args = cfg
 
         if event == "property" # FIXME: make nicer.
-
-
           definition = self.class.representer_class.representable_attrs.get(args)
           twin = @twin.send(definition.getter) # album.songs
 

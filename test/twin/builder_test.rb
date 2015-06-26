@@ -1,52 +1,32 @@
 require "test_helper"
 
-class TwinBuilderTest < MiniTest::Spec
+class BuilderTest < MiniTest::Spec
+  module Model
+    Song = Struct.new(:id, :title)
+    Hit = Struct.new(:id, :title)
+    Evergreen = Struct.new(:id, :title)
+  end
+
   class Twin < Disposable::Twin
     property :id
     property :title
     # option   :is_released
-  end
 
-  describe "without property setup" do
-    class Host
-      include Disposable::Twin::Builder
-
-      twin Twin
-
-      def initialize(*args)
-        @model = build_twin(*args)
-      end
-
-      attr_reader :model
+    include Builder
+    builds ->(model, options) do
+      return Hit       if model.is_a? Model::Hit
+      return Evergreen if options[:evergreen]
     end
+  end
 
-    subject { Host.new(TwinTest::Model::Song.new(1, "Saturday Night"), is_released: true) }
+  class Hit < Twin
+  end
 
-    # model is simply the twin.
-    it { subject.respond_to?(:title).must_equal false }
-    it { subject.model.id.must_equal 1 }
-    it { subject.model.title.must_equal "Saturday Night" }
-    # it { subject.model.is_released.must_equal true }
+  class Evergreen < Twin
   end
 
 
-  describe "without property setup" do
-    class HostWithReaders
-      include Disposable::Twin::Builder
-
-      extend Forwardable
-      twin(Twin) { |dfn| def_delegator :@model, dfn.name }
-
-      def initialize(*args)
-        @model = build_twin(*args)
-      end
-    end
-
-    subject { HostWithReaders.new(TwinTest::Model::Song.new(1, "Saturday Night"), is_released: true) }
-
-    # both twin gets created and reader method defined.
-    it { subject.id.must_equal 1 }
-    it { subject.title.must_equal "Saturday Night" }
-    # it { subject.is_released.must_equal true }
-  end
+  it { Twin.build(Model::Song.new).must_be_instance_of Twin }
+  it { Twin.build(Model::Hit.new).must_be_instance_of  Hit }
+  it { Twin.build(Model::Evergreen.new, evergreen: true).must_be_instance_of Evergreen }
 end
