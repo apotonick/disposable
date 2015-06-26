@@ -182,6 +182,74 @@ You can also delete, replace and move items.
 
 None of these operations is propagated to the model.
 
+## Collection Semantics
+
+In addition to the standard `Array` API the collection adds a handful of additional semantics.
+
+* `songs=`, `songs<<` and `songs.insert` track twin via `#added`.
+* `songs.delete` tracks via `#deleted`.
+* `twin.destroy( twin.songs[0] )` deletes the twin and marks it for destruction in `#to_destroy`.
+* `twin.songs.save` will call `destroy` on all models marked for destruction in `to_destroy`. Tracks destruction via `#destroyed`.
+
+Again, the model is left alone until you call `sync` or `save`.
+
+## Change Tracking
+
+The `Changed` module will allow tracking of state changes in all properties, even nested structures.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+  feature Changed
+```
+
+Now, consider the following operations.
+
+```ruby
+twin.name = "Skamobile"
+twin.songs << Song.new("Skate", 2) # this adds another song.
+```
+
+This results in the following tracking results.
+
+```ruby
+twin.changed?             #=> true
+twin.changed?(:name)      #=> true
+twin.changed?(:playable?) #=> false
+twin.songs.changed?       #=> true
+twin.songs[0].changed?    #=> false
+twin.songs[1].changed?    #=> true
+```
+
+Assignments from the constructor are _not_ tracked as changes.
+
+```ruby
+twin = AlbumTwin.new(album)
+twin.changed? #=> false
+```
+
+## Persistance Tracking
+
+The `Persisted` module will track the `persisted?` field of the model, implying that your model exposes this field.
+
+```ruby
+twin.persisted? #=> false
+twin.save
+twin.persisted? #=> true
+```
+
+The `persisted?` field is a copy of the model's persisted? flag.
+
+You can also use `created?` to find out whether a twin's model was already persisted or just got created in this session.
+
+```ruby
+twin = AlbumTwin.new(Album.create) # assuming we were using ActiveRecord.
+twin.created? #=> false
+twin.save
+twin.created? #=> false
+```
+
+This will only return true when the `persisted?` field has flipped.
+
 ## Renaming
 ## Compositions
 
@@ -191,33 +259,6 @@ they indirect data, the twin's attributes get assigned without writing to the pe
 
 ## With Contracts
 
-## Collections
-
-Define collections using `::collection`.
-
-```ruby
-class AlbumTwin < Disposable::Twin
-  collection :songs do
-
-  end
-```
-
-### API
-
-The API is identical to `Array` with the following additions.
-
-* `#<<(model)` adds item, wraps it in twin and tracks it via `#added`.
-* `#insert(i, model)`, see `#<<`.
-* `#delete(twin)`, removes twin from collection and tracks via `#deleted`.
-* `#destroy(twin)`, removes twin from collection and tracks via `#deleted` and `#to_destroy` for destruction in `#save`.
-
-### Semantics
-
-Include `Twin::Collection::Semantics`.
-
-Semantics are extensions to the pure Ruby array behavior and designed to deal with persistence layers like ActiveRecord or ROM.
-
-* `#save` will call `destroy` on all models marked for destruction in `to_destroy`. Tracks destruction via `#destroyed`.
 
 
 ## Imperative Callbacks
