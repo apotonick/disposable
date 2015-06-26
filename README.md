@@ -297,27 +297,25 @@ Note that renaming works here, too.
 
 ## Struct
 
-[FIXME: Coming soon!]
-
 Twins can also map hash properties, e.g. from a deeply nested serialized JSON column.
 
 ```ruby
 album.permissions #=> {admin: {read: true, write: true}, user: {destroy: false}}
 ```
 
-Map that using the `:struct` option.
+Map that using the `Struct` module.
 
 ```ruby
 class AlbumTwin < Disposable::Twin
-  include Struct
-
-  property :permissions, struct: true do
-    property :admin, struct: true, do
+  property :permissions do
+     include Struct
+    property :admin do
+      include Struct
       property :read
       property :write
     end
 
-    property :user # you don't have to use :struct everywhere!
+    property :user # you don't have to use Struct everywhere!
   end
 ```
 
@@ -327,7 +325,7 @@ You get fully object-oriented access to your properties.
 twin.permissions.admin.read #=> true
 ```
 
-Note that you do not have to use `:struct` everywhere.
+Note that you do not have to use `Struct` everywhere.
 
 ```ruby
 twin.permissions.user #=> {destroy: false}
