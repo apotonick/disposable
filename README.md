@@ -4,22 +4,23 @@ _Decorators on top of your ORM layer._
 
 ## Introduction
 
-Disposable gives you "_Twins_" which are domain objects, decoupled from ActiveRecord, ROM or whatever ORM you use.
+Disposable is the missing API of ActiveRecord*. Its mission is to
 
-Twins are non-persistent domain objects. That is reflected in the name of the gem. However, they can read from and write values to a persistent object. Goal is to abstract the persistence layer until data is synced to the model.
+* Maintain a manipulatable object graph that is a copy/map of a persistent structure.
+* Prevent any write to the persistence layer until you say `sync`.
+* Help designing your domain layer without being restricted to database layouts.
+* Provide additional behavior like [change tracking](#change-tracking), [imperative callbacks](#imperative-callbacks) and [collection semantics](#collection-semantics).
 
-* Twins help you design your domain layer without being restricted to your database layout by giving you composition, structs.
-* Change tracking for fields and nested structures.
-* Imperative callbacks
-* Collection semantics
+
+Disposable gives you "_Twins_": non-persistent domain objects. That is reflected in the name of the gem. They can read from and write values to a persistent object and abstract the persistence layer until data is synced to the model.
 
 ## API
 
-Their public API is inbelievably simple.
+The public twin API is unbelievably simple.
 
 1. `Twin::new` creates and populates the twin.
 1. `Twin#"reader"` returns the value or nested twin of the property.
-1. `Twin#"writer=(v)"` writes the value to the twin, not the model.
+1. `Twin#"writer"=(v)` writes the value to the twin, not the model.
 1. `Twin#sync` writes all values to the model.
 1. `Twin#save` writes all values to the model and calls `save` on configured models.
 
@@ -62,7 +63,7 @@ You need to pass model and the facultative options to the twin constructor.
 
 ```ruby
 album = Album.new("Nice Try")
-twin  = AlbumTwin.new(album, playable?: true)
+twin  = AlbumTwin.new(album, playable?: current_user.can?(:play))
 ```
 
 ## Readers
@@ -70,7 +71,7 @@ twin  = AlbumTwin.new(album, playable?: true)
 This will create a composition object of the actual model and the hash.
 
 ```ruby
-twin.name      #=> "Nice Try"
+twin.title     #=> "Nice Try"
 twin.playable? #=> true
 ```
 
@@ -86,9 +87,9 @@ twin.title #=> "Plasticash"
 Writers change values on the twin and are _not_ propagated to the model.
 
 ```ruby
-twin.name = "Skamobile"
-twin.name  #=> "Skamobile"
-album.name #=> "Nice Try"
+twin.title = "Skamobile"
+twin.title  #=> "Skamobile"
+album.title #=> "Nice Try"
 ```
 
 Writers on nested twins will "twin" the value.
@@ -96,7 +97,7 @@ Writers on nested twins will "twin" the value.
 ```ruby
 twin.songs #=> []
 twin.songs << Song.new("Adondo", 1)
-twin.songs = [<Twin::Song name="Adondo" index=1 model=<Song ..>>]
+twin.songs  #=> [<Twin::Song name="Adondo" index=1 model=<Song ..>>]
 album.songs #=> []
 ```
 
@@ -107,12 +108,12 @@ The added twin is _not_ passed to the model. Note that the nested song is a twin
 Given the above state change on the twin, here is what happens after calling `#sync`.
 
 ```ruby
-album.name  #=> "Nice Try"
+album.title  #=> "Nice Try"
 album.songs #=> []
 
 twin.sync
 
-album.name  #=> "Skamobile"
+album.title  #=> "Skamobile"
 album.songs #=> [<Song name="Adondo" index=1>]
 ```
 
@@ -125,18 +126,18 @@ You may implement your syncing manually by passing a block to `sync`.
 ```ruby
 twin.sync do |hash|
   hash #=> {
-  #  "name"      => "Skamobile",
+  #  "title"     => "Skamobile",
   #  "playable?" => true,
   #  "songs"     => [{"name"=>"Adondo"...}..]
   # }
 end
 ```
 
-This will _not_ write anything to the models.
+Invoking `sync` with block will _not_ write anything to the models.
 
 ## Save
 
-Calling `#save` will do `sync` plus calling `save` on all nested models. This implies that the models need to implement `save`.
+Calling `#save` will do `sync` plus calling `save` on all nested models. This implies that the models need to implement `#save`.
 
 ```ruby
 twin.save
@@ -180,7 +181,7 @@ You can also delete, replace and move items.
 
 * `twin.songs.delete( twin.songs[0] )`
 
-None of these operations is propagated to the model.
+None of these operations are propagated to the model.
 
 ## Collection Semantics
 
@@ -206,7 +207,7 @@ Now, consider the following operations.
 
 ```ruby
 twin.name = "Skamobile"
-twin.songs << Song.new("Skate", 2) # this adds another song.
+twin.songs << Song.new("Skate", 2) # this adds second song.
 ```
 
 This results in the following tracking results.
