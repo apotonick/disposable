@@ -4,8 +4,6 @@ module Disposable
   class Twin
     # Allows building different twin classes.
     #
-    # Example:
-    #
     #   class SongTwin < Disposable::Twin
     #     include Builder
     #     builds ->(model, options) do

@@ -1,5 +1,5 @@
 require "representable/decorator"
-require "representable/hash"
+# require "representable/hash"
 
 module Disposable
   class Twin
@@ -38,7 +38,7 @@ module Disposable
       end
 
       def self.default_inline_class
-        Disposable::Twin
+        Twin
       end
 
 
@@ -52,7 +52,6 @@ module Disposable
           self[:exclude] ||= []
         end
       end
-    end
-
+    end # Decorator.
   end
 end

@@ -1,3 +1,7 @@
+# 0.1.0
+
+* This is the official first serious release.
+
 # 0.0.9
 
 * Rename `:as` to `:from`. Deprecated, this will be removed in 0.1.0.
