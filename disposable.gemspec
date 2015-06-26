@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["apotonick@gmail.com"]
   spec.description   = %q{Decorators on top of your ORM layer.}
   spec.summary       = %q{Decorators on top of your ORM layer with change tracking, collection semantics and nesting.}
-  spec.homepage      = "http://trailblazerb.org"
+  spec.homepage      = "https://github.com/apotonick/disposable"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
