@@ -4,7 +4,8 @@
 # For a scalar property, this will be run once and yield the property's value.
 # For a collection, this is run per item and yields the item.
 class Disposable::Twin::PropertyProcessor
-  def initialize(definition, value)
+  def initialize(definition, twin, value=nil)
+    value ||= twin.send(definition.getter)
     @definition = definition
     @value      = value
   end

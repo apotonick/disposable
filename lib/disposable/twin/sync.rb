@@ -27,7 +27,7 @@ class Disposable::Twin
           next
         end
 
-        nested_model = PropertyProcessor.new(dfn, property_value).() { |twin| twin.sync!({}) }
+        nested_model = PropertyProcessor.new(dfn, self, property_value).() { |twin| twin.sync!({}) }
 
         next if nested_model.nil?
 

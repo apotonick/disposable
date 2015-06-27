@@ -15,7 +15,7 @@ class Disposable::Twin
         next if dfn[:save] == false
 
         # call #save! on all nested twins.
-        PropertyProcessor.new(dfn, send(dfn.getter)).() { |twin| twin.save! }
+        PropertyProcessor.new(dfn, self).() { |twin| twin.save! }
       end
 
       result
