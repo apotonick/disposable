@@ -20,12 +20,14 @@ class Disposable::Twin
       options_for_sync = sync_options(Decorator::Options[options])
 
       schema.each(options_for_sync) do |dfn|
+        property_value = sync_read(dfn) #
+
         unless dfn[:twin]
-          mapper.send(dfn.setter, send(dfn.getter)) # always sync the property
+          mapper.send(dfn.setter, property_value) # always sync the property
           next
         end
 
-        nested_model = PropertyProcessor.new(dfn, self).() { |twin| twin.sync!({}) }
+        nested_model = PropertyProcessor.new(dfn, property_value).() { |twin| twin.sync!({}) }
 
         next if nested_model.nil?
 
@@ -35,11 +37,14 @@ class Disposable::Twin
       model
     end
 
+  private
     def self.included(includer)
       includer.extend ToNestedHash::ClassMethods
     end
 
-  private
+    def sync_read(definition)
+      send(definition.getter)
+    end
 
     module ToNestedHash
       def to_nested_hash(*)
@@ -108,6 +113,14 @@ class Disposable::Twin
         # exclude unchanged scalars, nested forms and changed scalars still go in here!
         options.exclude!(unchanged)
         super
+      end
+    end
+
+
+    # Include this won't use the getter #title in #sync but read directly from @fields.
+    module SkipGetter
+      def sync_read(dfn)
+        @fields[dfn.name]
       end
     end
   end

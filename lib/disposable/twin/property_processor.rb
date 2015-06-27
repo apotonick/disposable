@@ -4,8 +4,9 @@
 # For a scalar property, this will be run once and yield the property's value.
 # For a collection, this is run per item and yields the item.
 class Disposable::Twin::PropertyProcessor
-  def initialize(definition, twin)
-    @definition, @twin = definition, twin
+  def initialize(definition, value)
+    @definition = definition
+    @value      = value
   end
 
   def call(&block)
@@ -19,11 +20,11 @@ class Disposable::Twin::PropertyProcessor
 private
   def collection!
     # FIXME: the nil collection is not tested, yet!
-    (@twin.send(@definition.getter) || []).collect { |nested_twin| yield(nested_twin) }
+    (@value || []).collect { |nested_twin| yield(nested_twin) }
   end
 
   def property!
-    twin = @twin.send(@definition.getter) or return nil
+    twin = @value or return nil
     nested_model = yield(twin)
   end
 end
