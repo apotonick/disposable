@@ -80,7 +80,17 @@ module Disposable
         return if dfn[:twin] and value.nil? # TODO: test me (model.composer => nil)
         value = dfn.array? ? wrap_collection(dfn, value) : wrap_scalar(dfn, value) if dfn[:twin]
 
+        field_write(name, value)
+      end
+
+      # Write the property's value without using the public writer.
+      def field_write(name, value)
         @fields[name.to_s] = value
+      end
+
+      # Read the property's value without using the public reader.
+      def field_read(name)
+        @fields[name.to_s]
       end
 
       def wrap_scalar(dfn, value)

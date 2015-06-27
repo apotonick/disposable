@@ -32,7 +32,7 @@ private
   end
 
   def write_property(name, value, dfn)
-    old_value = send(name)
+    old_value = field_read(name)
 
     super.tap do
       _changed[name.to_s] = old_value != value
