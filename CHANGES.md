@@ -1,3 +1,7 @@
+# 0.1.2
+
+* Fix `Changed` which does not use the public reader to compare anymore, but the private `field_read`.
+
 # 0.1.1
 
 * Adding `Setup::SkipSetter` and `Sync::SkipGetter`.
