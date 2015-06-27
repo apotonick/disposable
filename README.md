@@ -508,10 +508,6 @@ end
 
 ## Builders
 
-## Overriding Accessors
-
-super
-
 ## Used In
 
 * [Reform](https://github.com/apotonick/reform) forms are based on twins and add a little bit of form decoration on top. Every nested form is a twin.
