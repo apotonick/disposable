@@ -349,6 +349,52 @@ they indirect data, the twin's attributes get assigned without writing to the pe
 
 ## With Contracts
 
+## Overriding Getter for Presentation
+
+You can override getters for presentation.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+    property :title
+
+    def title
+      super.upcase
+    end
+  end
+```
+
+Be careful, though. The getter normally is also called in `sync` when writing properties to the models.
+
+You can skip invocation of getters in `sync` and read values from `@fields` directly by including `Sync::SkipGetter`.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+  feature Sync
+  feature Sync::SkipGetter
+```
+
+## Manual Coercion
+
+You can override setters for manual coercion.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+    property :title
+
+    def title=(v)
+      super(v.trim)
+    end
+  end
+```
+
+Be careful, though. The setter normally is also called in `setup` when copying properties from the models to the twin.
+
+Analogue to `SkipGetter`, include `Setup::SkipSetter` to write values directly to `@fields`.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+  feature Setup::SkipSetter
+```
 
 
 ## Imperative Callbacks
