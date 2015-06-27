@@ -1,3 +1,7 @@
+# 0.1.1
+
+* Adding `Setup::SkipSetter` and `Sync::SkipGetter`.
+
 # 0.1.0
 
 * This is the official first serious release.
