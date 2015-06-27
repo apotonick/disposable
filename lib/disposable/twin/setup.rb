@@ -27,11 +27,23 @@ module Disposable
           name  = dfn.name
           value = options[name.to_sym] || mapper.send(name) # model.title.
 
-          send(dfn.setter, value)
+          setup_write!(dfn, value)
         end
 
         @fields.merge!(options) # FIXME: hash/string. # FIXME: call writer!!!!!!!!!!
         # from_hash(options) # assigns known properties from options.
+      end
+
+      def setup_write!(dfn, value)
+        send(dfn.setter, value)
+      end
+
+
+      # Including this will _not_ use the property's setter in Setup and allow you to override it.
+      module SkipSetter
+        def setup_write!(dfn, value)
+          write_property(dfn.name, value, dfn)
+        end
       end
     end # Setup
   end
