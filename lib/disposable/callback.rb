@@ -25,6 +25,10 @@ module Disposable::Callback
       end
     end
 
+    def self.clone
+      Class.new(self)
+    end
+
     def self.feature(*args)
     end
 

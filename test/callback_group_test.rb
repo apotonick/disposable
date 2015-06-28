@@ -219,4 +219,15 @@ class CallbackGroupInheritanceTest < MiniTest::Spec
     RemovingInheritGroup.representer_class.representable_attrs.get(RemovingInheritGroup.hooks[0][1]).representer_module.hooks.to_s.must_equal "[[:on_add, [:reset_song!]]]"
     RemovingInheritGroup.representer_class.representable_attrs.get(RemovingInheritGroup.hooks[2][1]).representer_module.hooks.to_s.must_equal "[[:on_change, [:sing!]]]"
   end
+
+  # Group::clone
+  ClonedGroup = Group.clone
+  ClonedGroup.class_eval do
+    remove! :on_change, :change!
+  end
+
+  it do
+    Group.hooks.size.must_equal 4
+    ClonedGroup.hooks.size.must_equal 3
+  end
 end
