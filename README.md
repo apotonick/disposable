@@ -279,7 +279,7 @@ Compositions of objects can be mapped, too.
 
 ```ruby
 class AlbumTwin < Disposable::Twin
-  feature Composition
+  include Composition
 
   property :id,    on: :album
   property :title, on: :album

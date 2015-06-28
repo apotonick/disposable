@@ -1,3 +1,7 @@
+# 0.1.3
+
+* Fix `Composition#save`, it now returns true only if all models could be saved.
+
 # 0.1.2
 
 * Fix `Changed` which does not use the public reader to compare anymore, but the private `field_read`.

@@ -43,7 +43,8 @@ class TwinCompositionTest < MiniTest::Spec
     requester.name.must_equal "Greg Howe"
 
 
-    request.save
+    res = request.save
+    res.must_equal true
 
     # make sure models got synced and saved.
     song.id.must_equal 2
@@ -72,5 +73,12 @@ class TwinCompositionTest < MiniTest::Spec
     end
 
     nested_hash.must_equal(:song=>{"title"=>"Tease", "id"=>2}, :requester=>{"name"=>"Wooten", "id"=>1, "captcha"=>"Awesome!"})
+  end
+
+  # save with one unsaveable model.
+    #save returns result.
+  it do
+    song.instance_eval { def save; false; end }
+    request.save.must_equal false
   end
 end
