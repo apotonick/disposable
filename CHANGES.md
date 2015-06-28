@@ -1,6 +1,7 @@
 # 0.1.3
 
 * Fix `Composition#save`, it now returns true only if all models could be saved.
+* Introduce `Callback::Group::clone`.
 
 # 0.1.2
 
