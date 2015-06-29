@@ -185,6 +185,27 @@ class AlbumTwin < Disposable::Twin
     # this will now include Coercion, too.
 ```
 
+## Coercion
+
+Twins can use [Virtus](https://github.com/solnic/virtus) coercion. This will override the setter in your twin, coerce the incoming value, and call the original setter. _Nothing more_ will happen.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+  feature Coercion
+  feature Setup::SkipSetter
+
+  property :id, type: Integer
+```
+
+The `:type` option defines the coercion type. You may incluce `Setup::SkipSetter`, too, as otherwise the coercion will happen at initialization time and in the setter.
+
+```ruby
+twin.id = "1"
+twin.id #=> 1
+```
+
+Again, coercion only happens in the setter.
+
 ## Collections
 
 Collections can be defined analogue to `property`. The exposed API is the `Array` API.
