@@ -1,3 +1,7 @@
+# 0.1.4
+
+* Add `Twin::Coercion`.
+
 # 0.1.3
 
 * Fix `Composition#save`, it now returns true only if all models could be saved.
