@@ -173,6 +173,18 @@ You can also specify nested objects with an explicit class.
 property :artist, twin: TwinArtist
 ```
 
+## Features
+
+You can simply `include` feature modules into twins. If you want a feature to be included into all inline twins of your schema, use `::feature`.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+  feature Coercion
+
+  property :artist do
+    # this will now include Coercion, too.
+```
+
 ## Collections
 
 Collections can be defined analogue to `property`. The exposed API is the `Array` API.
