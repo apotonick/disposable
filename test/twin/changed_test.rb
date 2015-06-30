@@ -10,7 +10,6 @@ class ChangedWithSetupTest < MiniTest::Spec
 
   module Twin
     class Album < Disposable::Twin
-      feature Setup
       feature Changed
       # include Coercion
       property :name
@@ -25,7 +24,6 @@ class ChangedWithSetupTest < MiniTest::Spec
       end
 
       property :artist do
-        include Setup
         property :name
       end
     end
@@ -104,5 +102,36 @@ class ChangedWithSetupTest < MiniTest::Spec
   it do
     twin.name = "The Rest Is Silence"
     twin.changed?.must_equal false
+  end
+end
+
+
+require "disposable/twin/coercion"
+class ChangedWithCoercionTest < MiniTest::Spec
+  Song = Struct.new(:released)
+
+  class SongTwin < Disposable::Twin
+    include Changed
+    include Coercion
+
+    property :released, type: Virtus::Attribute::Boolean
+  end
+
+  it do
+    twin = SongTwin.new(Song.new)
+    twin.changed?(:released).must_equal false
+    twin.released = 1
+    twin.released.must_equal true
+    twin.changed?(:released).must_equal true
+  end
+
+  it do
+    twin = SongTwin.new(Song.new(true))
+    twin.released = true
+    twin.changed?(:released).must_equal false
+    twin.released = 1 # it coerces, then assigns, then compares, which makes this NOT changed.
+    twin.changed?(:released).must_equal false
+    twin.released = false
+    twin.changed?(:released).must_equal true
   end
 end
