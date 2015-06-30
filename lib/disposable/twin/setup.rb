@@ -30,12 +30,17 @@ module Disposable
           setup_write!(dfn, value)
         end
 
-        @fields.merge!(options) # FIXME: hash/string. # FIXME: call writer!!!!!!!!!!
+        merge_options!(options) # FIXME: call writer!!!!!!!!!!
         # from_hash(options) # assigns known properties from options.
       end
 
       def setup_write!(dfn, value)
         send(dfn.setter, value)
+      end
+
+      def merge_options!(options)
+        # TODO: ask charliesome if that is faster with return unless options.size.
+        options.each { |k, v| @fields[k.to_s] = v } # TODO: this merges every option, not only defined ones.
       end
 
 

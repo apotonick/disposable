@@ -1,3 +1,7 @@
+# 0.1.5
+
+* Correctly merge options from constructor into `@fields`.
+
 # 0.1.4
 
 * Add `Twin::Coercion`.

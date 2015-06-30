@@ -137,3 +137,19 @@ class TwinSetupWithInlineTwinsTest < MiniTest::Spec
     twin.songs[1].composer.id.must_equal 2
   end
 end
+
+# Twin.new(model, is_online: true)
+class TwinWithVirtualSetupTest < MiniTest::Spec
+  Song = Struct.new(:id)
+
+  class AlbumTwin < Disposable::Twin
+    property :id
+    property :is_online, readable: false, writeable: false
+  end
+
+  it do
+    twin = AlbumTwin.new(Song.new(1), is_online: true)
+    twin.id.must_equal 1
+    twin.is_online.must_equal true
+  end
+end
