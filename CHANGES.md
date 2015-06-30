@@ -1,6 +1,7 @@
 # 0.1.5
 
 * Correctly merge options from constructor into `@fields`.
+* Add `:virtual` which is an alias for `readable: false, writeable: false`.
 
 # 0.1.4
 

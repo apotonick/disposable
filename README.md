@@ -539,6 +539,14 @@ collection :songs do
 end
 ```
 
+## Readable, Writeable, Virtual
+
+Properties can have various access settings.
+
+* `readable: false` won't read from the model in `Setup`.
+* `writeable: false` won't write to model in `Sync`.
+* `virtual: true` is both settings above combined.
+
 ## Builders
 
 ## Used In

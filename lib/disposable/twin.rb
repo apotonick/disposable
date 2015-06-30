@@ -47,6 +47,10 @@ module Disposable
       options[:private_name] = options.delete(:from) || name
       options[:pass_options] = true
 
+      if options.delete(:virtual)
+        options[:writeable] = options[:readable] = false
+      end
+
       representer_class.property(name, options, &block).tap do |definition|
         mod = Module.new do
           define_method(name)       { @fields[name.to_s] }
