@@ -2,6 +2,7 @@
 
 * Correctly merge options from constructor into `@fields`.
 * Add `:virtual` which is an alias for `readable: false, writeable: false`.
+* Do not use getters with `SkipGetter` in `#sync{}`.
 
 # 0.1.4
 
