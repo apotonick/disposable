@@ -48,7 +48,11 @@ class Disposable::Twin
 
     module ToNestedHash
       def to_nested_hash(*)
-        self.class.nested_hash_representer.new(self).to_hash
+        self.class.nested_hash_representer.new(nested_hash_source).to_hash
+      end
+
+      def nested_hash_source
+        self
       end
 
       module ClassMethods
@@ -58,8 +62,10 @@ class Disposable::Twin
             include Representable::Hash
 
             representable_attrs.each do |dfn|
-              dfn.merge!(readable: true) # the nested hash contains all fields.
-              dfn.merge!(as: dfn[:private_name]) # nested hash keys by model property names.
+              dfn.merge!(
+                readable: true, # the nested hash contains all fields.
+                as:       dfn[:private_name] # nested hash keys by model property names.
+              )
 
               dfn.merge!(
                 prepare:       lambda { |model, *| model }, # TODO: why do we need that here?
@@ -121,6 +127,10 @@ class Disposable::Twin
     module SkipGetter
       def sync_read(dfn)
         @fields[dfn.name]
+      end
+
+      def nested_hash_source
+        OpenStruct.new(@fields)
       end
     end
   end

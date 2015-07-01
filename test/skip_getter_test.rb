@@ -33,6 +33,13 @@ class SkipGetterTest < MiniTest::Spec
 
     album.title.must_equal "Wild Frontier"
     album.artist.name.must_equal "Gary Moore"
+
+    # nested hash.
+    nested_hash = nil
+    twin.sync do |hash|
+      nested_hash = hash
+    end
+    nested_hash.must_equal({"title"=>"Wild Frontier", "artist"=>{"name"=>"Gary Moore"}})
   end
 end
 
