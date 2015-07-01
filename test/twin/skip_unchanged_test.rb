@@ -46,9 +46,9 @@ class SkipUnchangedTest < MiniTest::Spec
     twin.songs[0].title = "Resist Stance"
 
     # raises exceptions when setters are called.
-    album.instance_eval { def name=; end }
-    artist.instance_eval { def name=; end }
-    song_with_composer.instance_eval { def title=; end }
+    album.instance_eval { def name=; raise; end }
+    artist.instance_eval { def name=; raise; end }
+    song_with_composer.instance_eval { def title=; raise; end }
 
     twin.sync
 
