@@ -1,3 +1,4 @@
+# TODO: allow default: -> for hashes, etc.
 module Disposable::Twin::Default
   def setup_value_for(dfn, options)
     value = super
