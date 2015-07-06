@@ -24,14 +24,18 @@ module Disposable
         schema.each do |dfn|
           next if dfn[:readable] == false
 
-          name  = dfn.name
-          value = options[name.to_sym] || mapper.send(name) # model.title.
+          value = setup_value_for(dfn, options)
 
           setup_write!(dfn, value)
         end
 
         merge_options!(options) # FIXME: call writer!!!!!!!!!!
         # from_hash(options) # assigns known properties from options.
+      end
+
+      def setup_value_for(dfn, options)
+        name  = dfn.name
+        options[name.to_sym] || mapper.send(name) # model.title.
       end
 
       def setup_write!(dfn, value)

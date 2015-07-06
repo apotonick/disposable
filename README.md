@@ -206,6 +206,25 @@ twin.id #=> 1
 
 Again, coercion only happens in the setter.
 
+
+## Defaults
+
+Default values can be set via `:default`.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+  feature Default
+
+  property :title, default: "The Greatest Songs Ever Written"
+  property :composer, default: Composer.new do
+    property :name
+  end
+end
+```
+
+Default value is applied when the model's getter returns `nil`.
+
+
 ## Collections
 
 Collections can be defined analogue to `property`. The exposed API is the `Array` API.
