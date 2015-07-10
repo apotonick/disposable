@@ -224,6 +224,8 @@ end
 
 Default value is applied when the model's getter returns `nil`.
 
+Note that `:default` also works with `:virtual` and `readable: false`.
+
 
 ## Collections
 
