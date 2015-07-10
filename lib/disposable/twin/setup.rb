@@ -38,7 +38,7 @@ module Disposable
 
       def setup_value_for(dfn, options)
         name  = dfn.name
-        options[name.to_sym] || mapper.send(name) # model.title.
+        mapper.send(name) # model.title.
       end
 
       def setup_write!(dfn, value)
