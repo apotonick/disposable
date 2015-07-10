@@ -1,3 +1,10 @@
+# 0.1.7
+
+* Removed Setup#merge_options! and hash merge as this is already been done in #setup_properties.
+* Every property now gets set on the twin, even if `readable: false` is set.
+* `:default` and `:virtual` now work together.
+* Introduced `Setup#setup_property!`.
+
 # 0.1.6
 
 * Added `Default`.
