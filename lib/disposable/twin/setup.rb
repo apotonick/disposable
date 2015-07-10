@@ -22,15 +22,18 @@ module Disposable
 
       def setup_properties!(model, options)
         schema.each do |dfn|
-          next if dfn[:readable] == false
+          value = "saAAAAAAAAAAAAAAAAAA"
 
-          value = setup_value_for(dfn, options)
+          if options.has_key?(dfn.name.to_sym)
+            value = options[dfn.name.to_sym]
+          else
+            next if dfn[:readable] == false
+
+            value = setup_value_for(dfn, options)
+          end
 
           setup_write!(dfn, value)
         end
-
-        merge_options!(options) # FIXME: call writer!!!!!!!!!!
-        # from_hash(options) # assigns known properties from options.
       end
 
       def setup_value_for(dfn, options)
@@ -41,12 +44,6 @@ module Disposable
       def setup_write!(dfn, value)
         send(dfn.setter, value)
       end
-
-      def merge_options!(options)
-        # TODO: ask charliesome if that is faster with return unless options.size.
-        options.each { |k, v| @fields[k.to_s] = v } # TODO: this merges every option, not only defined ones.
-      end
-
 
       # Including this will _not_ use the property's setter in Setup and allow you to override it.
       module SkipSetter
