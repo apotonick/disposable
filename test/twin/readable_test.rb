@@ -54,4 +54,10 @@ class ReadableTest < MiniTest::Spec
 
     hash.must_equal("password"=> "123", "credit_card"=>{"name"=>"Jonny", "number"=>"456"})
   }
+
+  # allow passing non-readable value as option.
+  it do
+    twin = PasswordForm.new(cred, password: "open sesame!")
+    twin.password.must_equal "open sesame!"
+  end
 end

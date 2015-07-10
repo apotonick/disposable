@@ -34,6 +34,21 @@ class DefaultTest < Minitest::Spec
   end
 end
 
+class DefaultAndVirtualTest < Minitest::Spec
+  class Twin < Disposable::Twin
+    feature Default
+    feature Changed
+
+    property :title, default: "0", virtual: true
+  end
+
+  it do
+    twin = Twin.new(Object.new)
+    twin.title.must_equal "0"
+    # twin.changed.must_equal []
+  end
+end
+
 
 require "disposable/twin/struct"
 class DefaultWithStructTest < Minitest::Spec
