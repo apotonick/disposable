@@ -22,23 +22,24 @@ module Disposable
 
       def setup_properties!(model, options)
         schema.each do |dfn|
-          value = "saAAAAAAAAAAAAAAAAAA"
+          value =
+            if options.has_key?(dfn.name.to_sym)
+              options[dfn.name.to_sym]
+            else
+              setup_value_for(dfn, options)
+            end
 
-          if options.has_key?(dfn.name.to_sym)
-            value = options[dfn.name.to_sym]
-          else
-            next if dfn[:readable] == false
-
-            value = setup_value_for(dfn, options)
-          end
-
-          setup_write!(dfn, value)
+          setup_write!(dfn, value) # note: even readable: false will be written to twin as nil.
         end
       end
 
-      def setup_value_for(dfn, options)
-        name  = dfn.name
-        mapper.send(name) # model.title.
+      def setup_value_for(dfn, options) # overridden by Default.
+        return if dfn[:readable] == false
+        read_value_for(dfn, options)
+      end
+
+      def read_value_for(dfn, options)
+        mapper.send(dfn.name) # model.title.
       end
 
       def setup_write!(dfn, value)
