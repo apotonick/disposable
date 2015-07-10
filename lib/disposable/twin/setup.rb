@@ -5,14 +5,12 @@ module Disposable
     # This will result in all twin properties/collection items being twinned, and collections
     # being Collection to expose the desired public API.
     module Setup
-      # test is in incoming hash? is nil on incoming model?
-
       def initialize(model, options={})
         @fields = {}
         @model  = model
         @mapper = mapper_for(model) # mapper for model.
 
-        setup_properties!(model, options)
+        setup_properties!(options)
       end
 
     private
@@ -20,17 +18,19 @@ module Disposable
         model
       end
 
-      def setup_properties!(model, options)
-        schema.each do |dfn|
-          value =
-            if options.has_key?(dfn.name.to_sym)
-              options[dfn.name.to_sym]
-            else
-              setup_value_for(dfn, options)
-            end
+      def setup_properties!(options)
+        schema.each { |dfn| setup_property!(dfn, options) }
+      end
 
-          setup_write!(dfn, value) # note: even readable: false will be written to twin as nil.
-        end
+      def setup_property!(dfn, options)
+        value =
+          if options.has_key?(name = dfn.name.to_sym)
+            options[dfn.name.to_sym]
+          else
+            setup_value_for(dfn, options)
+          end
+
+        setup_write!(dfn, value) # note: even readable: false will be written to twin as nil.
       end
 
       def setup_value_for(dfn, options) # overridden by Default.

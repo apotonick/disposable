@@ -4,8 +4,8 @@
     #
     #   Twin.new(id: 1)
     module Struct
-      def setup_properties!(model, options={})
-        hash_representer.new(self).from_hash(model.merge(options))
+      def setup_properties!(options={})
+        hash_representer.new(self).from_hash(@model.merge(options))
       end
 
       def hash_representer
