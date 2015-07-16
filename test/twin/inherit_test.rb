@@ -40,8 +40,8 @@ class InheritTest < MiniTest::Spec
 
   # definitions are not shared.
   it do
-    Twin::Album.representer_class.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:fromage=>:_name, :private_name=>:name, :pass_options=>true, :parse_filter=>[], :render_filter=>[], :as=>\"name\"}>"
-    Twin::Compilation.representer_class.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:fromage=>:_name, :private_name=>:name, :pass_options=>true, :parse_filter=>[], :render_filter=>[], :as=>\"name\", :writeable=>false, :inherit=>true}>"
+    Twin::Album.representer_class.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:fromage=>:_name, :private_name=>:name, :parse_filter=>[], :render_filter=>[], :as=>\"name\"}>"
+    Twin::Compilation.representer_class.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:fromage=>:_name, :private_name=>:name, :parse_filter=>[], :render_filter=>[], :as=>\"name\", :writeable=>false, :inherit=>true}>"
   end
 
 

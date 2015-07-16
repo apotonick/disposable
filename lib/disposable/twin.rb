@@ -46,7 +46,6 @@ module Disposable
     # TODO: move to Declarative, as in Representable and Reform.
     def self.property(name, options={}, &block)
       options[:private_name] = options.delete(:from) || name
-      options[:pass_options] = true
 
       if options.delete(:virtual)
         options[:writeable] = options[:readable] = false
@@ -66,7 +65,7 @@ module Disposable
           process_inline!(nested_twin, definition)
           # DISCUSS: could we use build_inline's api here to inject the name feature?
 
-          definition.merge!(:twin => nested_twin)
+          definition.merge!(twin: nested_twin)
         end
       end
     end
