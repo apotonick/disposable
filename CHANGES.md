@@ -1,3 +1,7 @@
+# 0.1.8
+
+* Specifying a nested twin with `:twin` instead of a block now gets identically processed to the block.
+
 # 0.1.7
 
 * Removed Setup#merge_options! and hash merge as this is already been done in #setup_properties.

@@ -51,6 +51,8 @@ module Disposable
         options[:writeable] = options[:readable] = false
       end
 
+      options[:extend] = options[:twin] # e.g. property :album, twin: Album.
+
       representer_class.property(name, options, &block).tap do |definition|
         mod = Module.new do
           define_method(name)       { @fields[name.to_s] }
@@ -59,6 +61,7 @@ module Disposable
         end
         include mod
 
+        # FIXME: the problem here is that something like twin:{ Album } already gets evaluated here.
         # property -> build_inline(representable_attrs.features)
         if definition[:extend]
           nested_twin = definition[:extend].evaluate(nil)

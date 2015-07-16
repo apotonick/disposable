@@ -9,24 +9,24 @@ class TwinSetupTest < MiniTest::Spec
 
 
   module Twin
-    class Album < Disposable::Twin
+    class Artist < Disposable::Twin
       property :id
-      property :name
-      collection :songs, twin: lambda { |*| Twin::Song }
-      property :artist, twin: lambda { |*| Twin::Artist }
 
       include Setup
     end
 
-    class Song_ < Disposable::Twin
+    class Song < Disposable::Twin
       property :id
       property :composer, twin: lambda { |*| Twin::Artist }
 
       include Setup
     end
 
-    class Artist < Disposable::Twin
+    class Album < Disposable::Twin
       property :id
+      property :name
+      collection :songs, twin: lambda { |*| Twin::Song }
+      property :artist, twin: lambda { |*| Twin::Artist }
 
       include Setup
     end

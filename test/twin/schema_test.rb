@@ -67,3 +67,27 @@ class SchemaTest < MiniTest::Spec
     decorator.representable_attrs.get(:title).inspect.must_equal "#<Representable::Definition ==>title @options={:writeable=>false, :deserializer=>{:skip_parse=>\"skip lambda\"}, :parse_filter=>[], :render_filter=>[], :as=>\"title\"}>"
   end
 end
+
+
+class TwinSchemaTest < MiniTest::Spec
+  class Artist < Disposable::Twin
+    property :name
+  end
+
+  class Album < Disposable::Twin
+    property :artist, twin: Artist
+  end
+
+  it do
+    decorator = Disposable::Twin::Schema.from(Album, superclass: Representable::Decorator,
+      representer_from: lambda { |nested| nested.representer_class }
+    )
+
+    artist = decorator.representable_attrs.get(:artist)
+    options = artist.instance_variable_get(:@options)
+    nested_extend = options.delete(:extend)
+    options.inspect.must_equal "{:twin=>TwinSchemaTest::Artist, :private_name=>:artist, :parse_filter=>[], :render_filter=>[], :as=>\"artist\"}"
+    assert nested_extend < Representable::Decorator
+    nested_extend.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:private_name=>:name, :parse_filter=>[], :render_filter=>[], :as=>\"name\"}>"
+  end
+end

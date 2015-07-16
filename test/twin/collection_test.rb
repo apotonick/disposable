@@ -13,16 +13,16 @@ class TwinCollectionTest < MiniTest::Spec
 
 
   module Twin
-    class Album < Disposable::Twin
-      property :id # DISCUSS: needed for #save.
-      property :name
-      collection :songs, :twin => lambda { |*| Song }
-    end
-
     class Song < Disposable::Twin
       property :id # DISCUSS: needed for #save.
       property :title
       property :album, :twin => Album
+    end
+
+    class Album < Disposable::Twin
+      property :id # DISCUSS: needed for #save.
+      property :name
+      collection :songs, :twin => lambda { |*| Song }
     end
   end
 
@@ -46,18 +46,6 @@ require "disposable/twin/save"
 
 class TwinCollectionActiveRecordTest < MiniTest::Spec
   module Twin
-    class Album < Disposable::Twin
-      property :id # DISCUSS: needed for #save.
-      property :name
-      collection :songs, :twin => lambda { |*| Song }
-      property :artist, twin: lambda { |*| Artist }
-
-      include Sync
-      include Save
-      include Setup
-      include Collection::Semantics
-    end
-
     class Song < Disposable::Twin
       property :id # DISCUSS: needed for #save.
       property :title
@@ -69,6 +57,18 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
     end
 
     class Artist < Disposable::Twin
+    end
+
+    class Album < Disposable::Twin
+      property :id # DISCUSS: needed for #save.
+      property :name
+      collection :songs, :twin => lambda { |*| Song }
+      property :artist, twin: lambda { |*| Artist }
+
+      include Sync
+      include Save
+      include Setup
+      include Collection::Semantics
     end
   end
 
