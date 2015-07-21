@@ -43,38 +43,45 @@ module Disposable
     end
 
 
-    # TODO: move to Declarative, as in Representable and Reform.
-    def self.property(name, options={}, &block)
-      options[:private_name] = options.delete(:from) || name
+    class << self
+      # TODO: move to Declarative, as in Representable and Reform.
+      def property(name, options={}, &block)
+        options[:private_name] = options.delete(:from) || name
 
-      if options.delete(:virtual)
-        options[:writeable] = options[:readable] = false
+        if options.delete(:virtual)
+          options[:writeable] = options[:readable] = false
+        end
+
+        options[:extend] = options[:twin] # e.g. property :album, twin: Album.
+
+        representer_class.property(name, options, &block).tap do |definition|
+          create_accessors(name, definition)
+
+          # FIXME: the problem here is that something like twin:{ Album } already gets evaluated here.
+          # property -> build_inline(representable_attrs.features)
+          if definition[:extend]
+            nested_twin = definition[:extend].evaluate(nil)
+            process_inline!(nested_twin, definition)
+            # DISCUSS: could we use build_inline's api here to inject the name feature?
+
+            definition.merge!(twin: nested_twin)
+          end
+        end
       end
 
-      options[:extend] = options[:twin] # e.g. property :album, twin: Album.
+      def collection(name, options={}, &block)
+        property(name, options.merge(collection: true), &block)
+      end
 
-      representer_class.property(name, options, &block).tap do |definition|
+    private
+      def create_accessors(name, definition)
         mod = Module.new do
           define_method(name)       { @fields[name.to_s] }
           # define_method(name)       { read_property(name) }
           define_method("#{name}=") { |value| write_property(name, value, definition) } # TODO: this is more like prototyping.
         end
         include mod
-
-        # FIXME: the problem here is that something like twin:{ Album } already gets evaluated here.
-        # property -> build_inline(representable_attrs.features)
-        if definition[:extend]
-          nested_twin = definition[:extend].evaluate(nil)
-          process_inline!(nested_twin, definition)
-          # DISCUSS: could we use build_inline's api here to inject the name feature?
-
-          definition.merge!(twin: nested_twin)
-        end
       end
-    end
-
-    def self.collection(name, options={}, &block)
-      property(name, options.merge(collection: true), &block)
     end
 
     include Setup
