@@ -57,14 +57,12 @@ module Disposable
         representer_class.property(name, options, &block).tap do |definition|
           create_accessors(name, definition)
 
-          # FIXME: the problem here is that something like twin:{ Album } already gets evaluated here.
-          # property -> build_inline(representable_attrs.features)
-          if definition[:extend]
+          if definition[:extend] and !options[:twin]
+            # This will soon be replaced with Declarative's API. # DISCUSS: could we use build_inline's api here to inject the name feature?
             nested_twin = definition[:extend].evaluate(nil)
             process_inline!(nested_twin, definition)
-            # DISCUSS: could we use build_inline's api here to inject the name feature?
 
-            definition.merge!(twin: nested_twin)
+            definition.merge!(twin: nested_twin) # DISCUSS: where do we need this?
           end
         end
       end
@@ -81,6 +79,10 @@ module Disposable
           define_method("#{name}=") { |value| write_property(name, value, definition) } # TODO: this is more like prototyping.
         end
         include mod
+      end
+
+      # DISCUSS: this method might disappear or change pretty soon.
+      def process_inline!(mod, definition)
       end
     end
 
@@ -117,9 +119,6 @@ module Disposable
     end
     include Accessors
 
-    # DISCUSS: this method might disappear or change pretty soon.
-    def self.process_inline!(mod, definition)
-    end
 
     # FIXME: this is experimental.
     module ToS

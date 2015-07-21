@@ -57,12 +57,12 @@ class TwinWithNestedStructTest < MiniTest::Spec
     property :title
     include Sync
 
-    property :options, twin: true do # don't call #to_hash, this is triggered in the twin's constructor.
+    property :options do # don't call #to_hash, this is triggered in the twin's constructor.
       include Struct
       property :recorded
       property :released
 
-      property :preferences, twin: true do
+      property :preferences do
         include Struct
         property :show_image
         property :play_teaser

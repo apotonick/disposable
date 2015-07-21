@@ -1,3 +1,7 @@
+# 0.1.9
+
+* The `:twin` option is no longer evaluated at compile time, only inline twins are run through `::process_inline!`. This allows specifying twin classes in lambdas for lazy-loading, and recursive twins.
+
 # 0.1.8
 
 * Specifying a nested twin with `:twin` instead of a block now gets identically processed to the block.
