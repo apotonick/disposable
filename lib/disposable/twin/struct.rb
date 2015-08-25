@@ -4,29 +4,18 @@
     #
     #   Twin.new(id: 1)
     module Struct
-      def setup_properties!(options={})
-        hash_representer.new(self).from_hash(@model.merge(options))
+      def read_value_for(dfn, options)
+        name = dfn.name
+        @model[name.to_s] || @model[name.to_sym] # TODO: test sym vs. str.
       end
 
-      def hash_representer
+      def sync_hash_representer # TODO: make this without representable, please.
         Class.new(schema) do
           include Representable::Hash
-          include Representable::Hash::AllowSymbols
 
           representable_attrs.each do |dfn|
             dfn.merge!(
               prepare:       lambda { |model, *| model },
-              instance:      lambda { |model, *| model }, # FIXME: this is because Representable thinks this is typed? in Deserializer.
-              representable: false,
-            ) if dfn[:twin]
-          end
-        end
-      end
-
-      def sync_hash_representer
-        hash_representer.clone.tap do |rpr|
-          rpr.representable_attrs.each do |dfn|
-            dfn.merge!(
               serialize: lambda { |model, *| model.sync! },
               representable: true
             ) if dfn[:twin]

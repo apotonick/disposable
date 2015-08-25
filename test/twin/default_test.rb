@@ -8,7 +8,7 @@ class DefaultTest < Minitest::Spec
     feature Default
 
     property :title, default: "Medio-Core"
-    property :genre, default: -> { 'Punk Rock' }
+    property :genre, default: -> { "Punk Rock" }
     property :composer, default: Composer.new do
       property :name, default: "NOFX"
     end
