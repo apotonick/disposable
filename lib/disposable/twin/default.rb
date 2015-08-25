@@ -7,6 +7,6 @@ module Disposable::Twin::Default
   end
 
   def default_for(dfn, options)
-    dfn[:default]
+    Uber::Options::Value.new(dfn[:default]).evaluate(self)
   end
 end

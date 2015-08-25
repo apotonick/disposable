@@ -1,13 +1,14 @@
 require "test_helper"
 
 class DefaultTest < Minitest::Spec
-  Song     = Struct.new(:title, :composer)
+  Song     = Struct.new(:title, :genre, :composer)
   Composer = Struct.new(:name)
 
   class Twin < Disposable::Twin
     feature Default
 
-    property :title, default: "Mediocore"
+    property :title, default: "Medio-Core"
+    property :genre, default: -> { 'Punk Rock' }
     property :composer, default: Composer.new do
       property :name, default: "NOFX"
     end
@@ -15,16 +16,18 @@ class DefaultTest < Minitest::Spec
 
   # all given.
   it do
-    twin = Twin.new(Song.new("Anarchy Camp", Composer.new("Nofx")))
+    twin = Twin.new(Song.new("Anarchy Camp", "Punk", Composer.new("Nofx")))
     twin.title.must_equal "Anarchy Camp"
+    twin.genre.must_equal "Punk"
     twin.composer.name.must_equal "Nofx"
   end
 
   # defaults, please.
   it do
     twin = Twin.new(Song.new)
-    twin.title.must_equal "Mediocore"
+    twin.title.must_equal "Medio-Core"
     twin.composer.name.must_equal "NOFX"
+    twin.genre.must_equal "Punk Rock"
   end
 
   # false value is not defaulted.
