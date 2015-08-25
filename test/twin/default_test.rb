@@ -8,7 +8,7 @@ class DefaultTest < Minitest::Spec
     feature Default
 
     property :title, default: "Medio-Core"
-    property :genre, default: -> { "Punk Rock" }
+    property :genre, default: -> { "Punk Rock #{model.class}" }
     property :composer, default: Composer.new do
       property :name, default: "NOFX"
     end
@@ -27,7 +27,7 @@ class DefaultTest < Minitest::Spec
     twin = Twin.new(Song.new)
     twin.title.must_equal "Medio-Core"
     twin.composer.name.must_equal "NOFX"
-    twin.genre.must_equal "Punk Rock"
+    twin.genre.must_equal "Punk Rock DefaultTest::Song"
   end
 
   # false value is not defaulted.
