@@ -1,3 +1,7 @@
+# 0.1.10
+
+* `:default` now accepts lambdas, too. Thanks to @johndagostino for implemeting this.
+
 # 0.1.9
 
 * The `:twin` option is no longer evaluated at compile time, only inline twins are run through `::process_inline!`. This allows specifying twin classes in lambdas for lazy-loading, and recursive twins.

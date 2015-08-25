@@ -217,15 +217,14 @@ class AlbumTwin < Disposable::Twin
 
   property :title, default: "The Greatest Songs Ever Written"
   property :composer, default: Composer.new do
-    property :name
+    property :name, default: -> { "Object-#{id}" }
   end
 end
 ```
 
-Default value is applied when the model's getter returns `nil`.
+Default value is applied when the model's getter returns `nil` when _initializing_ the twin.
 
-Note that `:default` also works with `:virtual` and `readable: false`.
-
+Note that `:default` also works with `:virtual` and `readable: false`. `:default` can also be a lambda which is then executed in twin context.
 
 ## Collections
 
