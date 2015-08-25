@@ -7,6 +7,17 @@ module Disposable::Twin::Default
   end
 
   def default_for(dfn, options)
-    Uber::Options::Value.new(dfn[:default]).evaluate(self)
+    dfn[:default].evaluate(self)
+  end
+
+  module ClassMethods
+    def property(name, options={}, &block)
+      options[:default] = Uber::Options::Value.new(options[:default])
+      super
+    end
+  end
+
+  def self.included(includer)
+    includer.extend ClassMethods
   end
 end
