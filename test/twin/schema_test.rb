@@ -77,6 +77,30 @@ class SchemaTest < MiniTest::Spec
 
     decorator.representable_attrs.get(:id).inspect.must_equal "#<Representable::Definition ==>id @options={:parse_filter=>[], :render_filter=>[], :as=>\"id\"}>"
     decorator.representable_attrs.get(:title).inspect.must_equal "#<Representable::Definition ==>title @options={:writeable=>false, :parse_filter=>[], :render_filter=>[], :as=>\"title\"}>"
+    decorator.representable_attrs.get(:songs).representer_module.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:as=>\"Name\", :parse_filter=>[], :render_filter=>[]}>"
+  end
+
+
+  it "::from with block allows customizing every definition and returns representer" do
+    decorator = Disposable::Twin::Schema.from(Representer,
+      superclass:       Representable::Decorator,
+      representer_from: lambda { |nested| nested },
+    ) { |dfn| dfn.merge!(amazing: true) }
+
+    decorator.representable_attrs.get(:id).inspect.must_equal "#<Representable::Definition ==>id @options={:parse_filter=>[], :render_filter=>[], :as=>\"id\", :amazing=>true}>"
+    decorator.representable_attrs.get(:songs).representer_module.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:as=>\"Name\", :deserializer=>{:skip_parse=>\"a crazy cool instance method\"}, :parse_filter=>[], :render_filter=>[], :amazing=>true}>"
+  end
+
+  it "recursive: false only copies first level" do
+    decorator = Disposable::Twin::Schema.from(Representer,
+      superclass:       Representable::Decorator,
+      representer_from: lambda { |nested| nested },
+      recursive: false,
+      exclude_options: [:deserializer]
+    )
+
+    decorator.representable_attrs.get(:title).inspect.must_equal "#<Representable::Definition ==>title @options={:writeable=>false, :parse_filter=>[], :render_filter=>[], :as=>\"title\"}>"
+    decorator.representable_attrs.get(:songs).representer_module.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:as=>\"Name\", :deserializer=>{:skip_parse=>\"a crazy cool instance method\"}, :parse_filter=>[], :render_filter=>[]}>"
   end
 end
 

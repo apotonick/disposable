@@ -4,19 +4,23 @@
 # Options allow to customize the copied representer.
 #
 # +:exclude+: ignore options from original Definition when copying.
+#
+# Provided block is run per newly created Definition.
+#   Schema.from(...) { |dfn| dfn[:readable] = true }
 class Disposable::Twin::Schema
   def self.from(*args, &block)
     new.from(*args, &block)
   end
 
   # Builds a new representer (structure only) from source_class.
-  def from(source_class, options) # TODO: can we re-use this for all the decorator logic in #validate, etc?
+  def from(source_class, options, &block) # TODO: can we re-use this for all the decorator logic in #validate, etc?
     representer = build_representer(options)
 
     source_representer = options[:representer_from].call(source_class)
 
     source_representer.representable_attrs.each do |dfn|
-      build_definition!(options, dfn, representer)
+      dfn = build_definition!(options, dfn, representer, &block)
+      evaluate_block!(options, dfn, &block)
     end
 
     representer
@@ -29,15 +33,16 @@ private
     end
   end
 
-  def build_definition!(options, source_dfn, representer)
+  def build_definition!(options, source_dfn, representer, &block)
     local_options = source_dfn[options[:options_from]] || {} # e.g. deserializer: {..}.
 
     new_options   = source_dfn.instance_variable_get(:@options).dup # copy original options.
     exclude!(options, new_options)
     new_options.merge!(local_options)
 
-    from_scalar!(options, source_dfn, new_options, representer) && return unless source_dfn[:extend]
-    from_inline!(options, source_dfn, new_options, representer)
+    return from_scalar!(options, source_dfn, new_options, representer) if options[:recursive]==false
+    return from_scalar!(options, source_dfn, new_options, representer) unless source_dfn[:extend]
+    from_inline!(options, source_dfn, new_options, representer, &block)
   end
 
   def exclude!(options, dfn_options)
@@ -50,10 +55,15 @@ private
     representer.property(dfn.name, new_options)
   end
 
-  def from_inline!(options, dfn, new_options, representer)
+  def from_inline!(options, dfn, new_options, representer, &block)
     nested      = dfn[:extend].evaluate(nil) # nested now can be a Decorator, a representer module, a Form, a Twin.
-    dfn_options = new_options.merge(extend: from(nested, options))
+    dfn_options = new_options.merge(extend: from(nested, options, &block))
 
     representer.property(dfn.name, dfn_options)
+  end
+
+  def evaluate_block!(options, definition)
+    return unless block_given?
+    yield definition
   end
 end
