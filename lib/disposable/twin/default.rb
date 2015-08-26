@@ -7,12 +7,15 @@ module Disposable::Twin::Default
   end
 
   def default_for(dfn, options)
+    # TODO: introduce Null object in Declarative::Definition#[].
+    # dfn[:default].(self) # dfn#[] should return a Null object here if empty.
+    return unless dfn[:default]
     dfn[:default].evaluate(self)
   end
 
   module ClassMethods
     def property(name, options={}, &block)
-      options[:default] = Uber::Options::Value.new(options[:default])
+      options[:default] = Uber::Options::Value.new(options[:default]) if options[:default]
       super
     end
   end
