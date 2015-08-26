@@ -66,6 +66,18 @@ class SchemaTest < MiniTest::Spec
     decorator.representable_attrs.get(:id).inspect.must_equal "#<Representable::Definition ==>id @options={:parse_filter=>[], :render_filter=>[], :as=>\"id\"}>"
     decorator.representable_attrs.get(:title).inspect.must_equal "#<Representable::Definition ==>title @options={:writeable=>false, :deserializer=>{:skip_parse=>\"skip lambda\"}, :parse_filter=>[], :render_filter=>[], :as=>\"title\"}>"
   end
+
+
+  # :exclude_options allows skipping particular options when copying.
+  it do
+    decorator = Disposable::Twin::Schema.from(Representer, superclass: Representable::Decorator,
+      representer_from: lambda { |nested| nested },
+      exclude_options: [:deserializer]
+    )
+
+    decorator.representable_attrs.get(:id).inspect.must_equal "#<Representable::Definition ==>id @options={:parse_filter=>[], :render_filter=>[], :as=>\"id\"}>"
+    decorator.representable_attrs.get(:title).inspect.must_equal "#<Representable::Definition ==>title @options={:writeable=>false, :parse_filter=>[], :render_filter=>[], :as=>\"title\"}>"
+  end
 end
 
 
