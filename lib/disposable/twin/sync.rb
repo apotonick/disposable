@@ -58,24 +58,28 @@ class Disposable::Twin
       module ClassMethods
         # Create a hash representer on-the-fly to serialize the form to a hash.
         def nested_hash_representer
-          @nested_hash_representer ||= Class.new(representer_class) do
-            include Representable::Hash
-
-            representable_attrs.each do |dfn|
-              dfn.merge!(
-                readable: true, # the nested hash contains all fields.
-                as:       dfn[:private_name] # nested hash keys by model property names.
-              )
-
-              dfn.merge!(
-                prepare:       lambda { |model, *| model }, # TODO: why do we need that here?
-                serialize:     lambda { |form, args| form.to_nested_hash },
-              ) if dfn[:twin]
-
-              self
-            end
-          end
+          @nested_hash_representer ||= build_nested_hash_representer
         end
+
+        def build_nested_hash_representer
+          Schema.from(self,
+            recursive: false,
+            representer_from: lambda { |obj| obj.representer_class },
+            superclass: Representable::Decorator,
+            include: Representable::Hash,
+            exclude_options: [:default]
+          ) do |dfn|
+            dfn.merge!(
+              readable: true, # the nested hash contains all fields.
+              as:       dfn[:private_name] # nested hash keys by model property names.
+            )
+
+            dfn.merge!(
+              prepare:   lambda { |model, *| model }, # TODO: why do we need that here?
+              serialize: lambda { |form, args| form.to_nested_hash },
+            ) if dfn[:twin]
+          end
+        end # #build_nested_hash_representer
       end
     end
     include ToNestedHash
