@@ -1,6 +1,6 @@
 # 0.1.11
 
-* `:default` now accepts lambdas, too. Thanks to @johndagostino for implemeting this.
+* `:default` now accepts lambdas, too. Thanks to @johndagostino for implementing this.
 
 # 0.1.10
 
