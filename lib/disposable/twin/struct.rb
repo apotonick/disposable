@@ -10,16 +10,12 @@
       end
 
       def sync_hash_representer # TODO: make this without representable, please.
-        Class.new(schema) do
-          include Representable::Hash
-
-          representable_attrs.each do |dfn|
-            dfn.merge!(
-              prepare:       lambda { |model, *| model },
-              serialize: lambda { |model, *| model.sync! },
-              representable: true
-            ) if dfn[:twin]
-          end
+        Sync.hash_representer(self.class) do |dfn|
+          dfn.merge!(
+            prepare:       lambda { |model, *| model },
+            serialize: lambda { |model, *| model.sync! },
+            representable: true
+          ) if dfn[:twin]
         end
       end
 

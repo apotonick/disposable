@@ -5,6 +5,19 @@
 # Note: #sync currently implicitly saves AR objects with collections
 class Disposable::Twin
   module Sync
+    # Creates a fresh copy of the internal representer and adds Representable::Hash.
+    # This is used wherever a hash transformation is needed.
+    def self.hash_representer(twin_class, &block)
+      Schema.from(twin_class,
+        recursive: false,
+        representer_from: lambda { |twin_class| twin_class.representer_class },
+        superclass: Representable::Decorator,
+        include: Representable::Hash,
+        exclude_options: [:default], # TODO: TEST IN default_test.
+        &block
+      )
+    end
+
     def sync_models(options={})
       return yield to_nested_hash if block_given?
 
@@ -17,6 +30,8 @@ class Disposable::Twin
 
     # Sync all scalar attributes, call sync! on nested and return model.
     def sync!(options) # semi-public.
+      # TODO: merge this into Sync::Run or something and use in Struct, too, so we don't
+      # need the representer anymore?
       options_for_sync = sync_options(Decorator::Options[options])
 
       schema.each(options_for_sync) do |dfn|
@@ -62,13 +77,7 @@ class Disposable::Twin
         end
 
         def build_nested_hash_representer
-          Schema.from(self,
-            recursive: false,
-            representer_from: lambda { |obj| obj.representer_class },
-            superclass: Representable::Decorator,
-            include: Representable::Hash,
-            exclude_options: [:default]
-          ) do |dfn|
+          Sync.hash_representer(self) do |dfn|
             dfn.merge!(
               readable: true, # the nested hash contains all fields.
               as:       dfn[:private_name] # nested hash keys by model property names.
