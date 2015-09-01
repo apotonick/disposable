@@ -6,7 +6,7 @@ class SetterTest < Minitest::Spec
   class Twin < Disposable::Twin
     feature Setter
 
-    property :name, setter: -> (v) { v.sub(/cat/, 'dog') unless v.nil? }
+    property :name, setter: ->(v) { v.sub(/cat/, 'dog') unless v.nil? }
   end
 
   it do
