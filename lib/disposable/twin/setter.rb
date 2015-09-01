@@ -2,7 +2,7 @@ module Disposable::Twin::Setter
   module ClassMethods
     def property(name, options={}, &block)
       super(name, options, &block).tap do
-        create_setter!(name, options[:setter])  # define coercing setter after twin.
+        create_setter!(name, options[:setter])
       end
     end
 
