@@ -1,3 +1,7 @@
+# 0.1.12
+
+* Added `Twin::for_collection`. Thanks to @timoschilling for the implementation.
+
 # 0.1.11
 
 * `:default` now accepts lambdas, too. Thanks to @johndagostino for implementing this.
