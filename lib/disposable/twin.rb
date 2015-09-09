@@ -72,7 +72,7 @@ module Disposable
       end
 
       def from_collection(collection)
-        collection.map &method(:new)
+        collection.collect { |model| new(model) }
       end
 
     private

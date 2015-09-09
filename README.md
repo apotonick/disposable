@@ -19,7 +19,6 @@ Disposable gives you "_Twins_": non-persistent domain objects. That is reflected
 The public twin API is unbelievably simple.
 
 1. `Twin::new` creates and populates the twin.
-1. `Twin::from_collection` like `Twin::new`, but from a collection.
 1. `Twin#"reader"` returns the value or nested twin of the property.
 1. `Twin#"writer"=(v)` writes the value to the twin, not the model.
 1. `Twin#sync` writes all values to the model.
@@ -251,6 +250,16 @@ In addition to the standard `Array` API the collection adds a handful of additio
 * `twin.songs.save` will call `destroy` on all models marked for destruction in `to_destroy`. Tracks destruction via `#destroyed`.
 
 Again, the model is left alone until you call `sync` or `save`.
+
+## Twin Collections
+
+To twin a collection of models, you can use `::from_collection`.
+
+```ruby
+SongTwin.from_collection([song, song])
+```
+
+This will decorate every song instance using a fresh twin.
 
 ## Change Tracking
 
