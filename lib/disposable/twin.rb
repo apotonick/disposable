@@ -71,6 +71,10 @@ module Disposable
         property(name, options.merge(collection: true), &block)
       end
 
+      def from_collection(collection)
+        collection.map &method(:new)
+      end
+
     private
       def create_accessors(name, definition)
         mod = Module.new do

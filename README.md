@@ -19,6 +19,7 @@ Disposable gives you "_Twins_": non-persistent domain objects. That is reflected
 The public twin API is unbelievably simple.
 
 1. `Twin::new` creates and populates the twin.
+1. `Twin::from_collection` like `Twin::new`, but from a collection.
 1. `Twin#"reader"` returns the value or nested twin of the property.
 1. `Twin#"writer"=(v)` writes the value to the twin, not the model.
 1. `Twin#sync` writes all values to the model.
