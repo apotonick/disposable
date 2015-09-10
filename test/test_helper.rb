@@ -32,28 +32,26 @@ end
 
 ActiveRecord::Base.establish_connection(
   :adapter => "sqlite3",
-  :database => "#{Dir.pwd}/database.sqlite3"
+  :database => ":memory:"
 )
 
-# uncomment this once to create a database for testing:
-
-# ActiveRecord::Schema.define do
-#   create_table :artists do |table|
-#     table.column :name, :string
-#     table.timestamps
-#   end
-#   create_table :songs do |table|
-#     table.column :title, :string
-#     table.column :artist_id, :integer
-#     table.column :album_id, :integer
-#     table.timestamps
-#   end
-#   create_table :albums do |table|
-#     table.column :name, :string
-# table.column :artist_id, :integer
-#     table.timestamps
-#   end
-# end
+ActiveRecord::Schema.define do
+  create_table :artists do |table|
+    table.column :name, :string
+    table.timestamps
+  end
+  create_table :songs do |table|
+    table.column :title, :string
+    table.column :artist_id, :integer
+    table.column :album_id, :integer
+    table.timestamps
+  end
+  create_table :albums do |table|
+    table.column :name, :string
+    table.column :artist_id, :integer
+    table.timestamps
+  end
+end
 
 module Disposable
   module Comparable
