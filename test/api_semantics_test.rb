@@ -251,9 +251,6 @@ class ApiSemanticsWithUpdate < MiniTest::Spec
     ]})
     # missing: allow updating specific/all items in collection.
 
-    puts decorator.represented.songs.inspect
-
-
     decorator.represented.songs.inspect.must_equal %{[#<struct Model::Song id=2, title="Solidarity, updated!">, #<struct Model::Song id=nil, title="Capture Castles">, #<struct Model::Song id=nil, title=\"Rise And Fall\">]}
   end
 end
