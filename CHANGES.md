@@ -1,3 +1,7 @@
+# 0.1.13
+
+* Allow representable ~> 2.2.
+
 # 0.1.12
 
 * Added `Twin::for_collection`. Thanks to @timoschilling for the implementation.
