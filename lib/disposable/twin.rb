@@ -97,8 +97,9 @@ module Disposable
     private
       # assumption: collections are always initialized from Setup since we assume an empty [] for "nil"/uninitialized collections.
       def write_property(name, value, dfn)
-        return if dfn[:twin] and value.nil? # TODO: test me (model.composer => nil)
-        value = dfn.array? ? wrap_collection(dfn, value) : wrap_scalar(dfn, value) if dfn[:twin]
+        if dfn[:twin] and value
+          value = dfn.array? ? wrap_collection(dfn, value) : wrap_scalar(dfn, value)
+        end
 
         field_write(name, value)
       end

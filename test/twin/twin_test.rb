@@ -74,6 +74,17 @@ class TwinTest < MiniTest::Spec
       song.title.must_equal "Broken"
     end
 
+    describe "deleting" do
+      it "allows overwriting nested twin with nil" do
+        album = Model::Album.new(1, "Uncertain Terms", [], artist=Model::Artist.new("Greg Howe"))
+        twin = Twin::Album.new(album)
+        twin.artist.id.must_equal "Greg Howe"
+
+        twin.artist = nil
+        twin.artist.must_equal nil
+      end
+    end
+
     # setters for twin properties return the twin, not the model
     # it do
     #   result = twin.album = album
