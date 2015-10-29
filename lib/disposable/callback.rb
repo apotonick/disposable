@@ -78,7 +78,7 @@ module Disposable::Callback
           definition = self.class.representer_class.representable_attrs.get(args)
           twin = @twin.send(definition.getter) # album.songs
 
-          @invocations += definition.representer_module.new(twin).(options).invocations # Group.new(twin).()
+          invocations << *definition.representer_module.new(twin).(options).invocations # Group.new(twin).()
           next
         end
 
