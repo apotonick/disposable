@@ -36,7 +36,7 @@ module Disposable
     # extend Uber::InheritableAttr
 
     extend Declarative::Schema::DSL
-    def self.definitions_class
+    def self.definition_class
       Definition
     end
 
