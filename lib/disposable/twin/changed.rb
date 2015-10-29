@@ -44,7 +44,7 @@ private
       next unless twin = send(dfn.getter)
       next unless twin.changed?
 
-      changes[dfn.name] = true
+      changes[dfn[:name]] = true
     end
   end
 end

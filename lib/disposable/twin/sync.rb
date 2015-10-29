@@ -126,7 +126,7 @@ class Disposable::Twin
       def sync_options(options)
         # DISCUSS: we currently don't track if nested forms have changed (only their attributes). that's why i include them all here, which
         # is additional sync work/slightly wrong. solution: allow forms to form.changed? not sure how to do that with collections.
-        scalars   = schema.each(scalar: true).collect { |dfn| dfn.name }
+        scalars   = schema.each(scalar: true).collect { |dfn| dfn[:name ]}
         unchanged = scalars - changed.keys
 
         # exclude unchanged scalars, nested forms and changed scalars still go in here!
@@ -139,7 +139,7 @@ class Disposable::Twin
     # Include this won't use the getter #title in #sync but read directly from @fields.
     module SkipGetter
       def sync_read(dfn)
-        @fields[dfn.name]
+        @fields[dfn[:name]]
       end
 
       def nested_hash_source
