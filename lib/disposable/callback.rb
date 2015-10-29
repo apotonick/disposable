@@ -93,13 +93,11 @@ module Disposable::Callback
   private
     # Runs one callback.
     def callback!(event, options, args)
-      method      = args[0]
+      method      = args.shift
       context     = options[:context] || self # TODO: test me.
 
-      options = args[1..-1]
-
       # TODO: Use Option::Value here.
-      Dispatch.new(@twin).(event, method, *options) { |twin| context.send(method, twin) }
+      Dispatch.new(@twin).(event, method, *args) { |twin| context.send(method, twin) }
     end
   end
 
