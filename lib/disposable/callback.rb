@@ -20,8 +20,9 @@ module Disposable::Callback
     #   include Representable::Cloneable
     # end
     self.representer_class = Class.new(Representable::Decorator) do
+      include Representable::Hash # FIXME: USE DECLARATIVE.
       def self.default_inline_class
-        Group.extend Representable::Cloneable
+        Group#.extend Uber::Cloneable
       end
     end
 
@@ -80,6 +81,7 @@ module Disposable::Callback
           definition = self.class.representer_class.representable_attrs.get(args)
           twin = @twin.send(definition.getter) # album.songs
 
+          # recursively call nested group.
           @invocations += definition.representer_module.new(twin).(options).invocations # Group.new(twin).()
           next
         end

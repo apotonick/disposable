@@ -13,8 +13,8 @@ module Disposable
   #   AlbumExpose.new(OpenStruct.new(title: "AFI")).name #=> "AFI"
   class Expose
     class << self
-      def from(representer)
-        representer.representable_attrs.each do |definition|
+      def from(schema)
+        schema.each do |definition|
           process_definition!(definition)
         end
         self
@@ -22,7 +22,7 @@ module Disposable
 
     private
       def process_definition!(definition)
-        public_name  = definition.name
+        public_name  = definition[:name]
         private_name = definition[:private_name] || public_name
 
         accessors!(public_name, private_name, definition)

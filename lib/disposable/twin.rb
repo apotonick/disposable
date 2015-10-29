@@ -14,6 +14,8 @@ require "disposable/twin/property_processor"
 require "disposable/twin/persisted"
 require "disposable/twin/default"
 
+require "declarative/schema"
+
 # Twin.new(model/composition hash/hash, options)
 #   assign hash to @fields
 #   write: write to @fields
@@ -23,47 +25,49 @@ module Disposable
   class Twin
     extend Uber::InheritableAttr
 
-    inheritable_attr :representer_class
-    self.representer_class = Class.new(Decorator)
+    extend Declarative::Schema::DSL
+    extend Declarative::Schema::Feature # TODO: make automatic
+    extend Declarative::Schema::Heritage # TODO: make automatic
 
-    # Returns an each'able array of all properties defined in this twin.
-    # Allows to filter using
-    #   * collection: true
-    #   * twin:       true
-    #   * scalar:     true
-    #   * exclude:    ["title", "email"]
     def schema
-      self.class.representer_class
+      self.class.definitions.values.instance_exec do
+        def each(options={})
+          return self unless block_given?
+
+          super() do |dfn|
+            next if options[:exclude]    and options[:exclude].include?(dfn[:name])
+            next if options[:scalar]     and dfn[:collection]
+            next if options[:collection] and ! dfn[:collection]
+            next if options[:twin]       and ! dfn[:nested]
+
+            yield dfn
+          end
+
+          self
+        end
+        self
+      end
     end
-
-
-    extend Representable::Feature # imports ::feature, which calls ::register_feature.
-    def self.register_feature(mod)
-      representer_class.representable_attrs[:features][mod] = true
-    end
-
 
     class << self
+      def default_nested_class
+        Twin
+      end
+
       # TODO: move to Declarative, as in Representable and Reform.
       def property(name, options={}, &block)
+        puts "@@@@@ #{name.inspect}"
         options[:private_name] = options.delete(:from) || name
 
         if options.delete(:virtual)
           options[:writeable] = options[:readable] = false
         end
 
-        options[:extend] = options[:twin] # e.g. property :album, twin: Album.
+        # FIXME: now it's evaluated at compile-time!
+        options[:nested] = Uber::Options::Value.new(options[:twin]).(nil) # e.g. property :album, twin: Album.
 
-        representer_class.property(name, options, &block).tap do |definition|
+        super(name, options, &block).tap do |definition|
           create_accessors(name, definition)
-
-          if definition[:extend] and !options[:twin]
-            # This will soon be replaced with Declarative's API. # DISCUSS: could we use build_inline's api here to inject the name feature?
-            nested_twin = definition[:extend].evaluate(nil)
-            process_inline!(nested_twin, definition)
-
-            definition.merge!(twin: nested_twin) # DISCUSS: where do we need this?
-          end
         end
       end
 
@@ -80,13 +84,9 @@ module Disposable
         mod = Module.new do
           define_method(name)       { @fields[name.to_s] }
           # define_method(name)       { read_property(name) }
-          define_method("#{name}=") { |value| write_property(name, value, definition) } # TODO: this is more like prototyping.
+          define_method("#{name}=") { |value| write_property(name, value, definition) }
         end
         include mod
-      end
-
-      # DISCUSS: this method might disappear or change pretty soon.
-      def process_inline!(mod, definition)
       end
     end
 
@@ -97,8 +97,8 @@ module Disposable
     private
       # assumption: collections are always initialized from Setup since we assume an empty [] for "nil"/uninitialized collections.
       def write_property(name, value, dfn)
-        if dfn[:twin] and value
-          value = dfn.array? ? wrap_collection(dfn, value) : wrap_scalar(dfn, value)
+        if dfn[:nested] and value
+          value = dfn[:collection] ? wrap_collection(dfn, value) : wrap_scalar(dfn, value)
         end
 
         field_write(name, value)
@@ -141,7 +141,7 @@ module Disposable
       end
 
       def call(value)
-        @dfn.twin_class.new(value)
+        @dfn[:nested].new(value)
       end
     end
 

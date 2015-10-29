@@ -16,7 +16,7 @@ class ExposeTest < MiniTest::Spec
   end
 
   class AlbumExpose < Disposable::Expose
-    from Twin::Album.representer_class
+    from Twin::Album.definitions.values
   end
 
   let (:album) { Model::Album.new(1, "Dick Sandwich") }
@@ -59,7 +59,7 @@ class ExposeCompositionTest < MiniTest::Spec
     end
 
     class AlbumComposition < Disposable::Composition
-      from Twin::Album.representer_class
+      from Twin::Album.definitions.values
     end
   end
 

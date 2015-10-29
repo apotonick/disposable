@@ -107,7 +107,7 @@ class Disposable::Twin
       def sync_options(options)
         options = super
 
-        protected_fields = schema.each.find_all { |d| d[:writeable] == false }.collect { |d| d.name }
+        protected_fields = schema.each.find_all { |d| d[:writeable] == false }.collect { |d| d[:name] }
         options.exclude!(protected_fields)
       end
     end
