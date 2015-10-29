@@ -16,9 +16,9 @@ class Disposable::Twin::Schema
   def from(source_class, options, &block) # TODO: can we re-use this for all the decorator logic in #validate, etc?
     representer = build_representer(options)
 
-    source_representer = options[:representer_from].call(source_class)
+    definitions = options[:representer_from].call(source_class)
 
-    source_representer.representable_attrs.each do |dfn|
+    definitions.each do |dfn|
       dfn = build_definition!(options, dfn, representer, &block)
       evaluate_block!(options, dfn, &block)
     end

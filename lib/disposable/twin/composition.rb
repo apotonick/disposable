@@ -39,7 +39,7 @@ module Disposable
         hash = {}
 
         @model.each do |name, model| # TODO: provide list of composee attributes in Composition.
-          part_properties = schema.find_all { |dfn| dfn[:on] == name }.collect(&:name).collect(&:to_sym)
+          part_properties = schema.find_all { |dfn| dfn[:on] == name }.collect{ |dfn| dfn[:name].to_sym }
           hash[name] = self.class.nested_hash_representer.new(self).to_hash(include: part_properties)
         end
 

@@ -116,7 +116,7 @@ class TwinSchemaTest < MiniTest::Spec
 
   it do
     decorator = Disposable::Twin::Schema.from(Album, superclass: Representable::Decorator,
-      representer_from: lambda { |nested| nested.representer_class }
+      representer_from: lambda { |nested| nested.definitions }
     )
 
     artist = decorator.representable_attrs.get(:artist)
