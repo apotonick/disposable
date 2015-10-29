@@ -108,7 +108,7 @@ module Disposable::Callback
   # Implements the binding between the Callback API (on_change) and the underlying layer (twin/AR/etc.).
   class Dispatch
     def initialize(twins)
-      @twins = twins.is_a?(Array) ? twins : [twins] # TODO: find that out with Collection.
+      @twins = Array(twins) # TODO: find that out with Collection.
       @invocations = []
     end
 
