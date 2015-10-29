@@ -73,9 +73,7 @@ module Disposable::Callback
 
 
     def call(options={})
-      self.class.hooks.each do |cfg|
-        event, args = cfg
-
+      self.class.hooks.each do |event, args|
         if event == "property" # FIXME: make nicer.
           definition = self.class.representer_class.representable_attrs.get(args)
           twin = @twin.send(definition.getter) # album.songs
