@@ -37,7 +37,7 @@ class Disposable::Twin
       schema.each(options_for_sync) do |dfn|
         property_value = sync_read(dfn) #
 
-        unless dfn[:twin]
+        unless dfn[:nested]
           mapper.send(dfn.setter, property_value) # always sync the property
           next
         end

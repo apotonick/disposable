@@ -23,9 +23,23 @@ require "declarative/schema"
 
 module Disposable
   class Twin
-    extend Uber::InheritableAttr
+    class Definition < Declarative::Definitions::Definition
+      def getter
+        self[:name]
+      end
+
+      def setter
+        "#{self[:name]}="
+      end
+    end
+
+    # extend Uber::InheritableAttr
 
     extend Declarative::Schema::DSL
+    def self.definitions_class
+      Definition
+    end
+
     extend Declarative::Schema::Feature # TODO: make automatic
     extend Declarative::Schema::Heritage # TODO: make automatic
 
