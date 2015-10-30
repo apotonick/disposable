@@ -33,8 +33,6 @@ module Disposable
       end
     end
 
-    # extend Uber::InheritableAttr
-
     extend Declarative::Schema::DSL
     def self.definition_class
       Definition
@@ -77,7 +75,7 @@ module Disposable
         end
 
         # FIXME: now it's evaluated at compile-time!
-        options[:nested] = Uber::Options::Value.new(options[:twin]).(nil) # e.g. property :album, twin: Album.
+        options[:nested] = Uber::Options::Value.new(options.delete(:twin)).(nil) # e.g. property :album, twin: Album.
 
         super(name, options, &block).tap do |definition|
           create_accessors(name, definition)
