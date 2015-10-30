@@ -3,12 +3,10 @@
 require "uber/inheritable_attr"
 require "declarative/schema"
 
-require "disposable/twin/representer"
 require "disposable/twin/collection"
 require "disposable/twin/setup"
 require "disposable/twin/sync"
 require "disposable/twin/save"
-require "disposable/twin/option"
 require "disposable/twin/builder"
 require "disposable/twin/changed"
 require "disposable/twin/property_processor"
@@ -163,7 +161,5 @@ module Disposable
       attr_reader :mapper
     end
     include ModelReaders
-
-    include Option
   end
 end
