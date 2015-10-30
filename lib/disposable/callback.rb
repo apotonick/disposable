@@ -16,8 +16,6 @@ module Disposable::Callback
     extend Declarative::Schema::Heritage
     extend Declarative::Schema::Feature
 
-    extend Uber::InheritableAttr
-
     def self.default_nested_class
       Group
     end
@@ -59,12 +57,16 @@ module Disposable::Callback
 
     attr_reader :invocations
 
-    inheritable_attr :hooks
-    self.hooks = []
+    def self.hooks
+      @hooks ||= []
+    end
+
 
     class << self
       %w(on_add on_delete on_destroy on_update on_create on_change).each do |event|
         define_method event do |*args|
+          heritage.record(event, *args)
+
           hooks << [event.to_sym, args]
         end
       end
