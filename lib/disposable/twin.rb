@@ -1,6 +1,7 @@
 # DISCUSS: sync via @fields, not reader? allows overriding a la reform 1.
 
 require "uber/inheritable_attr"
+require "declarative/schema"
 
 require "disposable/twin/representer"
 require "disposable/twin/collection"
@@ -14,7 +15,6 @@ require "disposable/twin/property_processor"
 require "disposable/twin/persisted"
 require "disposable/twin/default"
 
-require "declarative/schema"
 
 # Twin.new(model/composition hash/hash, options)
 #   assign hash to @fields
@@ -74,8 +74,7 @@ module Disposable
           options[:writeable] = options[:readable] = false
         end
 
-        # FIXME: now it's evaluated at compile-time!
-        options[:nested] = Uber::Options::Value.new(options.delete(:twin)).(nil) # e.g. property :album, twin: Album.
+        options[:nested] = options.delete(:twin) if options[:twin]
 
         super(name, options, &block).tap do |definition|
           create_accessors(name, definition)

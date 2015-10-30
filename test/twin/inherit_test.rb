@@ -40,8 +40,8 @@ class InheritTest < MiniTest::Spec
 
   # definitions are not shared.
   it do
-    Twin::Album.definitions.get(:name).extend(Declarative::Inspect).inspect.must_equal "#<Disposable::Twin::Definition: @options={:fromage=>:_name, :private_name=>:name, :nested=>nil, :name=>\"name\"}>"
-    Twin::Compilation.definitions.get(:name).extend(Declarative::Inspect).inspect.must_equal "#<Disposable::Twin::Definition: @options={:fromage=>:_name, :private_name=>:name, :nested=>nil, :name=>\"name\", :writeable=>false}>" # FIXME: where did :inherit go?
+    Twin::Album.definitions.get(:name).extend(Declarative::Inspect).inspect.must_equal "#<Disposable::Twin::Definition: @options={:fromage=>:_name, :private_name=>:name, :name=>\"name\"}>"
+    Twin::Compilation.definitions.get(:name).extend(Declarative::Inspect).inspect.must_equal "#<Disposable::Twin::Definition: @options={:fromage=>:_name, :private_name=>:name, :name=>\"name\", :writeable=>false}>" # FIXME: where did :inherit go?
   end
 
 

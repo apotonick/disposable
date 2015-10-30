@@ -124,6 +124,6 @@ class TwinSchemaTest < MiniTest::Spec
     nested_extend = options[:nested]
     options.extend(Declarative::Inspect).inspect.must_equal "{:private_name=>:artist, :nested=>#<Class:>, :name=>\"artist\", :extend=>#<Class:>, :parse_filter=>[], :render_filter=>[]}"
     assert nested_extend < Representable::Decorator
-    nested_extend.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:private_name=>:name, :nested=>nil, :name=>\"name\", :parse_filter=>[], :render_filter=>[]}>"
+    nested_extend.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:private_name=>:name, :name=>\"name\", :parse_filter=>[], :render_filter=>[]}>"
   end
 end
