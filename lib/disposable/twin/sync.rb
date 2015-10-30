@@ -10,7 +10,7 @@ class Disposable::Twin
     def self.hash_representer(twin_class, &block)
       Schema.from(twin_class,
         recursive: false,
-        representer_from: lambda { |twin_class| twin_class.representer_class },
+        representer_from: lambda { |twin_class| twin_class.definitions },
         superclass: Representable::Decorator,
         include: Representable::Hash,
         exclude_options: [:default], # TODO: TEST IN default_test.
@@ -24,9 +24,6 @@ class Disposable::Twin
       sync!(options)
     end
     alias_method :sync, :sync_models
-
-    # reading from fields allows using readers in form for presentation
-    # and writers still pass to fields in #validate????
 
     # Sync all scalar attributes, call sync! on nested and return model.
     def sync!(options) # semi-public.
@@ -61,6 +58,7 @@ class Disposable::Twin
       send(definition.getter)
     end
 
+    # TODO: simplify that using a decent pipeline from Representable.
     module ToNestedHash
       def to_nested_hash(*)
         self.class.nested_hash_representer.new(nested_hash_source).to_hash
@@ -86,7 +84,7 @@ class Disposable::Twin
             dfn.merge!(
               prepare:   lambda { |model, *| model }, # TODO: why do we need that here?
               serialize: lambda { |form, args| form.to_nested_hash },
-            ) if dfn[:twin]
+            ) if dfn[:nested]
           end
         end # #build_nested_hash_representer
       end
