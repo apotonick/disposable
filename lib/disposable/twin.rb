@@ -70,7 +70,6 @@ module Disposable
 
       # TODO: move to Declarative, as in Representable and Reform.
       def property(name, options={}, &block)
-        puts "@@@@@ #{name.inspect}"
         options[:private_name] = options.delete(:from) || name
 
         if options.delete(:virtual)
