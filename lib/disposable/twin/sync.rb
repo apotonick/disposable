@@ -5,6 +5,17 @@
 # Note: #sync currently implicitly saves AR objects with collections
 class Disposable::Twin
   module Sync
+    class Options < ::Hash
+      def exclude!(names)
+        excludes.push(*names)
+        self
+      end
+
+      def excludes
+        self[:exclude] ||= []
+      end
+    end
+
     # Creates a fresh copy of the internal representer and adds Representable::Hash.
     # This is used wherever a hash transformation is needed.
     def self.hash_representer(twin_class, &block)
@@ -29,7 +40,7 @@ class Disposable::Twin
     def sync!(options) # semi-public.
       # TODO: merge this into Sync::Run or something and use in Struct, too, so we don't
       # need the representer anymore?
-      options_for_sync = sync_options(Decorator::Options[options])
+      options_for_sync = sync_options(Options[options])
 
       schema.each(options_for_sync) do |dfn|
         property_value = sync_read(dfn) #

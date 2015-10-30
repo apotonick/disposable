@@ -28,11 +28,6 @@ module Disposable::Callback
       property(name, options.merge(collection: true), &block)
     end
 
-    # def self.inherited(subclass) # DISCUSS: this could be in Decorator? but then we couldn't do B < A(include X) for non-decorators, right?
-    #     heritage.(subclass)
-    #     # super
-    #   end
-
     def self.property(name, options={}, &block)
       # NOTE: while the API will stay the same, it's very likely i'm gonna use Declarative::Config here instead
       # of maintaining two stacks of callbacks.
