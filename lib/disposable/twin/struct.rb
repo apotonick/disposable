@@ -15,7 +15,7 @@
             prepare:       lambda { |model, *| model },
             serialize: lambda { |model, *| model.sync! },
             representable: true
-          ) if dfn[:twin]
+          ) if dfn[:nested]
         end
       end
 
