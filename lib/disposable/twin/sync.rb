@@ -10,7 +10,7 @@ class Disposable::Twin
     def self.hash_representer(twin_class, &block)
       Schema.from(twin_class,
         recursive: false,
-        representer_from: lambda { |twin_class| twin_class.representer_class },
+        representer_from: lambda { |twin_class| twin_class.definitions },
         superclass: Representable::Decorator,
         include: Representable::Hash,
         exclude_options: [:default], # TODO: TEST IN default_test.
@@ -25,9 +25,6 @@ class Disposable::Twin
     end
     alias_method :sync, :sync_models
 
-    # reading from fields allows using readers in form for presentation
-    # and writers still pass to fields in #validate????
-
     # Sync all scalar attributes, call sync! on nested and return model.
     def sync!(options) # semi-public.
       # TODO: merge this into Sync::Run or something and use in Struct, too, so we don't
@@ -37,7 +34,7 @@ class Disposable::Twin
       schema.each(options_for_sync) do |dfn|
         property_value = sync_read(dfn) #
 
-        unless dfn[:twin]
+        unless dfn[:nested]
           mapper.send(dfn.setter, property_value) # always sync the property
           next
         end
@@ -61,6 +58,7 @@ class Disposable::Twin
       send(definition.getter)
     end
 
+    # TODO: simplify that using a decent pipeline from Representable.
     module ToNestedHash
       def to_nested_hash(*)
         self.class.nested_hash_representer.new(nested_hash_source).to_hash
@@ -86,7 +84,7 @@ class Disposable::Twin
             dfn.merge!(
               prepare:   lambda { |model, *| model }, # TODO: why do we need that here?
               serialize: lambda { |form, args| form.to_nested_hash },
-            ) if dfn[:twin]
+            ) if dfn[:nested]
           end
         end # #build_nested_hash_representer
       end
@@ -107,7 +105,7 @@ class Disposable::Twin
       def sync_options(options)
         options = super
 
-        protected_fields = schema.each.find_all { |d| d[:writeable] == false }.collect { |d| d.name }
+        protected_fields = schema.each.find_all { |d| d[:writeable] == false }.collect { |d| d[:name] }
         options.exclude!(protected_fields)
       end
     end
@@ -126,7 +124,7 @@ class Disposable::Twin
       def sync_options(options)
         # DISCUSS: we currently don't track if nested forms have changed (only their attributes). that's why i include them all here, which
         # is additional sync work/slightly wrong. solution: allow forms to form.changed? not sure how to do that with collections.
-        scalars   = schema.each(scalar: true).collect { |dfn| dfn.name }
+        scalars   = schema.each(scalar: true).collect { |dfn| dfn[:name ]}
         unchanged = scalars - changed.keys
 
         # exclude unchanged scalars, nested forms and changed scalars still go in here!
@@ -139,7 +137,7 @@ class Disposable::Twin
     # Include this won't use the getter #title in #sync but read directly from @fields.
     module SkipGetter
       def sync_read(dfn)
-        @fields[dfn.name]
+        @fields[dfn[:name]]
       end
 
       def nested_hash_source

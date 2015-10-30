@@ -7,25 +7,24 @@ class TwinTest < MiniTest::Spec
     Artist = Struct.new(:id)
   end
 
-
+  # test twin: option
   module Twin
+    class Artist < Disposable::Twin
+      property :id
+
+      include Setup
+    end
+
     class Album < Disposable::Twin
       property :id # DISCUSS: needed for #save.
       property :name
-      collection :songs, :twin => lambda { |*| Song }
-      property :artist, :twin => lambda { |*| Artist }
+      property :artist, twin: Artist
     end
 
     class Song < Disposable::Twin
       property :id # DISCUSS: needed for #save.
       property :title
-      property :album, :twin => Album
-    end
-
-    class Artist < Disposable::Twin
-      property :id
-
-      include Setup
+      property :album, twin: Album
     end
   end
 
@@ -138,7 +137,7 @@ class TwinAsTest < MiniTest::Spec
 
     class Song < Disposable::Twin
       property :name, :from => :title
-      property :record, :twin => Album, :from => :album
+      property :record, twin: Album, :from => :album
 
       # model Model::Song
     end

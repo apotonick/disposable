@@ -18,23 +18,19 @@ class FeatureTest < MiniTest::Spec
   end
 
   class AlbumForm < Disposable::Twin
-    include Setup
     feature Date
     property :name
 
     collection :songs do
-      include Setup
       property :title
 
       property :composer do
-        include Setup
         feature Instrument
         property :name
       end
     end
 
     property :artist do
-      include Setup
       property :name
     end
   end

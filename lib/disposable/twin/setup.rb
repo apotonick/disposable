@@ -24,8 +24,8 @@ module Disposable
 
       def setup_property!(dfn, options)
         value =
-          if options.has_key?(name = dfn.name.to_sym)
-            options[dfn.name.to_sym]
+          if options.has_key?(name = dfn[:name].to_sym)
+            options[dfn[:name].to_sym]
           else
             setup_value_for(dfn, options)
           end
@@ -39,17 +39,18 @@ module Disposable
       end
 
       def read_value_for(dfn, options)
-        mapper.send(dfn.name) # model.title.
+        mapper.send(dfn[:name]) # model.title.
       end
 
       def setup_write!(dfn, value)
-        send(dfn.setter, value)
+        # send(dfn.setter, value)
+        send("#{dfn[:name]}=", value) # FIXME!
       end
 
       # Including this will _not_ use the property's setter in Setup and allow you to override it.
       module SkipSetter
         def setup_write!(dfn, value)
-          write_property(dfn.name, value, dfn)
+          write_property(dfn[:name], value, dfn)
         end
       end
     end # Setup

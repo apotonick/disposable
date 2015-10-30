@@ -1,5 +1,6 @@
 require "disposable/version"
 require "disposable/twin"
+require "disposable/twin/schema"
 
 module Disposable
   class Twin

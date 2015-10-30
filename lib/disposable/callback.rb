@@ -12,29 +12,26 @@ module Disposable::Callback
   # you can call collection :songs again, with :inherit. TODO: verify.
 
   class Group
-    # TODO: make this easier via declarable.
-    extend Uber::InheritableAttr
-    inheritable_attr :representer_class
+    extend Declarative::Schema::DSL
+    extend Declarative::Schema::Heritage
+    extend Declarative::Schema::Feature
 
-    # class << self
-    #   include Representable::Cloneable
-    # end
-    self.representer_class = Class.new(Representable::Decorator) do
-      def self.default_inline_class
-        Group.extend Representable::Cloneable
-      end
+    def self.default_nested_class
+      Group
     end
 
     def self.clone
       Class.new(self)
     end
 
-    def self.feature(*args)
-    end
-
     def self.collection(name, options={}, &block)
       property(name, options.merge(collection: true), &block)
     end
+
+    # def self.inherited(subclass) # DISCUSS: this could be in Decorator? but then we couldn't do B < A(include X) for non-decorators, right?
+    #     heritage.(subclass)
+    #     # super
+    #   end
 
     def self.property(name, options={}, &block)
       # NOTE: while the API will stay the same, it's very likely i'm gonna use Declarative::Config here instead
@@ -42,9 +39,9 @@ module Disposable::Callback
       # it should have a Definition per callback where the representer_module will be a nested Group or a Callback.
       inherit = options[:inherit] # FIXME: this is deleted in ::property.
 
-      representer_class.property(name, options, &block).tap do |dfn|
+      super(name, options, &block).tap do |dfn|
         return if inherit
-        hooks << ["property", dfn.name]
+        hooks << ["property", dfn[:name]]
       end
     end
 
@@ -60,12 +57,16 @@ module Disposable::Callback
 
     attr_reader :invocations
 
-    inheritable_attr :hooks
-    self.hooks = []
+    def self.hooks
+      @hooks ||= []
+    end
+
 
     class << self
       %w(on_add on_delete on_destroy on_update on_create on_change).each do |event|
         define_method event do |*args|
+          heritage.record(event, *args)
+
           hooks << [event.to_sym, args]
         end
       end
@@ -75,10 +76,11 @@ module Disposable::Callback
     def call(options={})
       self.class.hooks.each do |event, args|
         if event == "property" # FIXME: make nicer.
-          definition = self.class.representer_class.representable_attrs.get(args)
-          twin = @twin.send(definition.getter) # album.songs
+          definition = self.class.definitions.get(args)
+          twin = @twin.send(definition[:name]) # album.songs
 
-          @invocations += definition.representer_module.new(twin).(options).invocations # Group.new(twin).()
+          # recursively call nested group.
+          @invocations += definition[:nested].new(twin).(options).invocations # Group.new(twin).()
           next
         end
 

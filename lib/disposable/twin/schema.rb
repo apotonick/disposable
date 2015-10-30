@@ -16,9 +16,9 @@ class Disposable::Twin::Schema
   def from(source_class, options, &block) # TODO: can we re-use this for all the decorator logic in #validate, etc?
     representer = build_representer(options)
 
-    source_representer = options[:representer_from].call(source_class)
+    definitions = options[:representer_from].call(source_class)
 
-    source_representer.representable_attrs.each do |dfn|
+    definitions.each do |dfn|
       dfn = build_definition!(options, dfn, representer, &block)
       evaluate_block!(options, dfn, &block)
     end
@@ -41,7 +41,7 @@ private
     new_options.merge!(local_options)
 
     return from_scalar!(options, source_dfn, new_options, representer) if options[:recursive]==false
-    return from_scalar!(options, source_dfn, new_options, representer) unless source_dfn[:extend]
+    return from_scalar!(options, source_dfn, new_options, representer) unless source_dfn[:nested]
     from_inline!(options, source_dfn, new_options, representer, &block)
   end
 
@@ -52,14 +52,14 @@ private
   end
 
   def from_scalar!(options, dfn, new_options, representer)
-    representer.property(dfn.name, new_options)
+    representer.property(dfn[:name], new_options)
   end
 
   def from_inline!(options, dfn, new_options, representer, &block)
-    nested      = dfn[:extend].evaluate(nil) # nested now can be a Decorator, a representer module, a Form, a Twin.
-    dfn_options = new_options.merge(extend: from(nested, options, &block))
+    nested      = dfn[:nested]#.evaluate(nil) # nested now can be a Decorator, a representer module, a Form, a Twin.
+    dfn_options = new_options.merge(nested: from(nested, options, &block))
 
-    representer.property(dfn.name, dfn_options)
+    representer.property(dfn[:name], dfn_options)
   end
 
   def evaluate_block!(options, definition)

@@ -6,7 +6,7 @@ module Disposable
     module Expose
       module ClassMethods
         def expose_class
-          @expose_class ||= Class.new(Disposable::Expose).from(representer_class)
+          @expose_class ||= Class.new(Disposable::Expose).from(definitions.values)
         end
       end # ClassMethods.
 
@@ -26,7 +26,7 @@ module Disposable
     module Composition
       module ClassMethods
         def expose_class
-          @expose_class ||= Class.new(Disposable::Composition).from(representer_class)
+          @expose_class ||= Class.new(Disposable::Composition).from(definitions.values)
         end
       end
 
@@ -39,7 +39,7 @@ module Disposable
         hash = {}
 
         @model.each do |name, model| # TODO: provide list of composee attributes in Composition.
-          part_properties = self.class.representer_class.representable_attrs.find_all { |dfn| dfn[:on] == name }.collect(&:name).collect(&:to_sym)
+          part_properties = schema.find_all { |dfn| dfn[:on] == name }.collect{ |dfn| dfn[:name].to_sym }
           hash[name] = self.class.nested_hash_representer.new(self).to_hash(include: part_properties)
         end
 

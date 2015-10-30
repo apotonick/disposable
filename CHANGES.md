@@ -1,3 +1,8 @@
+# 0.2.0
+
+* `twin: Twin::Song` is the only way to specify an external twin. To reduce complexity, I've removed the lambda version of `:twin`.
+* Internally, use Declarative now for schema-creation.
+
 # 0.1.14
 
 * Allow to nil-out nested twins.

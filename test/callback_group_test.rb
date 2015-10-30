@@ -148,10 +148,10 @@ class CallbackGroupInheritanceTest < MiniTest::Spec
   it do
     Group.hooks.size.must_equal 4
     Group.hooks[0].to_s.must_equal "[:on_change, [:change!]]"
-    # Group.hooks[1][1].representer_module.hooks.to_s.must_equal "[[:on_add, [:notify_album!]],[:on_add, [:reset_song!]]]"
+    # Group.hooks[1][1][:nested].hooks.to_s.must_equal "[[:on_add, [:notify_album!]],[:on_add, [:reset_song!]]]"
     Group.hooks[2].to_s.must_equal "[:on_change, [:rehash_name!, {:property=>:title}]]"
 
-    Group.representer_class.representable_attrs.get(Group.hooks[3][1]).representer_module.hooks.to_s.must_equal "[[:on_change, [:sing!]]]"
+    Group.definitions.get(Group.hooks[3][1])[:nested].hooks.to_s.must_equal "[[:on_change, [:sing!]]]"
   end
 
   class EmptyGroup < Group
@@ -173,8 +173,9 @@ class CallbackGroupInheritanceTest < MiniTest::Spec
 
   it do
     Group.hooks.size.must_equal 4
+    pp EnhancedGroup.hooks
     EnhancedGroup.hooks.size.must_equal 6
-    EnhancedGroup.representer_class.representable_attrs.get(EnhancedGroup.hooks[5][1]).representer_module.hooks.to_s.must_equal "[[:on_add, [:rewind!]]]"
+    EnhancedGroup.definitions.get(EnhancedGroup.hooks[5][1])[:nested].hooks.to_s.must_equal "[[:on_add, [:rewind!]]]"
   end
 
   class EnhancedWithInheritGroup < EnhancedGroup
@@ -190,10 +191,10 @@ class CallbackGroupInheritanceTest < MiniTest::Spec
     Group.hooks.size.must_equal 4
     EnhancedGroup.hooks.size.must_equal 6
 
-    EnhancedGroup.representer_class.representable_attrs.get(EnhancedGroup.hooks[5][1]).representer_module.hooks.to_s.must_equal "[[:on_add, [:rewind!]]]"
+    EnhancedGroup.definitions.get(EnhancedGroup.hooks[5][1])[:nested].hooks.to_s.must_equal "[[:on_add, [:rewind!]]]"
     EnhancedWithInheritGroup.hooks.size.must_equal 6
-    EnhancedWithInheritGroup.representer_class.representable_attrs.get(EnhancedWithInheritGroup.hooks[1][1]).representer_module.hooks.to_s.must_equal "[[:on_add, [:rewind!]], [:on_add, [:eat!]]]"
-    EnhancedWithInheritGroup.representer_class.representable_attrs.get(EnhancedWithInheritGroup.hooks[3][1]).representer_module.hooks.to_s.must_equal "[[:on_change, [:sing!]], [:on_delete, [:yell!]]]"
+    EnhancedWithInheritGroup.definitions.get(EnhancedWithInheritGroup.hooks[1][1])[:nested].hooks.to_s.must_equal "[[:on_add, [:rewind!]], [:on_add, [:eat!]]]"
+    EnhancedWithInheritGroup.definitions.get(EnhancedWithInheritGroup.hooks[3][1])[:nested].hooks.to_s.must_equal "[[:on_change, [:sing!]], [:on_delete, [:yell!]]]"
   end
 
   class RemovingInheritGroup < Group
@@ -205,19 +206,19 @@ class CallbackGroupInheritanceTest < MiniTest::Spec
 
 # # puts "@@@@@ #{Group.hooks.object_id.inspect}"
 # # puts "@@@@@ #{EmptyGroup.hooks.object_id.inspect}"
-# puts "@@@@@ Group:         #{Group.representer_class.representable_attrs.get(:songs).representer_module.hooks.inspect}"
-# puts "@@@@@ EnhancedGroup: #{EnhancedGroup.representer_class.representable_attrs.get(:songs).representer_module.hooks.inspect}"
-# puts "@@@@@ InheritGroup:  #{EnhancedWithInheritGroup.representer_class.representable_attrs.get(:songs).representer_module.hooks.inspect}"
-# puts "@@@@@ RemovingGroup: #{RemovingInheritGroup.representer_class.representable_attrs.get(:songs).representer_module.hooks.inspect}"
-# # puts "@@@@@ #{EnhancedWithInheritGroup.representer_class.representable_attrs.get(:songs).representer_module.hooks.object_id.inspect}"
+# puts "@@@@@ Group:         #{Group.definitions.get(:songs)[:nested].hooks.inspect}"
+# puts "@@@@@ EnhancedGroup: #{EnhancedGroup.definitions.get(:songs)[:nested].hooks.inspect}"
+# puts "@@@@@ InheritGroup:  #{EnhancedWithInheritGroup.definitions.get(:songs)[:nested].hooks.inspect}"
+# puts "@@@@@ RemovingGroup: #{RemovingInheritGroup.definitions.get(:songs)[:nested].hooks.inspect}"
+# # puts "@@@@@ #{EnhancedWithInheritGroup.definitions.get(:songs)[:nested].hooks.object_id.inspect}"
 
   # TODO: object_id tests for all nested representers.
 
   it do
     Group.hooks.size.must_equal 4
     RemovingInheritGroup.hooks.size.must_equal 3
-    RemovingInheritGroup.representer_class.representable_attrs.get(RemovingInheritGroup.hooks[0][1]).representer_module.hooks.to_s.must_equal "[[:on_add, [:reset_song!]]]"
-    RemovingInheritGroup.representer_class.representable_attrs.get(RemovingInheritGroup.hooks[2][1]).representer_module.hooks.to_s.must_equal "[[:on_change, [:sing!]]]"
+    RemovingInheritGroup.definitions.get(RemovingInheritGroup.hooks[0][1])[:nested].hooks.to_s.must_equal "[[:on_add, [:reset_song!]]]"
+    RemovingInheritGroup.definitions.get(RemovingInheritGroup.hooks[2][1])[:nested].hooks.to_s.must_equal "[[:on_change, [:sing!]]]"
   end
 
   # Group::clone
