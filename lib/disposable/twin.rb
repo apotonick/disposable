@@ -1,5 +1,3 @@
-# DISCUSS: sync via @fields, not reader? allows overriding a la reform 1.
-
 require "uber/inheritable_attr"
 require "declarative/schema"
 
