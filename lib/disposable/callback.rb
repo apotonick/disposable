@@ -12,9 +12,7 @@ module Disposable::Callback
   # you can call collection :songs again, with :inherit. TODO: verify.
 
   class Group
-    extend Declarative::Schema::DSL
-    extend Declarative::Schema::Heritage
-    extend Declarative::Schema::Feature
+    extend Declarative::Schema
 
     def self.default_nested_class
       Group

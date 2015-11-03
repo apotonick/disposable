@@ -32,13 +32,10 @@ module Disposable
       end
     end
 
-    extend Declarative::Schema::DSL
+    extend Declarative::Schema
     def self.definition_class
       Definition
     end
-
-    extend Declarative::Schema::Feature # TODO: make automatic
-    extend Declarative::Schema::Heritage # TODO: make automatic
 
     def schema
       self.class.definitions.values.instance_exec do
