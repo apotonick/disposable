@@ -1,8 +1,8 @@
 require "test_helper"
 
-require "disposable/twin/schema"
+require "disposable/twin/rescheme"
 
-class SchemaTest < MiniTest::Spec
+class ReschemeTest < MiniTest::Spec
   module Representer
     include Representable
 
@@ -32,7 +32,7 @@ class SchemaTest < MiniTest::Spec
   end
 
   it do
-    decorator = Disposable::Twin::Schema.from(Representer, superclass: Representable::Decorator,
+    decorator = Disposable::Twin::Rescheme.from(Representer, superclass: Representable::Decorator,
       include: [Representable::Hash, Hello, Gday, Ciao], # Hello will win over Gday.
       options_from: :deserializer,
       representer_from: lambda { |nested| nested.definitions }
@@ -59,7 +59,7 @@ class SchemaTest < MiniTest::Spec
 
   # :options_from and :include is optional
   it do
-    decorator = Disposable::Twin::Schema.from(Representer, superclass: Representable::Decorator, include: [Representable::Hash],
+    decorator = Disposable::Twin::Rescheme.from(Representer, superclass: Representable::Decorator, include: [Representable::Hash],
       representer_from: lambda { |nested| nested.definitions }
     )
 
@@ -70,7 +70,7 @@ class SchemaTest < MiniTest::Spec
 
   # :exclude_options allows skipping particular options when copying.
   it do
-    decorator = Disposable::Twin::Schema.from(Representer, superclass: Representable::Decorator, include: [Representable::Hash],
+    decorator = Disposable::Twin::Rescheme.from(Representer, superclass: Representable::Decorator, include: [Representable::Hash],
       representer_from: lambda { |nested| nested.definitions },
       exclude_options: [:deserializer]
     )
@@ -82,7 +82,7 @@ class SchemaTest < MiniTest::Spec
 
 
   it "::from with block allows customizing every definition and returns representer" do
-    decorator = Disposable::Twin::Schema.from(Representer, include: [Representable::Hash],
+    decorator = Disposable::Twin::Rescheme.from(Representer, include: [Representable::Hash],
       superclass:       Representable::Decorator,
       representer_from: lambda { |nested| nested.definitions },
     ) { |dfn| dfn.merge!(amazing: true) }
@@ -92,7 +92,7 @@ class SchemaTest < MiniTest::Spec
   end
 
   it "recursive: false only copies first level" do
-    decorator = Disposable::Twin::Schema.from(Representer, include: [Representable::Hash],
+    decorator = Disposable::Twin::Rescheme.from(Representer, include: [Representable::Hash],
       superclass:       Representable::Decorator,
       representer_from: lambda { |nested| nested.definitions },
       recursive: false,
@@ -105,7 +105,7 @@ class SchemaTest < MiniTest::Spec
 end
 
 
-class TwinSchemaTest < MiniTest::Spec
+class TwinReschemeTest < MiniTest::Spec
   class Artist < Disposable::Twin
     property :name
   end
@@ -115,7 +115,7 @@ class TwinSchemaTest < MiniTest::Spec
   end
 
   it do
-    decorator = Disposable::Twin::Schema.from(Album, superclass: Representable::Decorator, include: [Representable::Hash],
+    decorator = Disposable::Twin::Rescheme.from(Album, superclass: Representable::Decorator, include: [Representable::Hash],
       representer_from: lambda { |nested| nested.definitions }
     )
 

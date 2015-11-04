@@ -1,4 +1,4 @@
-# Schema::from allows to copy a representer structure. This will create "fresh" inline representers instead
+# Rescheme::from allows to copy a representer structure. This will create "fresh" inline representers instead
 # of inheriting/copying the original classes, making it a replication of the structure, only.
 #
 # Options allow to customize the copied representer.
@@ -6,8 +6,8 @@
 # +:exclude+: ignore options from original Definition when copying.
 #
 # Provided block is run per newly created Definition.
-#   Schema.from(...) { |dfn| dfn[:readable] = true }
-class Disposable::Twin::Schema
+#   Rescheme.from(...) { |dfn| dfn[:readable] = true }
+class Disposable::Twin::Rescheme
   def self.from(*args, &block)
     new.from(*args, &block)
   end
