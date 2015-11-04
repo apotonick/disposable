@@ -1,7 +1,7 @@
-# Rescheme::from allows to copy a representer structure. This will create "fresh" inline representers instead
+# Rescheme::from allows to copy a schema structure. This will create "fresh" inline schemas instead
 # of inheriting/copying the original classes, making it a replication of the structure, only.
 #
-# Options allow to customize the copied representer.
+# Options allow to customize the copied schema.
 #
 # +:exclude+: ignore options from original Definition when copying.
 #
@@ -16,7 +16,7 @@ class Disposable::Rescheme
   def from(source_class, options, &block) # TODO: can we re-use this for all the decorator logic in #validate, etc?
     representer = build_representer(options)
 
-    definitions = options[:representer_from].call(source_class)
+    definitions = options[:definitions_from].call(source_class)
 
     definitions.each do |dfn|
       dfn = build_definition!(options, dfn, representer, &block)

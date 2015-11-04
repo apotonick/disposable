@@ -33,7 +33,7 @@ class ReschemeTest < MiniTest::Spec
     decorator = Disposable::Rescheme.from(Representer, superclass: Representable::Decorator,
       include: [Representable::Hash, Hello, Gday, Ciao], # Hello will win over Gday.
       options_from: :deserializer,
-      representer_from: lambda { |nested| nested.definitions }
+      definitions_from: lambda { |nested| nested.definitions }
     )
 
     # include: works.
@@ -58,7 +58,7 @@ class ReschemeTest < MiniTest::Spec
   # :options_from and :include is optional
   it do
     decorator = Disposable::Rescheme.from(Representer, superclass: Representable::Decorator, include: [Representable::Hash],
-      representer_from: lambda { |nested| nested.definitions }
+      definitions_from: lambda { |nested| nested.definitions }
     )
 
     decorator.representable_attrs.get(:id).inspect.must_equal "#<Representable::Definition ==>id @options={:name=>\"id\", :parse_filter=>[], :render_filter=>[]}>"
@@ -69,7 +69,7 @@ class ReschemeTest < MiniTest::Spec
   # :exclude_options allows skipping particular options when copying.
   it do
     decorator = Disposable::Rescheme.from(Representer, superclass: Representable::Decorator, include: [Representable::Hash],
-      representer_from: lambda { |nested| nested.definitions },
+      definitions_from: lambda { |nested| nested.definitions },
       exclude_options: [:deserializer]
     )
 
@@ -82,7 +82,7 @@ class ReschemeTest < MiniTest::Spec
   it "::from with block allows customizing every definition and returns representer" do
     decorator = Disposable::Rescheme.from(Representer, include: [Representable::Hash],
       superclass:       Representable::Decorator,
-      representer_from: lambda { |nested| nested.definitions },
+      definitions_from: lambda { |nested| nested.definitions },
     ) { |dfn| dfn.merge!(amazing: true) }
 
     decorator.representable_attrs.get(:id).inspect.must_equal "#<Representable::Definition ==>id @options={:name=>\"id\", :parse_filter=>[], :render_filter=>[], :amazing=>true}>"
@@ -92,7 +92,7 @@ class ReschemeTest < MiniTest::Spec
   it "recursive: false only copies first level" do
     decorator = Disposable::Rescheme.from(Representer, include: [Representable::Hash],
       superclass:       Representable::Decorator,
-      representer_from: lambda { |nested| nested.definitions },
+      definitions_from: lambda { |nested| nested.definitions },
       recursive: false,
       exclude_options: [:deserializer]
     )
@@ -114,7 +114,7 @@ class TwinReschemeTest < MiniTest::Spec
 
   it do
     decorator = Disposable::Rescheme.from(Album, superclass: Representable::Decorator, include: [Representable::Hash],
-      representer_from: lambda { |nested| nested.definitions }
+      definitions_from: lambda { |nested| nested.definitions }
     )
 
     artist = decorator.representable_attrs.get(:artist)
