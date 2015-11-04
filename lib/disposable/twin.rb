@@ -1,6 +1,6 @@
 require "uber/inheritable_attr"
 require "declarative/schema"
-
+require "disposable/twin/definitions"
 require "disposable/twin/collection"
 require "disposable/twin/setup"
 require "disposable/twin/sync"
@@ -20,39 +20,13 @@ require "representable/decorator"
 
 module Disposable
   class Twin
-    class Definition < Declarative::Definitions::Definition
-      def getter
-        self[:name]
-      end
-
-      def setter
-        "#{self[:name]}="
-      end
-    end
-
     extend Declarative::Schema
     def self.definition_class
       Definition
     end
 
     def schema
-      self.class.definitions.values.instance_exec do
-        def each(options={})
-          return self unless block_given?
-
-          super() do |dfn|
-            next if options[:exclude]    and options[:exclude].include?(dfn[:name])
-            next if options[:scalar]     and dfn[:collection]
-            next if options[:collection] and ! dfn[:collection]
-            next if options[:twin]       and ! dfn[:nested]
-
-            yield dfn
-          end
-
-          self
-        end
-        self
-      end
+      self.class.definitions.extend(DefinitionsEach)
     end
 
     class << self

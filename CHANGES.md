@@ -1,7 +1,9 @@
 # 0.2.0
 
+* Internally, use [Declarative](https://github.com/apotonick/declarative) now for schema creation, resulting in the following internal changes.
+    * `Twin::representer_class.representable_attrs` is now `Twin::definitions`.
+* `Disposable::Twin::Schema` is now `Disposable::Rescheme`. Renamed its `:representer_from` option to `:definitions_from`.
 * `twin: Twin::Song` is the only way to specify an external twin. To reduce complexity, I've removed the lambda version of `:twin`.
-* Internally, use Declarative now for schema-creation.
 
 # 0.1.14
 
