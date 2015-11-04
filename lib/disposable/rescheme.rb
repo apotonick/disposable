@@ -7,7 +7,7 @@
 #
 # Provided block is run per newly created Definition.
 #   Rescheme.from(...) { |dfn| dfn[:readable] = true }
-class Disposable::Twin::Rescheme
+class Disposable::Rescheme
   def self.from(*args, &block)
     new.from(*args, &block)
   end

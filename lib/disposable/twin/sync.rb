@@ -19,7 +19,7 @@ class Disposable::Twin
     # Creates a fresh copy of the internal representer and adds Representable::Hash.
     # This is used wherever a hash transformation is needed.
     def self.hash_representer(twin_class, &block)
-      Rescheme.from(twin_class,
+      Disposable::Rescheme.from(twin_class,
         recursive: false,
         representer_from: lambda { |twin_class| twin_class.definitions },
         superclass: Representable::Decorator,
