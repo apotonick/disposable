@@ -102,17 +102,6 @@ module Disposable
     end
     include Accessors
 
-
-    # FIXME: this is experimental.
-    module ToS
-      def to_s
-        return super if self.class.name
-        "#<Twin (inline):#{object_id}>"
-      end
-    end
-    include ToS
-
-
     class Twinner
       def initialize(dfn)
         @dfn = dfn

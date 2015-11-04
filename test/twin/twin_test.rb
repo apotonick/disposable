@@ -90,20 +90,6 @@ class TwinTest < MiniTest::Spec
     #   result.must_equal twin.album
     # end
   end
-
-  # FIXME: experimental.
-  describe "#to_s" do
-    class HitTwin < Disposable::Twin
-      include Setup
-
-      property :song do
-      end
-    end
-
-    let (:hit) { OpenStruct.new(song: song) }
-    it { HitTwin.new(hit).to_s.must_match "#<TwinTest::HitTwin:" }
-    it { HitTwin.new(hit).song.to_s.must_match "#<Twin (inline):" }
-  end
 end
 
 
