@@ -3,6 +3,7 @@
 #   2. call sync! on nested
 #
 # Note: #sync currently implicitly saves AR objects with collections
+require 'ostruct'
 class Disposable::Twin
   module Sync
     class Options < ::Hash
