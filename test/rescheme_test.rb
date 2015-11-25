@@ -100,6 +100,31 @@ class ReschemeTest < MiniTest::Spec
     decorator.representable_attrs.get(:title).inspect.must_equal "#<Representable::Definition ==>title @options={:writeable=>false, :name=>\"title\", :parse_filter=>[], :render_filter=>[]}>"
     decorator.representable_attrs.get(:songs).representer_module.representable_attrs.get(:name).inspect.must_equal "#<Representable::Definition ==>name @options={:as=>\"Name\", :deserializer=>{:skip_parse=>\"a crazy cool instance method\"}, :name=>\"name\", :parse_filter=>[], :render_filter=>[]}>"
   end
+
+  describe ":exclude_properties" do
+    module SmallRepresenter
+      include Representable
+
+      property :id
+      property :songs do
+        property :id
+        property :name, as: "Name"
+      end
+    end
+
+    it do
+      decorator = Disposable::Rescheme.from(SmallRepresenter,
+        include:            [Representable::Hash],
+        superclass:         Representable::Decorator,
+        definitions_from:   lambda { |nested| nested.definitions },
+        recursive:          true,
+        exclude_properties: [:id]
+      )
+
+      decorator.definitions.keys.must_equal ["songs"]
+      decorator.definitions.get(:songs).representer_module.definitions.keys.must_equal ["name"]
+    end
+  end
 end
 
 

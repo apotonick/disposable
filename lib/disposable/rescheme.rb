@@ -19,6 +19,8 @@ class Disposable::Rescheme
     definitions = options[:definitions_from].call(source_class)
 
     definitions.each do |dfn|
+      next if (options[:exclude_properties]||{}).include?(dfn[:name].to_sym)
+
       dfn = build_definition!(options, dfn, representer, &block)
       evaluate_block!(options, dfn, &block)
     end
