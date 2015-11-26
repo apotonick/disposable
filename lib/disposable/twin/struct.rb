@@ -12,8 +12,8 @@
       def sync_hash_representer # TODO: make this without representable, please.
         Sync.hash_representer(self.class) do |dfn|
           dfn.merge!(
-            prepare:       lambda { |model, *| model },
-            serialize: lambda { |model, *| model.sync! },
+            prepare:       lambda { |options| options[:input] },
+            serialize: lambda { |options| options[:input].sync! },
             representable: true
           ) if dfn[:nested]
         end

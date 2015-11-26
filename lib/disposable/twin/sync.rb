@@ -94,8 +94,8 @@ class Disposable::Twin
             )
 
             dfn.merge!(
-              prepare:   lambda { |model, *| model }, # TODO: why do we need that here?
-              serialize: lambda { |form, args| form.to_nested_hash },
+              prepare:   lambda { |options| options[:input] }, # TODO: why do we need that here?
+              serialize: lambda { |options| options[:input].to_nested_hash },
             ) if dfn[:nested]
           end
         end # #build_nested_hash_representer
