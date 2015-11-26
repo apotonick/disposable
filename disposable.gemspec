@@ -1,4 +1,3 @@
-# coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'disposable/version'
@@ -20,7 +19,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "uber"
   spec.add_dependency "declarative", "~> 0.0.4"
-  spec.add_dependency "representable", ">= 2.4.0.rc1", "< 2.5.0"
+  spec.add_dependency "representable", ">= 2.4.0.rc5", "<= 3.1.0"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
