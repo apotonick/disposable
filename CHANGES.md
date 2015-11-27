@@ -1,3 +1,7 @@
+# 0.1.15
+
+* Restrict to Representable < 2.4.
+
 # 0.1.14
 
 * Allow to nil-out nested twins.
