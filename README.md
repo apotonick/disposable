@@ -366,14 +366,12 @@ Twins can also map hash properties, e.g. from a deeply nested serialized JSON co
 album.permissions #=> {admin: {read: true, write: true}, user: {destroy: false}}
 ```
 
-Map that using the `Struct` module.
+Map that using the `:struct` option that automatically adds `Disposable::Twin::Struct` feature.
 
 ```ruby
 class AlbumTwin < Disposable::Twin
-  property :permissions do
-     include Struct
-    property :admin do
-      include Struct
+  property :permissions, struct: true do
+    property :admin, struct: true do
       property :read
       property :write
     end
