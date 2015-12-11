@@ -14,11 +14,11 @@ class CallbackGroupTest < MiniTest::Spec
 
       # on_delete :notify_deleted_author! # in Update!
 
-      def notify_album!(twin)
+      def notify_album!(twin, *)
         @output = "added to songs"
       end
 
-      def reset_song!(twin)
+      def reset_song!(twin, *)
         @output << "added to songs, reseting"
       end
     end
@@ -29,7 +29,7 @@ class CallbackGroupTest < MiniTest::Spec
     on_create :expire_cache! # on_change
     on_update :expire_cache!
 
-    def change!(twin)
+    def change!(twin, *)
       @output = "Album has changed!"
     end
   end
@@ -98,15 +98,15 @@ class CallbackGroupTest < MiniTest::Spec
   class Operation
     attr_reader :output
 
-    def change!(twin)
+    def change!(twin, *)
       @output = "changed!"
     end
 
-    def notify_album!(twin)
+    def notify_album!(twin, *)
       @output << "notify_album!"
     end
 
-    def reset_song!(twin)
+    def reset_song!(twin, *)
       @output << "reset_song!"
     end
 

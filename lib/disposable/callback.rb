@@ -90,7 +90,7 @@ module Disposable::Callback
 
       # TODO: Use Option::Value here. this could be created straight in the DSL with the twin being passed in.
       if context.methods.include?(method) && context.method(method).arity == 1 # TODO: remove in 0.3.
-        warn "[Disposable] Callback handlers now receive two options: #{method}!(twin, options)."
+        warn "[Disposable] Callback handlers now receive two options: #{method}(twin, options)."
         return Dispatch.new(@twin).(event, method, property_options) { |twin| context.send(method, twin) }
       end
 

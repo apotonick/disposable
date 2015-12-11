@@ -529,6 +529,8 @@ AfterSave.new(twin).(context: self)
 
 Methods like `:sing!` will be invoked on the `:context` object. Likewise, nested properties will be retrieved by simply calling the getter on the twin, like `twin.songs`.
 
+An options hash is passed as the second argument. # TODO: document Group.(operation: Object.new).
+
 Again, only the events that match will be invoked. If the top level twin hasn't changed, `expire_cache!` won't be invoked. This works by simply using `Callback` under the hood.
 
 ## Callback Inheritance
