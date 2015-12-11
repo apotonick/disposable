@@ -39,7 +39,7 @@ module Disposable::Callback
     end
 
     def self.remove!(event, callback)
-      hooks.delete hooks.find { |cfg| cfg[0] == event && cfg[1][0] == callback }
+      hooks.delete hooks.find { |cfg| cfg[0] == event && cfg[1] == callback }
     end
 
 
@@ -57,19 +57,19 @@ module Disposable::Callback
 
     class << self
       %w(on_add on_delete on_destroy on_update on_create on_change).each do |event|
-        define_method event do |*args|
-          heritage.record(event, *args)
+        define_method event do |method, options={}|
+          heritage.record(event, method, options)
 
-          hooks << [event.to_sym, args]
+          hooks << [event.to_sym, method, options] # DISCUSS: can't we simply instantiate Callables here?
         end
       end
     end
 
 
     def call(options={})
-      self.class.hooks.each do |event, args|
+      self.class.hooks.each do |event, method, property_options|
         if event == "property" # FIXME: make nicer.
-          definition = self.class.definitions.get(args)
+          definition = self.class.definitions.get(method)
           twin = @twin.send(definition[:name]) # album.songs
 
           # recursively call nested group.
@@ -77,22 +77,24 @@ module Disposable::Callback
           next
         end
 
-        invocations << callback!(event, options, args)
+        invocations << callback!(event, options, method, property_options)
       end
 
       self
     end
 
   private
-    # Runs one callback.
-    def callback!(event, options, args)
-      method      = args[0]
-      context     = options[:context] || self # TODO: test me.
+    # Runs one callback, e.g. for `on_change :smile!`.
+    def callback!(event, options, method, property_options) # TODO: remove args.
+      context = options[:context] || self # TODO: test me.
 
-      options = args[1..-1]
+      # TODO: Use Option::Value here. this could be created straight in the DSL with the twin being passed in.
+      if context.methods.include?(method) && context.method(method).arity == 1 # TODO: remove in 0.3.
+        warn "[Disposable] Callback handlers now receive two options: #{method}!(twin, options)."
+        return Dispatch.new(@twin).(event, method, property_options) { |twin| context.send(method, twin) }
+      end
 
-      # TODO: Use Option::Value here.
-      Dispatch.new(@twin).(event, method, *options) { |twin| context.send(method, twin) }
+      Dispatch.new(@twin).(event, method, property_options) { |twin| context.send(method, twin, options) }
     end
   end
 
@@ -105,33 +107,33 @@ module Disposable::Callback
       @invocations = []
     end
 
-    def call(event, method, *args, &block) # FIXME: as long as we only support method, pass in here.
-      send(event, *args, &block)
+    def call(event, method, property_options, &block) # FIXME: as long as we only support method, pass in here.
+      send(event, property_options, &block)
       [event, method, @invocations]
     end
 
     def on_add(state=nil, &block) # how to call it once, for "all"?
       # @twins can only be Collection instance.
       @twins.added.each do |item|
-        run!(item, &block) if state.nil?
+        run!(item, &block) if ! state.is_a?(Symbol)
         run!(item, &block) if item.created? && state == :created # :created # DISCUSS: should we really keep that?
       end
     end
 
-    def on_delete(&block)
+    def on_delete(*, &block)
       # @twins can only be Collection instance.
       @twins.deleted.each do |item|
         run!(item, &block)
       end
     end
 
-    def on_destroy(&block)
+    def on_destroy(*, &block)
       @twins.destroyed.each do |item|
         run!(item, &block)
       end
     end
 
-    def on_update(&block)
+    def on_update(*, &block)
       @twins.each do |twin|
         next if twin.created?
         next unless twin.persisted? # only persisted can be updated.
@@ -140,15 +142,15 @@ module Disposable::Callback
       end
     end
 
-    def on_create(&block)
+    def on_create(*, &block)
       @twins.each do |twin|
         next unless twin.created?
         run!(twin, &block)
       end
     end
 
-    def on_change(options={}, &block)
-      name = options[:property]
+    def on_change(property_options={}, &block)
+      name = property_options[:property]
 
       @twins.each do |twin|
         if name

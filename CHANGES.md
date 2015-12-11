@@ -7,6 +7,10 @@
 * Added `:exclude_properties` to `Rescheme`.
 * Runs with Representable 2.4 and 3.0.
 
+# 0.1.15
+
+* Restrict to Representable < 2.4.
+
 # 0.1.14
 
 * Allow to nil-out nested twins.
