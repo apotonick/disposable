@@ -1,7 +1,7 @@
 # 0.2.1
 
 * In `Callback::Group#call`, the `context` option now allows running callbacks in different contexts. Per default, the group instance is context.
-* Callback handler methods now receive two options: the twin and the options hash passed into `Group#call`. This allows injecting arbitrary objects into callbacks, which is pretty awesome.
+* Callback handler methods now receive two options: the twin and the options hash passed into `Group#call`. This allows injecting arbitrary objects into callbacks, which is pretty awesome!
 
 # 0.2.0
 
