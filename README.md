@@ -462,6 +462,8 @@ class AlbumTwin < Disposable::Twin
 
 ## Imperative Callbacks
 
+Please refer to the [full documentation](http://trailblazer.to/gems/disposable/callback.html).
+
 Note: [Chapter 8 of the Trailblazer](http://leanpub.com/trailblazer) book is dedicated to callbacks and discusses them in great detail.
 
 Callbacks use the fact that twins track state changes. This allows to execute callbacks on certain conditions.
