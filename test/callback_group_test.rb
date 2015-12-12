@@ -14,12 +14,12 @@ class CallbackGroupTest < MiniTest::Spec
 
       # on_delete :notify_deleted_author! # in Update!
 
-      def notify_album!(twin, *)
-        @output = "added to songs"
+      def notify_album!(twin, options)
+        options[:content] << "notify_album!"
       end
 
-      def reset_song!(twin, *)
-        @output << "added to songs, reseting"
+      def reset_song!(twin, options)
+        options[:content] << "reset_song!"
       end
     end
 
@@ -29,7 +29,7 @@ class CallbackGroupTest < MiniTest::Spec
     on_create :expire_cache! # on_change
     on_update :expire_cache!
 
-    def change!(twin, *)
+    def change!(twin, options)
       @output = "Album has changed!"
     end
   end
@@ -66,6 +66,8 @@ class CallbackGroupTest < MiniTest::Spec
     ]
   end
 
+  # trigger songs:on_add, and on_change.
+  let (:content) { "" }
   it do
     twin = AlbumTwin.new(Album.new)
     twin.songs << Song.new(title: "Dead To Me")
@@ -73,10 +75,7 @@ class CallbackGroupTest < MiniTest::Spec
 
     twin.name = "Dear Landlord"
 
-    group = Group.new(twin).()
-    # Disposable::Callback::Dispatch.new(twin).on_change{ |twin| puts twin;puts }
-
-    # pp group.invocations
+    group = Group.new(twin).(content: content)
 
     group.invocations.must_equal [
       [:on_change, :change!, [twin]],
@@ -87,6 +86,7 @@ class CallbackGroupTest < MiniTest::Spec
       [:on_update, :expire_cache!, []],
     ]
 
+    content.must_equal "notify_album!notify_album!reset_song!reset_song!"
     group.output.must_equal "Album has changed!"
   end
 
@@ -98,24 +98,24 @@ class CallbackGroupTest < MiniTest::Spec
   class Operation
     attr_reader :output
 
-    def change!(twin, *)
-      @output = "changed!"
+    def change!(twin, options)
+      options[:content] << "Op: changed! [#{options[:context].class}]"
     end
 
-    def notify_album!(twin, *)
-      @output << "notify_album!"
+    def notify_album!(twin, options)
+      options[:content] << "Op: notify_album! [#{options[:context].class}]"
     end
 
-    def reset_song!(twin, *)
-      @output << "reset_song!"
+    def reset_song!(twin, options)
+      options[:content] << "Op: reset_song! [#{options[:context].class}]"
     end
 
     def rehash_name!(twin, options)
-      @output << "rehash_name!"
+      options[:content] << "Op: rehash_name! [#{options[:context].class}]"
     end
 
     def expire_cache!(twin, options)
-      @output << "expire_cache!"
+      options[:content] << "Op: expire_cache! [#{options[:context].class}]"
     end
   end
 
@@ -125,7 +125,7 @@ class CallbackGroupTest < MiniTest::Spec
 
     twin.name = "Dear Landlord"
 
-    group = Group.new(twin).(context: context = Operation.new)
+    group = Group.new(twin).(context: context = Operation.new, content: content)
     # Disposable::Callback::Dispatch.new(twin).on_change{ |twin| puts twin;puts }
 
     # pp group.invocations
@@ -139,7 +139,7 @@ class CallbackGroupTest < MiniTest::Spec
       [:on_update, :expire_cache!, []],
     ]
 
-    context.output.must_equal "changed!notify_album!reset_song!"
+    content.must_equal "Op: changed! [CallbackGroupTest::Operation]Op: notify_album! [CallbackGroupTest::Operation]Op: reset_song! [CallbackGroupTest::Operation]"
   end
 end
 
