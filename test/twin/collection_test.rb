@@ -215,6 +215,12 @@ class CollectionUnitTest < MiniTest::Spec
     collection.insert(0, Model::Album.new).must_be_instance_of Twin::Album
   end
 
+  # #append(model)
+  it do
+    collection.append(Model::Album.new).must_be_instance_of Twin::Album
+    collection[0].must_be_instance_of Twin::Album
+  end
+
   # #<<
   it do
     collection << Model::Album.new
