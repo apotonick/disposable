@@ -219,11 +219,17 @@ class CollectionUnitTest < MiniTest::Spec
   it do
     collection.append(Model::Album.new).must_be_instance_of Twin::Album
     collection[0].must_be_instance_of Twin::Album
+
+    # allows subsequent calls.
+    collection.append(Model::Album.new)
+    collection[1].must_be_instance_of Twin::Album
+
+    collection.size.must_equal 2
   end
 
   # #<<
   it do
-    collection << Model::Album.new
+    (collection << Model::Album.new).must_be_instance_of Array
     collection[0].must_be_instance_of Twin::Album
   end
 end

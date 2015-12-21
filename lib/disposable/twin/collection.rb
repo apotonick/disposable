@@ -14,13 +14,9 @@ module Disposable
       end
       attr_reader :original # TODO: test me and rethink me.
 
-      alias_method :append, :<<
-
       # Note that this expects a model, untwinned.
       def append(model)
-        super(twin = @twinner.(model))
-        added << twin
-        twin
+        (self << model).last
       end
 
       # Note that this expects a model, untwinned.
