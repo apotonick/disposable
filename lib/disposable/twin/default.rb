@@ -10,7 +10,7 @@ module Disposable::Twin::Default
     # TODO: introduce Null object in Declarative::Definition#[].
     # dfn[:default].(self) # dfn#[] should return a Null object here if empty.
     return unless dfn[:default]
-    dfn[:default].evaluate(self) # TODO: use .()
+    dfn[:default].(self) # TODO: use .()
   end
 
   module ClassMethods
