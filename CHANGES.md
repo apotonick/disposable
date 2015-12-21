@@ -1,3 +1,8 @@
+# 0.2.2
+
+* Use `Uber::Options::Value#call` to evaluate.
+* Add `Twin::Collection#append`.
+
 # 0.2.1
 
 * In `Callback::Group#call`, the `context` option now allows running callbacks in different contexts. Per default, the group instance is context.
