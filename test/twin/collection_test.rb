@@ -39,6 +39,16 @@ class TwinCollectionTest < MiniTest::Spec
 
     end
   end
+
+  describe "#find_by" do
+    let (:album) { Model::Album.new(1, "The Rest Is Silence", [Model::Song.new(3), Model::Song.new(4)]) }
+    let (:twin) { Twin::Album.new(album) }
+
+    it { twin.songs.find_by(id: 1).must_equal nil }
+    it { twin.songs.find_by(id: 3).must_equal twin.songs[0] }
+    it { twin.songs.find_by(id: 4).must_equal twin.songs[1] }
+    it { twin.songs.find_by(id: "4").must_equal twin.songs[1] }
+  end
 end
 
 require "disposable/twin/sync"

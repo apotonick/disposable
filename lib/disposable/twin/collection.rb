@@ -14,6 +14,11 @@ module Disposable
       end
       attr_reader :original # TODO: test me and rethink me.
 
+      def find_by(options)
+        field, value = options.to_a.first
+        find { |item| item.send(field).to_s == value.to_s }
+      end
+
       # Note that this expects a model, untwinned.
       def append(model)
         (self << model).last
