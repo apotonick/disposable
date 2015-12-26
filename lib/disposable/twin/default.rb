@@ -10,12 +10,13 @@ module Disposable::Twin::Default
     # TODO: introduce Null object in Declarative::Definition#[].
     # dfn[:default].(self) # dfn#[] should return a Null object here if empty.
     return unless dfn[:default]
-    dfn[:default].(self) # TODO: use .()
+    dfn[:default].(self)
   end
 
   module ClassMethods
-    def property(name, options={}, &block)
-      options[:default] = Uber::Options::Value.new(options[:default]) if options[:default]
+  private
+    def build_definition(name, options={}, &block)
+      options = options.merge(default: Uber::Options::Value.new(options[:default])) if options[:default]
       super
     end
   end

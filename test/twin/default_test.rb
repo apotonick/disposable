@@ -35,6 +35,17 @@ class DefaultTest < Minitest::Spec
     twin = Twin.new(Song.new(false))
     twin.title.must_equal false
   end
+
+  describe "inheritance" do
+    class SuperTwin < Disposable::Twin
+      feature Default
+      property :name, default: "n/a"
+    end
+    class MegaTwin < SuperTwin
+    end
+
+    it { MegaTwin.new(Composer.new).name.must_equal "n/a" }
+  end
 end
 
 class DefaultAndVirtualTest < Minitest::Spec
