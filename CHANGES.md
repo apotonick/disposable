@@ -1,6 +1,6 @@
 # 0.2.3
 
-* Add `Collection#find_by` for easier finding: `album.songs.find_by(id: 1)`.
+* Add `Collection#find_by` for easier traversal/querying of twin collections: `album.songs.find_by(id: 1)`.
 * Fix inheritance of the `:default` option. This would formerly wrap the default value into another `Uber::Options::Value`.
 * Introduce `Struct#save!`.
 
