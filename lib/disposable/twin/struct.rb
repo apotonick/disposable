@@ -23,6 +23,10 @@
         sync_hash_representer.new(self).to_hash
       end
       alias_method :sync!, :sync
+
+      # So far, hashes can't be persisted separately.
+      def save!
+      end
     end
   end
 end

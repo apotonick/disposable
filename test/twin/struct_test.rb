@@ -48,7 +48,6 @@ class TwinStructTest < MiniTest::Spec
       # song.send(:model).object_id.must_equal model.object_id
     end
   end
-
 end
 
 
@@ -96,4 +95,9 @@ class TwinWithNestedStructTest < MiniTest::Spec
     model.options["recorded"].must_equal "yo"
     model.options["preferences"].must_equal({"show_image" => 9, "play_teaser"=>2})
   }
+
+
+  describe "#save" do
+    it { Song.new(model).extend(Disposable::Twin::Save).save }
+  end
 end
