@@ -1,12 +1,20 @@
 # require "test_helper"
 
-# class TwinOptionTest < TwinTest
+# class TwinOptionTest < Minitest::Spec
+#   module Model
+#     Song  = Struct.new(:id, :title, :album)
+#   end
+
 #   class Song < Disposable::Twin
-#     property :id # DISCUSS: needed for #save.
+#     property :id
 #     property :title
 
+#     def self.option(name, options={})
+#       property(name, options.merge(virtual: true))
+#     end
+
 #     option :preview?
-#     option :highlight?
+#     option :current_user
 #   end
 
 #   let (:song) { Model::Song.new(1, "Broken") }
@@ -20,8 +28,12 @@
 #   # option is not delegated to model.
 #   it { twin.preview?.must_equal false }
 #   # not passing option means zero.
-#   it { twin.highlight?.must_equal nil }
+#   it { twin.current_user.must_equal nil }
 
-#   # passing both options.
-#   it { Song.new(song, preview?: true, highlight?: false).preview?.must_equal true }
+#   describe "passing all options" do
+#     let (:twin) { Song.new(song, :preview? => false, current_user: Object) }
+
+#     it { twin.preview?.must_equal false }
+#     it { twin.current_user.must_equal Object }
+#   end
 # end

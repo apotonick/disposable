@@ -581,6 +581,25 @@ Properties can have various access settings.
 * `writeable: false` won't write to model in `Sync`.
 * `virtual: true` is both settings above combined.
 
+## Options
+
+To inject context data into a twin that is not part of any model, you can simply use `:virtual` properties.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+  property :title
+  property :current_user, virtual: true
+end
+```
+
+You can now pass the `current_user` as an option into the constructor and then access it via the reader.
+
+```ruby
+twin = AlbumTwin.new(album, current_user: User.find(1))
+twin.current_user #=> <User id:1>
+```
+
+
 ## Builders
 
 ## Used In
