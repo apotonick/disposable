@@ -1,6 +1,6 @@
 # 0.2.4
 
-* Add `Twin::Parent` so access a nested's parent twin.
+* Add `Twin::Parent` to access a nested's parent twin.
 
 # 0.2.3
 

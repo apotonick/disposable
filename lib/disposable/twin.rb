@@ -59,6 +59,7 @@ module Disposable
       end
 
     private
+
       def create_accessors(name, definition)
         mod = Module.new do
           define_method(name)       { @fields[name.to_s] }
@@ -76,7 +77,7 @@ module Disposable
     private
       # assumption: collections are always initialized from Setup since we assume an empty [] for "nil"/uninitialized collections.
       def write_property(name, value, dfn)
-        value = build_twin(dfn, value) if dfn[:nested] and value
+        value = build_for(dfn, value) if dfn[:nested] and value
 
         field_write(name, value)
       end
@@ -92,28 +93,29 @@ module Disposable
       end
 
       # Build a twin or a Twin::Collection for the value (which is a model or array of).
-      def build_twin(dfn, *args)
-        dfn[:collection] ? build_collection(dfn, *args) : build_scalar(dfn, *args)
+      def build_for(dfn, *args)
+        dfn[:collection] ? build_collection(dfn, *args) : build_twin(dfn, *args)
       end
 
-      def build_scalar(dfn, *args)
-        Twinner.new(dfn).(*args) # Twin.new(model, options={})
+      def build_twin(dfn, *args)
+        dfn[:nested].new(*args) # Twin.new(model, options={})
       end
 
       def build_collection(dfn, *args)
-        Collection.for_models(Twinner.new(dfn), *args)
+        Collection.for_models(Twinner.new(self, dfn), *args)
       end
     end
     include Accessors
 
     # TODO: make this a function so it's faster at run-time.
     class Twinner
-      def initialize(dfn)
-        @dfn = dfn
+      def initialize(twin, dfn)
+        @twin = twin
+        @dfn  = dfn
       end
 
       def call(*args)
-        @dfn[:nested].new(*args) # e.g. Twin.new(model) or Twin.new(model, admin: true).
+        @twin.send(:build_twin, @dfn, *args)
       end
     end
 
