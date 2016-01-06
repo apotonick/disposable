@@ -3,8 +3,8 @@ module Disposable
     # Provides collection semantics like add, delete, and more for twin collections.
     # Tracks additions and deletions in #added and #deleted.
     class Collection < Array
-      def self.for_models(twinner, models)
-        new(twinner, models.collect { |model| twinner.(model) })
+      def self.for_models(twinner, models, *options)
+        new(twinner, models.collect { |model| twinner.(model, *options) })
       end
 
       def initialize(twinner, items)

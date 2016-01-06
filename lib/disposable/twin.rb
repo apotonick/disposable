@@ -53,6 +53,7 @@ module Disposable
         property(name, options.merge(collection: true), &block)
       end
 
+      # TODO: remove.
       def from_collection(collection)
         collection.collect { |model| new(model) }
       end
@@ -75,9 +76,7 @@ module Disposable
     private
       # assumption: collections are always initialized from Setup since we assume an empty [] for "nil"/uninitialized collections.
       def write_property(name, value, dfn)
-        if dfn[:nested] and value
-          value = dfn[:collection] ? wrap_collection(dfn, value) : wrap_scalar(dfn, value)
-        end
+        value = build_twin(dfn, value) if dfn[:nested] and value
 
         field_write(name, value)
       end
@@ -92,26 +91,31 @@ module Disposable
         @fields[name.to_s]
       end
 
-      def wrap_scalar(dfn, value)
-        Twinner.new(dfn).(value)
+      # Build a twin or a Twin::Collection for the value (which is a model or array of).
+      def build_twin(dfn, *args)
+        dfn[:collection] ? build_collection(dfn, *args) : build_scalar(dfn, *args)
       end
 
-      def wrap_collection(dfn, value)
-        Collection.for_models(Twinner.new(dfn), value)
+      def build_scalar(dfn, *args)
+        Twinner.new(dfn).(*args) # Twin.new(model, options={})
+      end
+
+      def build_collection(dfn, *args)
+        Collection.for_models(Twinner.new(dfn), *args)
       end
     end
     include Accessors
 
+    # TODO: make this a function so it's faster at run-time.
     class Twinner
       def initialize(dfn)
         @dfn = dfn
       end
 
-      def call(value)
-        @dfn[:nested].new(value)
+      def call(*args)
+        @dfn[:nested].new(*args) # e.g. Twin.new(model) or Twin.new(model, admin: true).
       end
     end
-
 
   private
     module ModelReaders
