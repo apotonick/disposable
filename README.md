@@ -599,6 +599,29 @@ twin = AlbumTwin.new(album, current_user: User.find(1))
 twin.current_user #=> <User id:1>
 ```
 
+## Parent
+
+By using the `Parent` feature you can access the parent twin of a nested one.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+  feature Parent
+
+  property :artist do
+    property :name
+  end
+end
+```
+
+Use `parent` to grab the nested's container twin.
+
+```ruby
+twin = AlbumTwin.new(Album.new(artist: Artist.new))
+
+twin.artist.parent #=> twin
+```
+
+Note that this will internally add a `parent` property.
 
 ## Builders
 

@@ -1,3 +1,7 @@
+# 0.2.4
+
+* Add `Twin::Parent` so access a nested's parent twin.
+
 # 0.2.3
 
 * Add `Collection#find_by` for easier traversal/querying of twin collections: `album.songs.find_by(id: 1)`.
