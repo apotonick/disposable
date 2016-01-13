@@ -1,6 +1,7 @@
 # 0.2.4
 
 * Add `Twin::Parent` to access a nested's parent twin.
+* Introduce `Twin#build_for` and `Twin#build_twin`. This is a private API change.
 
 # 0.2.3
 
