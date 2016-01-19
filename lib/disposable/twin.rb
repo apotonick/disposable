@@ -1,16 +1,5 @@
 require "uber/inheritable_attr"
 require "declarative/schema"
-require "disposable/twin/definitions"
-require "disposable/twin/collection"
-require "disposable/twin/setup"
-require "disposable/twin/sync"
-require "disposable/twin/save"
-require "disposable/twin/builder"
-require "disposable/twin/changed"
-require "disposable/twin/property_processor"
-require "disposable/twin/persisted"
-require "disposable/twin/default"
-
 require "representable/decorator"
 
 # Twin.new(model/composition hash/hash, options)
@@ -70,6 +59,7 @@ module Disposable
       end
     end
 
+    require "disposable/twin/setup"
     include Setup
 
 
@@ -127,3 +117,13 @@ module Disposable
     include ModelReaders
   end
 end
+
+require "disposable/twin/definitions"
+require "disposable/twin/collection"
+require "disposable/twin/sync"
+require "disposable/twin/save"
+require "disposable/twin/builder"
+require "disposable/twin/changed"
+require "disposable/twin/property_processor"
+require "disposable/twin/persisted"
+require "disposable/twin/default"
