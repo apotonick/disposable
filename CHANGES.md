@@ -1,3 +1,7 @@
+# 0.2.5
+
+* Fix loading order, you may now `require "disposable/twin"` without any further requires.
+
 # 0.2.4
 
 * Add `Twin::Parent` to access a nested's parent twin.
