@@ -33,7 +33,13 @@ module Disposable
 
         options[:nested] = options.delete(:twin) if options[:twin]
 
-        super(name, options, &block).tap do |definition|
+        class_block = proc do
+          require 'disposable/twin/struct'
+          include Disposable::Twin::Struct if options[:struct]
+          class_eval(&block)
+        end if block
+
+        super(name, options, &class_block).tap do |definition|
           create_accessors(name, definition)
         end
       end
