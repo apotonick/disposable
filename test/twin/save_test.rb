@@ -161,6 +161,13 @@ class SaveTest < MiniTest::Spec
     twin.songs[1].composer.name = "Lynott"
     twin.artist.name = "Thin Lizzy"
   end
+
+  # save with one unsaveable model.
+    #save returns result.
+  it do
+    song.instance_eval { def save; false; end }
+    twin.save.must_equal false
+  end
 end
 
 
