@@ -51,9 +51,9 @@ module Disposable
 
       def create_accessors(name, definition)
         mod = Module.new do
-          define_method(name)       { @fields[name.to_s] }
+          define_method(name)       { defined?(super) ? super() : @fields[name.to_s] }
           # define_method(name)       { read_property(name) }
-          define_method("#{name}=") { |value| write_property(name, value, definition) }
+          define_method("#{name}=") { |value| defined?(super) ? super(value) : write_property(name, value, definition) }
         end
         include mod
       end

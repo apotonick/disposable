@@ -3,7 +3,7 @@ require "test_helper"
 class InheritTest < MiniTest::Spec
   module Model
     Song  = Struct.new(:title, :album)
-    Album = Struct.new(:name, :songs, :artist)
+    Album = Struct.new(:name, :songs, :artist, :with_custom_getter, :with_custom_setter)
     Artist = Struct.new(:name)
   end
 
@@ -23,6 +23,17 @@ class InheritTest < MiniTest::Spec
         def artist_id
           1
         end
+      end
+
+      property :with_custom_getter
+      property :with_custom_setter
+
+      def with_custom_getter
+        "my custom getter: #{super}"
+      end
+
+      def with_custom_setter=(val)
+        super("my custom setter: #{val}")
       end
     end
 
@@ -54,4 +65,24 @@ class InheritTest < MiniTest::Spec
 
   # inherit inline twins when overriding.
   it { Twin::Compilation.new(album).artist.artist_id.must_equal 1 }
+
+  describe "custom getters get inherited" do
+    let (:album) { Model::Album.new("", [], Model::Artist.new, "underlying getter value", "") }
+
+    it do
+      compilation = Twin::Compilation.new(album)
+      compilation.with_custom_getter.must_equal("my custom getter: underlying getter value")
+    end
+  end
+
+  describe "custom setters get inherited" do
+    let (:album) { Model::Album.new("", [], Model::Artist.new, "", "underlying setter value") }
+
+    it do
+      compilation = Twin::Compilation.new(album)
+      compilation.with_custom_setter.must_equal("my custom setter: underlying setter value")
+      compilation.with_custom_setter = "new value"
+      compilation.with_custom_setter.must_equal("my custom setter: new value")
+    end
+  end
 end
