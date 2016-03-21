@@ -14,6 +14,13 @@ module Disposable
       Definition
     end
 
+    def self.inherited(subclass)
+      # no super here!
+      heritage.(subclass) do |cfg|
+        cfg[:args].last.merge!(_inherited: true) if cfg[:method] == :property
+      end
+    end
+
     def schema
       self.class.definitions.extend(DefinitionsEach)
     end
@@ -26,6 +33,7 @@ module Disposable
       # TODO: move to Declarative, as in Representable and Reform.
       def property(name, options={}, &block)
         options[:private_name] = options.delete(:from) || name
+        is_inherited = options.delete(:_inherited)
 
         if options.delete(:virtual)
           options[:writeable] = options[:readable] = false
@@ -33,8 +41,8 @@ module Disposable
 
         options[:nested] = options.delete(:twin) if options[:twin]
 
-        super(name, options, &block).tap do |definition|
-          create_accessors(name, definition)
+        super(name, options, &block).tap do |definition| # super is Declarative::Schema::property.
+          create_accessors(name, definition) unless is_inherited
         end
       end
 
@@ -51,9 +59,9 @@ module Disposable
 
       def create_accessors(name, definition)
         mod = Module.new do
-          define_method(name)       { defined?(super) ? super() : @fields[name.to_s] }
+          define_method(name)       { @fields[name.to_s] }
           # define_method(name)       { read_property(name) }
-          define_method("#{name}=") { |value| defined?(super) ? super(value) : write_property(name, value, definition) }
+          define_method("#{name}=") { |value| write_property(name, value, definition) }
         end
         include mod
       end
