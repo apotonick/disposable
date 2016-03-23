@@ -1,3 +1,8 @@
+# 0.2.6
+
+* Manual accessors are no longer overridden when inheriting twin classes.
+* The `:from` option is no longer ignored when inheriting.
+
 # 0.2.5
 
 * Fix loading order, you may now `require "disposable/twin"` without any further requires.
