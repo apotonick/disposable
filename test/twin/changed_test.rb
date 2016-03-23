@@ -114,24 +114,23 @@ class ChangedWithCoercionTest < MiniTest::Spec
     include Changed
     include Coercion
 
-    property :released, type: Virtus::Attribute::Boolean
+    property :released, type: Types::Form::Bool
   end
 
   it do
     twin = SongTwin.new(Song.new)
     twin.changed?(:released).must_equal false
-    twin.released = 1
+    twin.released = 'true'
     twin.released.must_equal true
     twin.changed?(:released).must_equal true
   end
 
   it do
     twin = SongTwin.new(Song.new(true))
-    twin.released = true
     twin.changed?(:released).must_equal false
-    twin.released = 1 # it coerces, then assigns, then compares, which makes this NOT changed.
+    twin.released = 'true' # it coerces, then assigns, then compares, which makes this NOT changed.
     twin.changed?(:released).must_equal false
-    twin.released = false
+    twin.released = 'false'
     twin.changed?(:released).must_equal true
   end
 end
