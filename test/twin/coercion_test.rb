@@ -9,16 +9,16 @@ class CoercionTest < MiniTest::Spec
     feature Setup::SkipSetter
 
     property :id
-    property :released_at, :type => Types::Form::DateTime
+    property :released_at, type: Types::Form::DateTime
 
     property :hit do
-      property :length, :type => Types::Coercible::Int
-      property :good,   :type => Types::Bool
+      property :length, type: Types::Coercible::Int
+      property :good,   type: Types::Bool
     end
 
     property :band do
       property :label do
-        property :value, :type => Types::Coercible::Float
+        property :value, type: Types::Coercible::Float
       end
     end
   end
