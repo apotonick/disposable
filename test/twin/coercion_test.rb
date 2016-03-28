@@ -28,15 +28,6 @@ class CoercionTest < MiniTest::Spec
     property :id, type: Types::Coercible::Int
   end
 
-  class TwinWithNilify < Disposable::Twin
-    feature Coercion
-
-    property :date_of_birth,
-             type: Types::Form::Date, nilify: true
-    property :date_of_death_by_unicorns,
-             type: Types::Form::Nil | Types::Form::Date
-  end
-
   describe "with Setup::SkipSetter" do
 
     subject do
@@ -86,6 +77,15 @@ class CoercionTest < MiniTest::Spec
     end
   end
 
+  class TwinWithNilify < Disposable::Twin
+    feature Coercion
+
+    property :date_of_birth,
+             type: Types::Form::Date, nilify: true
+    property :date_of_death_by_unicorns,
+             type: Types::Form::Nil | Types::Form::Date
+  end
+
   describe "with Nilify" do
 
     subject do
@@ -99,12 +99,12 @@ class CoercionTest < MiniTest::Spec
     end
 
     it "coerce empty values to nil when using option nilify: true" do
-      subject.date_of_birth = ''
+      subject.date_of_birth = ""
       subject.date_of_birth.must_equal nil
     end
 
     it "coerce empty values to nil when using dry-types | operator" do
-      subject.date_of_death_by_unicorns = ''
+      subject.date_of_death_by_unicorns = ""
       subject.date_of_death_by_unicorns.must_equal nil
     end
   end
