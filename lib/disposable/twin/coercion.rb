@@ -1,17 +1,22 @@
-require "virtus"
+require 'dry-types'
 
-# confession: i love virtus' coercion.
 module Disposable::Twin::Coercion
+  module Types
+    include Dry::Types.module
+  end
+
   module ClassMethods
     def property(name, options={}, &block)
       super(name, options, &block).tap do
-        coercing_setter!(name, options[:type])  # define coercing setter after twin.
+        coercing_setter!(name, options[:type]) if options[:type]
       end
     end
 
     def coercing_setter!(name, type)
       mod = Module.new do
-        define_method("#{name}=") { |value| super Virtus::Attribute.build(type).coerce(value) }
+        define_method("#{name}=") do |value|
+          super type.call(value)
+        end
       end
       include mod
     end

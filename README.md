@@ -193,14 +193,16 @@ class AlbumTwin < Disposable::Twin
 
 ## Coercion
 
-Twins can use [Virtus](https://github.com/solnic/virtus) coercion. This will override the setter in your twin, coerce the incoming value, and call the original setter. _Nothing more_ will happen.
+Twins can use [dry-types](https://github.com/dry-rb/dry-types) coercion. This will override the setter in your twin, coerce the incoming value, and call the original setter. _Nothing more_ will happen.
+
+Disposable already defines a module `Disposable::Twin::Coercion::Types` with all the Dry::Types built-in types. So you can use any of the types documented in http://dry-rb.org/gems/dry-types/built-in-types/.
 
 ```ruby
 class AlbumTwin < Disposable::Twin
   feature Coercion
   feature Setup::SkipSetter
 
-  property :id, type: Integer
+  property :id, type: Types::Form::Int
 ```
 
 The `:type` option defines the coercion type. You may incluce `Setup::SkipSetter`, too, as otherwise the coercion will happen at initialization time and in the setter.
@@ -211,7 +213,6 @@ twin.id #=> 1
 ```
 
 Again, coercion only happens in the setter.
-
 
 ## Defaults
 
