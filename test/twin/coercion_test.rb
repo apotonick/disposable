@@ -23,11 +23,6 @@ class CoercionTest < MiniTest::Spec
     end
   end
 
-  class TwinWithoutSkipSetter < Disposable::Twin
-    feature Coercion
-    property :id, type: Types::Coercible::Int
-  end
-
   describe "with Setup::SkipSetter" do
 
     subject do
@@ -62,6 +57,11 @@ class CoercionTest < MiniTest::Spec
       subject.hit.good.must_equal nil
       subject.band.label.value.must_equal 9999.99
     end
+  end
+
+  class TwinWithoutSkipSetter < Disposable::Twin
+    feature Coercion
+    property :id, type: Types::Coercible::Int
   end
 
   describe "without Setup::SkipSetter" do
