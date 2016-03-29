@@ -84,13 +84,15 @@ class CoercionTest < MiniTest::Spec
              type: Types::Form::Date, nilify: true
     property :date_of_death_by_unicorns,
              type: Types::Form::Nil | Types::Form::Date
+    property :id, nilify: true
   end
 
   describe "with Nilify" do
 
     subject do
       TwinWithNilify.new(OpenStruct.new(date_of_birth: '1990-01-12',
-                                        date_of_death_by_unicorns: '2037-02-18'))
+                                        date_of_death_by_unicorns: '2037-02-18',
+                                        id: 1))
     end
 
     it "coerce values correctly" do
@@ -106,6 +108,11 @@ class CoercionTest < MiniTest::Spec
     it "coerce empty values to nil when using dry-types | operator" do
       subject.date_of_death_by_unicorns = ""
       subject.date_of_death_by_unicorns.must_equal nil
+    end
+
+    it "converts blank string to nil, without :type option" do
+      subject.id = ""
+      subject.id.must_equal nil
     end
   end
 end
