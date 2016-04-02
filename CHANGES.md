@@ -1,3 +1,8 @@
+# 0.3.0
+
+* Use [dry-types](https://github.com/dry-rb/dry-types) as a replacement for the deprecated virtus. You have to change to dry-types' constants.
+* Add `:nilify` option to avoid processing blank strings.
+
 # 0.2.6
 
 * Manual accessors are no longer overridden when inheriting twin classes.

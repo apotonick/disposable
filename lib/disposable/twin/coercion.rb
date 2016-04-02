@@ -1,4 +1,4 @@
-require 'dry-types'
+require "dry-types"
 
 module Disposable::Twin::Coercion
   module Types
