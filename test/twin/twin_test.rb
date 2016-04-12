@@ -97,13 +97,20 @@ class OverridingAccessorsTest < TwinTest
   # overriding accessors in Twin
   class Song < Disposable::Twin
     property :title
+    property :id
 
     def title
       super.downcase
     end
+
+    def id=(v)
+      super(v+1)
+    end
   end
 
-  it { Song.new(Model::Song.new(1, "A Tale That Wasn't Right")).title.must_equal "a tale that wasn't right" }
+  let (:model) { Model::Song.new(1, "A Tale That Wasn't Right") }
+  it { Song.new(model).title.must_equal "a tale that wasn't right" }
+  it { Song.new(model).id.must_equal 2 }
 end
 
 
