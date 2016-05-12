@@ -51,10 +51,11 @@ class Disposable::Twin
           next
         end
 
+        # First, call sync! on nested model(s).
         nested_model = PropertyProcessor.new(dfn, self, property_value).() { |twin| twin.sync!({}) }
-
         next if nested_model.nil?
 
+        # Then, write nested model to parent model, e.g. model.songs = [<Song>]
         mapper.send(dfn.setter, nested_model) # @model.artist = <Artist>
       end
 
