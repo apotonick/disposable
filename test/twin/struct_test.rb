@@ -107,8 +107,9 @@ class TwinWithNestedStructTest < MiniTest::Spec
     # adding to collection.
     it do
       # note that Struct-twin's public API wants a hash!
-      song.options.roles.append({}) # add empty "model" to hash collection.
-      song.options.roles[-1].name = "admin"
+      # it kinda sucks that the user has to know there's a hash model in place. is that what we want?
+      role = song.options.roles.append({}) # add empty "model" to hash collection.
+      role.name = "admin"
 
       song.options.roles.size.must_equal 2
       song.options.roles[0].name.must_equal "user"
@@ -181,6 +182,26 @@ class CompositionWithStructTest < Minitest::Spec
         property :index
       end
     end
+
+    def tags=(*args)
+      content.tags=*args
+    end
+
+    def notes
+      content.notes
+    end
+  end
+
+  it "use nested twin but delegate" do
+    twin = PersistedSheet.new(model)
+
+    twin.tags = "history"
+
+    twin.notes.append text: "Canberra trip", index: 0
+
+    twin.sync
+
+    model.content.must_equal({"tags"=>["history"], "notes"=>[{"text"=>"Freedom", "index"=>0}, {"text"=>"Like", "index"=>1}, {"text"=>"Canberra trip", "index"=>0}]})
   end
 
   class Sheet < Disposable::Twin
@@ -225,7 +246,10 @@ class CompositionWithStructTest < Minitest::Spec
 
   it do
     skip
-    # raise persisted_sheet.content.notes[0].inspect
+    # this fails because the Sheet wants to write PersistedSheet.options.notes twins to the persisted sheet in #sync,
+    # instead of an array of hashes.
+
+
 
 #     sheeet= Sheeeeeeet.new(p= PersistedSheet.new(model))
 
