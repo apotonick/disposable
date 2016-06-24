@@ -169,6 +169,63 @@ class TwinWithNestedStructTest < MiniTest::Spec
   end
 end
 
+class StructReadableWriteableTest < Minitest::Spec
+  class Song < Disposable::Twin
+    include Struct
+    property :length
+    property :id, readable: false
+  end
+
+  it "ignores readable: false" do
+    song = Song.new(length: 123, id: 1)
+    song.length.must_equal 123
+    song.id.must_equal nil
+  end
+
+  it "ignores writeable: false" do
+    skip
+  end
+end
+
+# Default has to be included.
+class DefaultWithStructTest < Minitest::Spec
+  Song = Struct.new(:settings)
+
+  class Twin < Disposable::Twin
+    feature Default
+    feature Sync
+
+    property :settings, default: Hash.new do
+      include Struct
+
+      property :enabled, default: "yes"
+      property :roles, default: Hash.new do
+        include Struct
+        property :admin, default: "maybe"
+      end
+    end
+  end
+
+  # all given.
+  it do
+    twin = Twin.new(Song.new({enabled: true, roles: {admin: false}}))
+    twin.settings.enabled.must_equal true
+    twin.settings.roles.admin.must_equal false
+  end
+
+  # defaults, please.
+  it do
+    song = Song.new
+    twin = Twin.new(song)
+    twin.settings.enabled.must_equal "yes"
+    twin.settings.roles.admin.must_equal "maybe"
+
+    twin.sync
+
+    song.settings.must_equal({"enabled"=>"yes", "roles"=>{"admin"=>"maybe"}})
+  end
+end
+
 class CompositionWithStructTest < Minitest::Spec
   class PersistedSheet < Disposable::Twin
     feature Sync
@@ -197,11 +254,11 @@ class CompositionWithStructTest < Minitest::Spec
 
     twin.tags = "history"
 
-    twin.notes.append text: "Canberra trip", index: 0
+    twin.notes.append text: "Canberra trip", index: 2
 
     twin.sync
 
-    model.content.must_equal({"tags"=>["history"], "notes"=>[{"text"=>"Freedom", "index"=>0}, {"text"=>"Like", "index"=>1}, {"text"=>"Canberra trip", "index"=>0}]})
+    model.content.must_equal({"tags"=>["history"], "notes"=>[{"text"=>"Freedom", "index"=>0}, {"text"=>"Like", "index"=>1}, {"text"=>"Canberra trip", "index"=>2}]})
   end
 
   class Sheet < Disposable::Twin
