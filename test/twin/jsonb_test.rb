@@ -6,6 +6,7 @@ class JSONBTest < MiniTest::Spec
 
   class Song < Disposable::Twin
     include JSONB
+    include Sync
 
     property :id
     property :content, jsonb: true do
@@ -48,6 +49,57 @@ class JSONBTest < MiniTest::Spec
 
     # model's hash hasn't changed.
     model.inspect.must_equal "#<struct JSONBTest::Model id=1, content=nil>"
+  end
+
+  it "#sync writes to model" do
+    model = Model.new
+
+    song = Song.new(model)
+    song.content.band.label.location = "San Francisco"
+
+    song.sync
+
+    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}}>"
+  end
+
+  it "doesn't erase existing, undeclared content" do
+    model = Model.new(nil, {"artist"=>{}})
+
+    song = Song.new(model)
+    song.content.band.label.location = "San Francisco"
+
+    song.sync
+
+    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}},}>"
+  end
+
+
+  describe "features propagation" do
+    module UUID
+      def uuid
+        "1224"
+      end
+    end
+
+    class Hit < Disposable::Twin
+      include JSONB
+      feature UUID
+
+      property :id
+      property :content, jsonb: true do
+        property :title
+        property :band do
+          property :name
+        end
+      end
+    end
+
+    it "includes features into all nested twins" do
+      song = Hit.new(Model.new)
+      song.uuid.must_equal "1224"
+      song.content.uuid.must_equal "1224"
+      song.content.band.uuid.must_equal "1224"
+    end
   end
 end
 
