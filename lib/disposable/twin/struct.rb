@@ -20,7 +20,6 @@
       end
 
       def sync(options={})
-        # puts "@@@@@model #{@model.inspect}"
         sync_hash_representer.new(self).to_hash
       end
       alias_method :sync!, :sync
