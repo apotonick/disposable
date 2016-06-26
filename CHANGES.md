@@ -1,3 +1,7 @@
+# 0.3.1
+
+* Introduce `Twin::JSONB` for easy access to hash fields using `Struct`.
+
 # 0.3.0
 
 * Use [dry-types](https://github.com/dry-rb/dry-types) as a replacement for the deprecated virtus. You have to change to dry-types' constants.
