@@ -18,20 +18,27 @@ class Disposable::Twin
     end
 
   private
+    # Note that :_features `include`s modules in this order, first to last.
     def self.jsonb_options
-      { _features: [Struct, NestedDefaults], default: ->(*) { Hash.new } }
+      { _features: [NestedDefaults, Struct, JSONB::Sync], default: ->(*) { Hash.new } }
     end
 
     # NestedDefaults for properties nested in the top :jsonb column.
     module NestedDefaults
       def self.included(includer)
         includer.defaults do |name, options|
-          if options[:_nested_builder]
+          if options[:_nested_builder] # DISCUSS: any other way to figure out we're nested?
             JSONB.jsonb_options
           else
             { }
           end
         end
+      end
+    end
+
+    module Sync
+      def sync!(options={})
+        @model.merge(super)
       end
     end
   end

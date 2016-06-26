@@ -5,8 +5,8 @@ class JSONBTest < MiniTest::Spec
   Model = Struct.new(:id, :content)
 
   class Song < Disposable::Twin
+    feature Sync
     include JSONB
-    include Sync
 
     property :id
     property :content, jsonb: true do
@@ -68,9 +68,21 @@ class JSONBTest < MiniTest::Spec
     song = Song.new(model)
     song.content.band.label.location = "San Francisco"
 
+    # puts song.content.class.ancestors
     song.sync
 
-    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}},}>"
+    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"artist\"=>{}, \"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}}>"
+  end
+
+  it "doesn't erase existing, undeclared content in existing content" do
+    model = Model.new(nil, {"band"=>{ "label" => { "owner" => "Brett Gurewitz" }, "genre" => "Punkrock" }})
+
+    song = Song.new(model)
+    song.content.band.label.location = "San Francisco"
+
+    song.sync
+
+    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"owner\"=>\"Brett Gurewitz\", \"location\"=>\"San Francisco\"}, \"genre\"=>\"Punkrock\"}}>"
   end
 
 
