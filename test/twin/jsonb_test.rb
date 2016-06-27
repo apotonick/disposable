@@ -18,6 +18,10 @@ class JSONBTest < MiniTest::Spec
           property :location
         end
       end
+
+      collection :releases do
+        property :version
+      end
     end
   end
 
@@ -32,6 +36,7 @@ class JSONBTest < MiniTest::Spec
     song.content.title.must_equal nil
     song.content.band.name.must_equal nil
     song.content.band.label.location.must_equal nil
+    song.content.releases.must_equal []
 
     # model's hash hasn't changed.
     model.inspect.must_equal "#<struct JSONBTest::Model id=1, content={}>"
@@ -59,7 +64,19 @@ class JSONBTest < MiniTest::Spec
 
     song.sync
 
-    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}}>"
+    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}, \"releases\"=>[]}>"
+  end
+
+  it "#appends to collections" do
+    model = Model.new
+
+    song = Song.new(model)
+    # song.content.releases.append(version: 1) # FIXME: yes, this happens!
+    song.content.releases.append("version" => 1)
+
+    song.sync
+
+    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"band\"=>{\"label\"=>{}}, \"releases\"=>[{\"version\"=>1}]}>"
   end
 
   it "doesn't erase existing, undeclared content" do
@@ -71,7 +88,7 @@ class JSONBTest < MiniTest::Spec
     # puts song.content.class.ancestors
     song.sync
 
-    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"artist\"=>{}, \"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}}>"
+    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"artist\"=>{}, \"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}, \"releases\"=>[]}>"
   end
 
   it "doesn't erase existing, undeclared content in existing content" do
@@ -82,7 +99,7 @@ class JSONBTest < MiniTest::Spec
 
     song.sync
 
-    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"owner\"=>\"Brett Gurewitz\", \"location\"=>\"San Francisco\"}, \"genre\"=>\"Punkrock\"}}>"
+    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"owner\"=>\"Brett Gurewitz\", \"location\"=>\"San Francisco\"}, \"genre\"=>\"Punkrock\"}, \"releases\"=>[]}>"
   end
 
 
