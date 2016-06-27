@@ -113,6 +113,30 @@ class JSONBTest < MiniTest::Spec
       song.content.band.uuid.must_equal "1224"
     end
   end
+
+  describe "coercion" do
+    require "disposable/twin/coercion"
+    class Coercing < Disposable::Twin
+      include JSONB
+      feature Coercion
+
+      property :id, type: Types::Coercible::Int
+      property :content, jsonb: true do
+        property :title
+        property :band do
+          property :name, type: Types::Coercible::String
+        end
+      end
+    end
+
+    it "coerces" do
+      song = Coercing.new(Model.new(1))
+      song.id = "9"
+      song.id.must_equal 9
+      song.content.band.name = 18
+      song.content.band.name.must_equal "18"
+    end
+  end
 end
 
 # fixme: make sure default hash is different for every invocation, and not created at compile time.
