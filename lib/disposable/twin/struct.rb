@@ -1,4 +1,4 @@
-  module Disposable
+module Disposable
   class Twin
     # Twin that uses a hash to populate.
     #
