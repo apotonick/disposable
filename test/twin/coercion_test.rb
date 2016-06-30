@@ -44,6 +44,14 @@ class CoercionTest < MiniTest::Spec
       subject.band.label.value.must_equal "9999.99"
     end
 
+    it "NOT coerce twice on subclasses" do
+      subclassed = Class.new(TwinWithSkipSetter).new(album)
+      subclassed.released_at.must_equal "31/03/1981"
+
+      subclassed.released_at =  "12/12/1980"
+      subclassed.released_at.must_equal DateTime.parse("12/12/1980")
+    end
+
 
     it "coerce values when using a setter" do
       subject.id = Object
