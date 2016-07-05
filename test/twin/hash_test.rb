@@ -9,7 +9,7 @@ class HashTest < MiniTest::Spec
     include Property::Hash
 
     property :id
-    property :content, hash: true do
+    property :content, field: :hash do
       property :title
       property :band do
         property :name
@@ -115,7 +115,7 @@ class HashTest < MiniTest::Spec
       feature UUID
 
       property :id
-      property :content, hash: true do
+      property :content, field: :hash do
         property :title
         property :band do
           property :name
@@ -138,7 +138,7 @@ class HashTest < MiniTest::Spec
       feature Coercion
 
       property :id, type: Types::Coercible::Int
-      property :content, hash: true do
+      property :content, field: :hash do
         property :title
         property :band do
           property :name, type: Types::Coercible::String
@@ -161,7 +161,7 @@ class HashTest < MiniTest::Spec
       include Property::Hash
 
       property :id
-      content=property :content, hash: true do
+      content=property :content, field: :hash do
         property :title
         property :band do
           property :name

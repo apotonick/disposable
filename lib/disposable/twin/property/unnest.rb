@@ -10,7 +10,11 @@ module Disposable::Twin::Property
     def unnest(name, options)
       from = options.delete(:from)
       # needed to make reform process this field.
-      property(name, virtual: true, _inherited: true)
+
+      options = definitions.get(from)[:nested].definitions.get(name).instance_variable_get(:@options) # FIXME.
+      options = options.merge(virtual: true, _inherited: true, private_name: nil)
+
+      property(name, options)
       delegates from, name, "#{name}="
     end
   end

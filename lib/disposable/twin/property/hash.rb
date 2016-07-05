@@ -11,7 +11,7 @@ class Disposable::Twin
         # Recursively include Struct in :hash and nested properties.
         # defaults is applied to all ::property calls.
         includer.defaults do |name, options|
-          if options[:hash] # only apply to `hash: true`.
+          if options[:field] == :hash
             hash_options
           else
             {}
@@ -22,7 +22,7 @@ class Disposable::Twin
     private
       # Note that :_features `include`s modules in this order, first to last.
       def self.hash_options
-        { _features: [NestedDefaults, Struct, Hash::Sync], default: ->(*) { ::Hash.new } }
+        { _features: [NestedDefaults, Property::Struct, Hash::Sync], default: ->(*) { ::Hash.new } }
       end
 
       # NestedDefaults for properties nested in the top :hash column.
