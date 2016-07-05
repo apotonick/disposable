@@ -1,3 +1,9 @@
+# 0.3.2
+
+* Rename `JSONB` to `Property::Hash`.
+* Fix `::unnest` so it copies delegated property options correctly.
+* Deprecate `Twin::Struct`.
+
 # 0.3.1
 
 * Introduce `Twin::JSONB` for easy access to hash fields using `Struct`.
