@@ -50,6 +50,17 @@ module Disposable
         property(name, options.merge(collection: true), &block)
       end
 
+      # TODO: test that nested properties options are "unnested", too, e.g. populator.
+      include Uber::Delegates
+      def unnest(name, options)
+        from = options.delete(:from)
+        puts "unnest"
+
+        # needed to make reform process this field.
+        property(name, virtual: true, _inherited: true)
+        delegates from, name, "#{name}="
+      end
+
       # TODO: remove.
       def from_collection(collection)
         collection.collect { |model| new(model) }

@@ -179,6 +179,10 @@ You can also specify nested objects with an explicit class.
 property :artist, twin: TwinArtist
 ```
 
+## Unnest
+
+#todo: document
+
 ## Features
 
 You can simply `include` feature modules into twins. If you want a feature to be included into all inline twins of your schema, use `::feature`.

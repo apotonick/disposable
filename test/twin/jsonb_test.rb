@@ -154,6 +154,56 @@ class JSONBTest < MiniTest::Spec
       song.content.band.name.must_equal "18"
     end
   end
+
+  describe "::unnest" do
+    class Unnesting < Disposable::Twin
+      feature Sync
+      include JSONB
+
+      property :id
+      content=property :content, jsonb: true do
+        property :title
+        property :band do
+          property :name
+
+          property :label do
+            property :location
+          end
+        end
+
+        collection :releases do
+          property :version
+        end
+      end
+
+      unnest :title, from: :content
+      unnest :band,  from: :content
+      # property :title, virtual: true#, _inherit: true, nested: content[:nested].definitions.get(:title)[:nested]
+      # def title=(v)
+      #   raise v.inspect
+      #   content.title=(v)
+      # end
+    end
+
+    it "exposes reader and writer" do
+      model = Model.new(1, {title: "Bedroom Eyes"})
+      song = Unnesting.new(model)
+
+      # singular scalar accessors
+      song.content.title.must_equal "Bedroom Eyes"
+      song.title.must_equal "Bedroom Eyes"
+
+      song.title = "Notorious"
+      song.title.must_equal "Notorious"
+      song.content.title.must_equal "Notorious"
+
+      # singular nested accessors
+      song.band.name.must_equal nil
+      song.content.band.name.must_equal nil
+      song.band.name = "Duran Duran"
+      song.band.name.must_equal "Duran Duran"
+    end
+  end
 end
 
 # fixme: make sure default hash is different for every invocation, and not created at compile time.
