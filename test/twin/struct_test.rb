@@ -5,7 +5,7 @@ require 'disposable/twin/struct'
 
 class TwinStructTest < MiniTest::Spec
   class Song < Disposable::Twin
-    include Struct
+    include Property::Struct
     property :number#, default: 1 # FIXME: this should be :default_if_nil so it becomes clear with a model.
     property :cool?
   end
@@ -57,18 +57,18 @@ class TwinWithNestedStructTest < MiniTest::Spec
     include Sync
 
     property :options do # don't call #to_hash, this is triggered in the twin's constructor.
-      include Struct
+      include Property::Struct
       property :recorded
       property :released
 
       property :preferences do
-        include Struct
+        include Property::Struct
         property :show_image
         property :play_teaser
       end
 
       collection :roles do
-        include Struct
+        include Property::Struct
         property :name
       end
     end
@@ -171,7 +171,7 @@ end
 
 class StructReadableWriteableTest < Minitest::Spec
   class Song < Disposable::Twin
-    include Struct
+    include Property::Struct
     property :length
     property :id, readable: false
   end
@@ -196,11 +196,11 @@ class DefaultWithStructTest < Minitest::Spec
     feature Sync
 
     property :settings, default: Hash.new do
-      include Struct
+      include Property::Struct
 
       property :enabled, default: "yes"
       property :roles, default: Hash.new do
-        include Struct
+        include Property::Struct
         property :admin, default: "maybe"
       end
     end

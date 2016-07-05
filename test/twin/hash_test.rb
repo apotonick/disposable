@@ -1,15 +1,15 @@
 require "test_helper"
-require "disposable/twin/jsonb"
+require "disposable/twin/property/hash"
 
-class JSONBTest < MiniTest::Spec
+class HashTest < MiniTest::Spec
   Model = Struct.new(:id, :content)
 
   class Song < Disposable::Twin
     feature Sync
-    include JSONB
+    include Property::Hash
 
     property :id
-    property :content, jsonb: true do
+    property :content, hash: true do
       property :title
       property :band do
         property :name
@@ -29,7 +29,7 @@ class JSONBTest < MiniTest::Spec
 
   it "allows reading from existing hash" do
     model = Model.new(1, {})
-    model.inspect.must_equal "#<struct JSONBTest::Model id=1, content={}>"
+    model.inspect.must_equal "#<struct HashTest::Model id=1, content={}>"
 
     song = Song.new(model)
     song.id.must_equal 1
@@ -39,12 +39,12 @@ class JSONBTest < MiniTest::Spec
     song.content.releases.must_equal []
 
     # model's hash hasn't changed.
-    model.inspect.must_equal "#<struct JSONBTest::Model id=1, content={}>"
+    model.inspect.must_equal "#<struct HashTest::Model id=1, content={}>"
   end
 
   it "defaults to hash when value is nil" do
     model = Model.new(1)
-    model.inspect.must_equal "#<struct JSONBTest::Model id=1, content=nil>"
+    model.inspect.must_equal "#<struct HashTest::Model id=1, content=nil>"
 
     song = Song.new(model)
     song.id.must_equal 1
@@ -53,7 +53,7 @@ class JSONBTest < MiniTest::Spec
     song.content.band.label.location.must_equal nil
 
     # model's hash hasn't changed.
-    model.inspect.must_equal "#<struct JSONBTest::Model id=1, content=nil>"
+    model.inspect.must_equal "#<struct HashTest::Model id=1, content=nil>"
   end
 
   it "#sync writes to model" do
@@ -64,7 +64,7 @@ class JSONBTest < MiniTest::Spec
 
     song.sync
 
-    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}, \"releases\"=>[]}>"
+    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}, \"releases\"=>[]}>"
   end
 
   it "#appends to collections" do
@@ -76,7 +76,7 @@ class JSONBTest < MiniTest::Spec
 
     song.sync
 
-    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"band\"=>{\"label\"=>{}}, \"releases\"=>[{\"version\"=>1}]}>"
+    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"band\"=>{\"label\"=>{}}, \"releases\"=>[{\"version\"=>1}]}>"
   end
 
   it "doesn't erase existing, undeclared content" do
@@ -88,7 +88,7 @@ class JSONBTest < MiniTest::Spec
     # puts song.content.class.ancestors
     song.sync
 
-    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"artist\"=>{}, \"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}, \"releases\"=>[]}>"
+    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"artist\"=>{}, \"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}, \"releases\"=>[]}>"
   end
 
   it "doesn't erase existing, undeclared content in existing content" do
@@ -99,7 +99,7 @@ class JSONBTest < MiniTest::Spec
 
     song.sync
 
-    model.inspect.must_equal "#<struct JSONBTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"owner\"=>\"Brett Gurewitz\", \"location\"=>\"San Francisco\"}, \"genre\"=>\"Punkrock\"}, \"releases\"=>[]}>"
+    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"owner\"=>\"Brett Gurewitz\", \"location\"=>\"San Francisco\"}, \"genre\"=>\"Punkrock\"}, \"releases\"=>[]}>"
   end
 
 
@@ -111,11 +111,11 @@ class JSONBTest < MiniTest::Spec
     end
 
     class Hit < Disposable::Twin
-      include JSONB
+      include Property::Hash
       feature UUID
 
       property :id
-      property :content, jsonb: true do
+      property :content, hash: true do
         property :title
         property :band do
           property :name
@@ -134,11 +134,11 @@ class JSONBTest < MiniTest::Spec
   describe "coercion" do
     require "disposable/twin/coercion"
     class Coercing < Disposable::Twin
-      include JSONB
+      include Property::Hash
       feature Coercion
 
       property :id, type: Types::Coercible::Int
-      property :content, jsonb: true do
+      property :content, hash: true do
         property :title
         property :band do
           property :name, type: Types::Coercible::String
@@ -158,10 +158,10 @@ class JSONBTest < MiniTest::Spec
   describe "::unnest" do
     class Unnesting < Disposable::Twin
       feature Sync
-      include JSONB
+      include Property::Hash
 
       property :id
-      content=property :content, jsonb: true do
+      content=property :content, hash: true do
         property :title
         property :band do
           property :name
@@ -207,3 +207,5 @@ class JSONBTest < MiniTest::Spec
 end
 
 # fixme: make sure default hash is different for every invocation, and not created at compile time.
+
+# TODO: test that config is same and nested.

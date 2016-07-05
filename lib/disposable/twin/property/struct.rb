@@ -1,5 +1,5 @@
-  module Disposable
-  class Twin
+class Disposable::Twin
+  module Property
     # Twin that uses a hash to populate.
     #
     #   Twin.new(id: 1)
@@ -28,5 +28,5 @@
       def save!
       end
     end
-  end
+  end # Property
 end
