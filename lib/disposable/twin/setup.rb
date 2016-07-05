@@ -23,12 +23,15 @@ module Disposable
       end
 
       def setup_property!(dfn, options)
-        value =
-          if options.has_key?(name = dfn[:name].to_sym)
-            options[dfn[:name].to_sym]
-          else
-            setup_value_for(dfn, options)
-          end
+        if options.has_key?(name = dfn[:name].to_sym)
+          value = options[dfn[:name].to_sym]
+          return setup_write!(dfn, value)
+        end
+
+        value = setup_value_for(dfn, options)
+
+        # this sucks and is why i introduce pipetrees in 0.4.
+        return if dfn[:readable] == false && dfn[:default].nil?
 
         setup_write!(dfn, value) # note: even readable: false will be written to twin as nil.
       end

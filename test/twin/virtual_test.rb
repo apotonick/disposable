@@ -22,4 +22,18 @@ class VirtualTest < MiniTest::Spec
 
     hash.must_equal("credit_card_number"=> "123")
   }
+
+  describe "setter should never be called with virtual:true" do
+    class Raising < Disposable::Twin
+      property :id, virtual: true
+
+      def id=(*)
+        raise "i should never be called!"
+      end
+    end
+
+    it "what" do
+      Raising.new(Object.new).id.must_equal nil
+    end
+  end
 end
