@@ -21,4 +21,17 @@ class UnnestTest < MiniTest::Spec
     # also copies :nested.
     Twin.definitions.get(:email).extend(Declarative::Inspect).inspect.must_equal %{#<Disposable::Twin::Definition: @options={:private_name=>:email, :nested=>#<Class:>, :name=>\"email\", :readable=>false, :writeable=>false}>}
   end
+
+  it "exposes accessors on top-level twin" do
+    twin = Twin.new(OpenStruct.new(content: OpenStruct.new()))
+
+    twin.email.must_equal nil
+    twin.email= 2
+    twin.email.model.must_equal 2
+
+
+    twin.id.must_equal nil
+    twin.id = 1
+    twin.id.must_equal 1
+  end
 end
