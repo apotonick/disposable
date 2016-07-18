@@ -90,8 +90,9 @@ class Disposable::Twin
         def build_nested_hash_representer
           Sync.hash_representer(self) do |dfn|
             dfn.merge!(
-              readable: true, # the nested hash contains all fields.
-              as:       dfn[:private_name] # nested hash keys by model property names.
+              readable:   true, # the nested hash contains all fields.
+              as:         dfn[:private_name], # nested hash keys by model property names.
+              render_nil: true,
             )
 
             dfn.merge!(

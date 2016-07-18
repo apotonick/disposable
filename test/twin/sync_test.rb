@@ -94,26 +94,37 @@ class TwinSyncTest < MiniTest::Spec
       album.songs[1].composer.name.must_equal "Lynott"
     end
 
-    # save with block creates nested_hash and doesn't sync.
-    it do
-      twin = Twin::Album.new(album)
+    # save with block.
+    describe "#to_nested_hash" do
+      let (:twin) { Twin::Album.new(album) }
 
-      # this usually happens in Contract::Validate or in from_* in a representer
-      fill_out!(twin)
+      it "creates nested_hash and doesn't sync" do
+        # this usually happens in Contract::Validate or in from_* in a representer
+        fill_out!(twin)
 
-      nested_hash = nil
-      twin.sync do |hash|
-        nested_hash = hash
+        nested_hash = nil
+        twin.sync do |hash|
+          nested_hash = hash
+        end
+
+        nested_hash.must_equal({"name"=>"Live And Dangerous", "songs"=>[{"title"=>"Southbound", "composer"=>nil}, {"title"=>"The Boys Are Back In Town", "composer"=>{"name"=>"Lynott"}}], "artist"=>{"name"=>"Thin Lizzy"}})
+
+        # nothing written to model.
+        album.name.must_equal nil
+        album.songs[0].title.must_equal nil
+        album.songs[1].title.must_equal nil
+        album.songs[1].composer.name.must_equal nil
+        album.artist.name.must_equal nil
       end
 
-      nested_hash.must_equal({"name"=>"Live And Dangerous", "songs"=>[{"title"=>"Southbound"}, {"title"=>"The Boys Are Back In Town", "composer"=>{"name"=>"Lynott"}}], "artist"=>{"name"=>"Thin Lizzy"}})
+      it "includes nil values" do
+        nested_hash = nil
+        twin.sync do |hash|
+          nested_hash = hash
+        end
 
-      # nothing written to model.
-      album.name.must_equal nil
-      album.songs[0].title.must_equal nil
-      album.songs[1].title.must_equal nil
-      album.songs[1].composer.name.must_equal nil
-      album.artist.name.must_equal nil
+        nested_hash.must_equal({"name"=>nil, "songs"=>[{"title"=>nil, "composer"=>nil}, {"title"=>nil, "composer"=>{"name"=>nil}}], "artist"=>{"name"=>nil}})
+      end
     end
 
 
