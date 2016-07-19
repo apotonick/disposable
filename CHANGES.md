@@ -1,3 +1,11 @@
+# 0.4.0
+
+* In `#sync {}` with block, `nil` values will now be included in the nested hash, resulting in a hash as follows.
+    ```ruby
+    twin.sync do |nested_hash|
+      nested_hash #=> {  uuid: nil, title: "Greatest Hits" }
+    ```
+
 # 0.3.2
 
 * Rename `JSONB` to `Property::Hash`.
