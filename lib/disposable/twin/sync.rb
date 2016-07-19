@@ -92,7 +92,7 @@ class Disposable::Twin
             dfn.merge!(
               readable:   true, # the nested hash contains all fields.
               as:         dfn[:private_name], # nested hash keys by model property names.
-              render_nil: true,
+              render_nil: dfn[:collection] ? nil : true,
             )
 
             dfn.merge!(

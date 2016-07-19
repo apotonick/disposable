@@ -117,13 +117,30 @@ class TwinSyncTest < MiniTest::Spec
         album.artist.name.must_equal nil
       end
 
-      it "includes nil values" do
-        nested_hash = nil
-        twin.sync do |hash|
-          nested_hash = hash
+      describe "nil values" do
+        it "includes nil values, including nil collections" do
+          twin = Twin::Album.new(Model::Album.new(nil,
+            nil, # uninitialized nil collection.
+            nil)
+          )
+
+          nested_hash = nil
+          twin.sync { |hash| nested_hash = hash }
+
+          nested_hash.must_equal({"name"=>nil, "artist"=>nil})
         end
 
-        nested_hash.must_equal({"name"=>nil, "songs"=>[{"title"=>nil, "composer"=>nil}, {"title"=>nil, "composer"=>{"name"=>nil}}], "artist"=>{"name"=>nil}})
+        it "includes empty collections" do
+          twin = Twin::Album.new(Model::Album.new(nil,
+            [], # empty collection.
+            nil)
+          )
+
+          nested_hash = nil
+          twin.sync { |hash| nested_hash = hash }
+
+          nested_hash.must_equal({"name"=>nil, "songs"=>[], "artist"=>nil})
+        end
       end
     end
 
