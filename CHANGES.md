@@ -5,6 +5,7 @@
     twin.sync do |nested_hash|
       nested_hash #=> {  uuid: nil, title: "Greatest Hits" }
     ```
+  Note that in earlier versions, `nil` values were not included in this hash.
 
 # 0.3.2
 
