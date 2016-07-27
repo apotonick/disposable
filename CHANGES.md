@@ -1,3 +1,7 @@
+# Unreleased
+
+* Make dry types a runtime dependency, not just a development dependency
+
 # 0.3.2
 
 * Rename `JSONB` to `Property::Hash`.
