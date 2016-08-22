@@ -94,28 +94,61 @@ class TwinSyncTest < MiniTest::Spec
       album.songs[1].composer.name.must_equal "Lynott"
     end
 
-    # save with block creates nested_hash and doesn't sync.
-    it do
-      twin = Twin::Album.new(album)
+    describe "save with block" do
+      # creates nested_hash and doesn't sync.
+      it do
+        twin = Twin::Album.new(album)
 
-      # this usually happens in Contract::Validate or in from_* in a representer
-      fill_out!(twin)
+        # this usually happens in Contract::Validate or in from_* in a representer
+        fill_out!(twin)
 
-      nested_hash = nil
-      twin.sync do |hash|
-        nested_hash = hash
+        nested_hash = nil
+        twin.sync do |hash|
+          nested_hash = hash
+        end
+
+        nested_hash.must_equal({"name"=>"Live And Dangerous", "songs"=>[{"title"=>"Southbound"}, {"title"=>"The Boys Are Back In Town", "composer"=>{"name"=>"Lynott"}}], "artist"=>{"name"=>"Thin Lizzy"}})
+
+        # nothing written to model.
+        album.name.must_equal nil
+        album.songs[0].title.must_equal nil
+        album.songs[1].title.must_equal nil
+        album.songs[1].composer.name.must_equal nil
+        album.artist.name.must_equal nil
       end
 
-      nested_hash.must_equal({"name"=>"Live And Dangerous", "songs"=>[{"title"=>"Southbound"}, {"title"=>"The Boys Are Back In Town", "composer"=>{"name"=>"Lynott"}}], "artist"=>{"name"=>"Thin Lizzy"}})
+      it "assigns nil values correctly" do
+        artist = Model::Artist.new("Thin Lizzy")
+        song = Model::Song.new("Southbound")
+        song_with_composer = Model::Song.new("The Boys Are Back In Town", Model::Artist.new("Lynott"))
+        album = Model::Album.new("Live And Dangerous", [song, song_with_composer], artist)
 
-      # nothing written to model.
-      album.name.must_equal nil
-      album.songs[0].title.must_equal nil
-      album.songs[1].title.must_equal nil
-      album.songs[1].composer.name.must_equal nil
-      album.artist.name.must_equal nil
+        twin = Twin::Album.new(album)
+        twin.name = nil
+        twin.artist.name = nil
+        twin.songs[0].title = nil
+        twin.songs[1].composer.name = nil
+
+        nested_hash = nil
+        twin.sync do |hash|
+          nested_hash = hash
+        end
+
+        nested_hash.must_equal({"name" => nil,
+                                "songs" => [
+                                  {"title" => nil},
+                                  {"composer" => {"name" => nil}}, 
+                                ],
+                                "artist" => {"name" => nil}})
+
+        # doesn't update the model
+        album.name.must_equal "Live And Dangerous"
+        album.songs[0].title.must_equal "Southbound"
+        album.songs[1].title.must_equal "The Boys Are Back In Town"
+        album.songs[1].composer.name.must_equal "Lynott"
+        album.artist.name.must_equal "Thin Lizzy"
+      end
     end
-
 
     def fill_out!(twin)
       twin.name = "Live And Dangerous"
