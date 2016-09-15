@@ -1,7 +1,7 @@
 require "test_helper"
 
 class DefaultTest < Minitest::Spec
-  Song     = Struct.new(:title, :genre, :composer)
+  Song     = Struct.new(:title, :new_album, :published, :genre, :composer)
   Composer = Struct.new(:name)
 
   class Twin < Disposable::Twin
@@ -12,14 +12,18 @@ class DefaultTest < Minitest::Spec
     property :composer, default: Composer.new do
       property :name, default: "NOFX"
     end
+    property :published, default: false
+    property :new_album, default: true
   end
 
   # all given.
   it do
-    twin = Twin.new(Song.new("Anarchy Camp", "Punk", Composer.new("Nofx")))
+    twin = Twin.new(Song.new("Anarchy Camp", false, true, "Punk", Composer.new("Nofx")))
     twin.title.must_equal "Anarchy Camp"
     twin.genre.must_equal "Punk"
     twin.composer.name.must_equal "Nofx"
+    twin.published.must_equal true
+    twin.new_album.must_equal false
   end
 
   # defaults, please.
@@ -28,12 +32,15 @@ class DefaultTest < Minitest::Spec
     twin.title.must_equal "Medio-Core"
     twin.composer.name.must_equal "NOFX"
     twin.genre.must_equal "Punk Rock DefaultTest::Song"
+    twin.published.must_equal false
+    twin.new_album.must_equal true
   end
 
   # false value is not defaulted.
   it do
-    twin = Twin.new(Song.new(false))
+    twin = Twin.new(Song.new(false, false))
     twin.title.must_equal false
+    twin.new_album.must_equal false
   end
 
   describe "inheritance" do
