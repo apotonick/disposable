@@ -154,6 +154,11 @@ class SaveTest < MiniTest::Spec
     album.artist.saved?.must_equal true
   end
 
+  # save!: can not use as public.
+  it do
+    twin.respond_to?(:save!).must_equal false
+  end
+
   def fill_out!(twin)
     twin.name = "Live And Dangerous"
     twin.songs[0].title = "Southbound"
