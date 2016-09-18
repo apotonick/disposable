@@ -1,3 +1,7 @@
+# 0.4.1
+
+* Allow `false` as a `:default` value.
+
 # 0.4.0
 
 * In `#sync {}` with block, `nil` values will now be included in the nested hash, resulting in a hash as follows.

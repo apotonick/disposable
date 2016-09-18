@@ -16,7 +16,7 @@ module Disposable::Twin::Default
   module ClassMethods
   private
     def build_definition(name, options={}, &block)
-      options = options.merge(default: Uber::Options::Value.new(options[:default])) if options.has_key? :default
+      options = options.merge(default: Uber::Options::Value.new(options[:default])) if options.has_key?(:default)
       super
     end
   end
