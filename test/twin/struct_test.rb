@@ -329,3 +329,15 @@ class CompositionWithStructTest < Minitest::Spec
 
   end
 end
+
+class IndifferentAttributeAccessTwinStructTest < MiniTest::Spec
+  class Song < Disposable::Twin
+    include Property::Struct
+    property :cool?
+  end
+
+  it { Song.new(cool?: true).cool?.must_equal true }
+  it { Song.new(cool?: false).cool?.must_equal false }
+  it { Song.new('cool?' => true).cool?.must_equal true }
+  it { Song.new('cool?' => false).cool?.must_equal false }
+end
