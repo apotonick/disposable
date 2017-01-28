@@ -1,4 +1,4 @@
-require "uber/builder"
+require "declarative/builder"
 
 module Disposable
   class Twin
@@ -16,10 +16,10 @@ module Disposable
     module Builder
       def self.included(base)
         base.class_eval do
-          include Uber::Builder
+          include Declarative::Builder
 
           def self.build(model, options={}) # semi-public.
-            class_builder.call(model, options).new(model, options) # Uber::Builder::class_builder.
+            build!(self, model, options).new(model, options) # Declarative::Builder::build!.
           end
         end
       end

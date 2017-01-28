@@ -1,3 +1,5 @@
+require "declarative/option"
+
 # TODO: allow default: -> for hashes, etc.
 module Disposable::Twin::Default
   def setup_value_for(dfn, options)
@@ -16,7 +18,7 @@ module Disposable::Twin::Default
   module ClassMethods
   private
     def build_definition(name, options={}, &block)
-      options = options.merge(default: Uber::Options::Value.new(options[:default])) if options.has_key?(:default)
+      options = options.merge(default: Declarative::Option(options[:default], instance_exec: true)) if options.has_key?(:default)
       super
     end
   end

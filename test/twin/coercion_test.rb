@@ -116,3 +116,77 @@ class CoercionTest < MiniTest::Spec
     end
   end
 end
+
+# this converts "" to nil and then breaks because it's strict.
+# Types::Strict::String.constructor(Dry::Types::Coercions::Form.method(:to_nil))
+
+class CoercionTypingTest < MiniTest::Spec
+  class Song < Disposable::Twin
+    include Coercion
+    include Setup::SkipSetter
+
+    # property :title, type: Dry::Types::Strict::String.constructor(Dry::Types::Coercions::Form.method(:to_nil))
+    property :title, type: Types::Strict::String.optional # this is the behavior of the "DB" data twin. this is NOT the form.
+
+    # property :name, type: Types::Form::String
+  end
+
+  it do
+    twin = Song.new(Struct.new(:title, :name).new)
+
+    # with type: Dry::Types::Strict::String
+    # assert_raises(Dry::Types::ConstraintError) { twin.title = nil }
+    twin.title = nil
+    twin.title.must_be_nil
+
+    twin.title = "Yo"
+    twin.title.must_equal "Yo"
+
+    twin.title = ""
+    twin.title.must_equal ""
+
+    assert_raises(Dry::Types::ConstraintError) { twin.title = :bla }
+    assert_raises(Dry::Types::ConstraintError) { twin.title = 1 }
+  end
+
+  # Form
+  class Form < Disposable::Twin
+    include Coercion
+    include Setup::SkipSetter
+
+
+    # property :title, type: Dry::Types::Strict::String.constructor(Dry::Types::Coercions::Form.method(:to_nil))
+    property :title, type: Types::Strict::String.optional.constructor(Dry::Types::Coercions::Form.method(:to_nil)) # this is the behavior of the "DB" data twin. this is NOT the form.
+
+    # property :name, type: Types::Form::String
+
+    property :enabled, type: Types::Form::Bool
+    # property :enabled, Bool.constructor(:trim!)
+  end
+  it do
+    twin =Form.new(Struct.new(:title, :enabled).new)
+
+    # assert_raises(Dry::Types::ConstraintError) { twin.title = nil } # in form, we either have a blank string or the key's not present at all.
+    twin.title = nil
+    twin.title.must_be_nil
+
+    twin.title = "" # nilify blank strings
+    twin.title.must_be_nil
+
+    twin.title = "Yo"
+    twin.title.must_equal "Yo"
+
+    twin.enabled = " TRUE"
+    twin.enabled.must_equal true
+  end
+end
+
+
+# def title=(String value) # allow obj.title = "bla"
+# def title=(Nil)          # allow obj.title = nil
+
+
+
+# active = " TRUE HACK"
+# how to test/validate if active is boolean?
+
