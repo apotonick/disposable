@@ -1,6 +1,7 @@
 # 0.4.1
 
 * Allow `false` as a `:default` value.
+* Use `Declarative::Builder` instead of `Uber::Builder`.
 
 # 0.4.0
 
