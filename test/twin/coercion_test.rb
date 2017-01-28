@@ -176,8 +176,8 @@ class CoercionTypingTest < MiniTest::Spec
     twin.title = "Yo"
     twin.title.must_equal "Yo"
 
-    twin.enabled = " TRUE"
-    twin.enabled.must_equal true
+    # twin.enabled = " TRUE"
+    # twin.enabled.must_equal true
   end
 end
 
