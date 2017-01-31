@@ -19,6 +19,7 @@ class Disposable::Twin
       end.compact
     end
 
+    require "delegate"
     class Each < SimpleDelegator
       def each(options={})
         return __getobj__ unless block_given?
