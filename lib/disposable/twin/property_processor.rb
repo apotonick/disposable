@@ -5,7 +5,7 @@
 # For a collection, this is run per item and yields the item.
 class Disposable::Twin::PropertyProcessor
   def initialize(definition, twin, value=nil)
-    value ||= twin.send(definition.getter)
+    value ||= twin.send(definition.getter) # DISCUSS: should we decouple definition and value, here?
     @definition = definition
     @value      = value
   end
@@ -20,12 +20,11 @@ class Disposable::Twin::PropertyProcessor
 
 private
   def collection!
-    # FIXME: the nil collection is not tested, yet!
-    (@value || []).collect { |nested_twin| yield(nested_twin) }
+    (@value || []).each_with_index.collect { |nested_twin, i| yield(nested_twin, i) }
   end
 
   def property!
     twin = @value or return nil
-    nested_model = yield(twin)
+    yield(twin)
   end
 end

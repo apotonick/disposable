@@ -1,5 +1,10 @@
 # 0.4.1
 
+* `Twin#schema` doesn't `extend` at runtime anymore but uses a decorator for `each`.
+* `PropertyProcessor`
+
+# 0.4.1
+
 * Allow `false` as a `:default` value.
 * Use `Declarative::Builder` instead of `Uber::Builder`.
 

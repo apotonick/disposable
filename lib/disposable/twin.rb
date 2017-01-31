@@ -22,7 +22,7 @@ module Disposable
     end
 
     def schema
-      self.class.definitions.extend(DefinitionsEach)
+      Definition::Each.new(self.class.definitions) # TODO: change this interface.
     end
 
     class << self

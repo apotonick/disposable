@@ -1,0 +1,39 @@
+require "test_helper"
+
+class PropertyProcessorTest < Minitest::Spec
+	Album  = Struct.new(:title, :artist, :songs)
+	Artist = Struct.new(:name)
+	Song   = Struct.new(:id)
+
+ 	class AlbumTwin < Disposable::Twin
+    property :title
+
+    property :artist do
+      property :name
+    end
+
+    collection :songs do
+    	property :id
+    end
+  end
+
+  describe "collection" do
+  	it "yields twin, index" do
+	    twin   = AlbumTwin.new(Album.new("Live!", Artist.new, [Song.new(1), Song.new(2)]))
+	    
+	    called = []
+	    Disposable::Twin::PropertyProcessor.new(twin.class.definitions.get(:songs), twin).() { |v, i| called << [v.model, i] }
+
+	    called.inspect.must_equal %{[[#<struct PropertyProcessorTest::Song id=1>, 0], [#<struct PropertyProcessorTest::Song id=2>, 1]]}
+  	end
+
+  	it "allows nil collection" do
+  		twin   = AlbumTwin.new(Album.new("Live!", Artist.new, nil))
+	    
+	    called = []
+	    Disposable::Twin::PropertyProcessor.new(twin.class.definitions.get(:songs), twin).() { |v, i| called << [v.model, i] }
+
+	    called.inspect.must_equal %{[]}
+  	end
+  end
+end

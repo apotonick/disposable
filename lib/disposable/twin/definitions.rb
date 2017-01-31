@@ -7,22 +7,24 @@ class Disposable::Twin
     def setter
       "#{self[:name]}="
     end
-  end
 
-  module DefinitionsEach
-    def each(options={})
-      return self unless block_given?
-
-      super() do |dfn|
+    # :private:
+    Filter = ->(definitions, options) do
+      definitions.collect do |dfn|
         next if options[:exclude]    and options[:exclude].include?(dfn[:name])
         next if options[:scalar]     and dfn[:collection]
         next if options[:collection] and ! dfn[:collection]
         next if options[:twin]       and ! dfn[:nested]
+        dfn
+      end.compact
+    end
 
-        yield dfn
+    class Each < SimpleDelegator
+      def each(options={})
+        return __getobj__ unless block_given?
+
+        Definition::Filter.(__getobj__, options).each { |dfn| yield dfn }
       end
-
-      self
     end
   end
 end
