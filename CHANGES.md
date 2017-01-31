@@ -1,4 +1,4 @@
-# 0.4.1
+# 0.4.2
 
 * `Twin#schema` doesn't `extend` at runtime anymore but uses a decorator for `each`.
 * `PropertyProcessor` now yields `(twin, index)` if its working on a collection.
