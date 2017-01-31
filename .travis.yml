@@ -8,3 +8,6 @@ rvm:
   # - 2.0
 gemfile:
   - Gemfile
+matrix:
+  allow_failures:
+    - rvm: 2.4.0
