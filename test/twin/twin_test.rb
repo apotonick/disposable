@@ -138,3 +138,17 @@ class TwinAsTest < MiniTest::Spec
 
 end
 # TODO: test coercion!
+
+class AccessorsTest < Minitest::Spec
+  Song = Struct.new(:format)
+
+  class Twin < Disposable::Twin
+    property :format # Kernel#format
+  end
+
+  it do
+    twin = Twin.new(Song.new("bla"))
+    twin.format.must_equal "bla"
+    twin.format = "blubb"
+  end
+end
