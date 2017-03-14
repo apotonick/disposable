@@ -8,6 +8,7 @@ class Disposable::Twin
       save!(options)
     end
 
+  protected
     def save!(options={})
       result = save_model
 
