@@ -32,7 +32,7 @@ class Disposable::Twin
             if options[:_nested_builder] # DISCUSS: any other way to figure out we're nested?
               Hash.hash_options
             else
-              { }
+              { render_nil: true }
             end
           end
         end
