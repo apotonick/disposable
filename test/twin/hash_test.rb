@@ -64,7 +64,7 @@ class HashTest < MiniTest::Spec
 
     song.sync
 
-    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}, \"releases\"=>[]}>"
+    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"title\"=>nil, \"band\"=>{\"name\"=>nil, \"label\"=>{\"location\"=>\"San Francisco\"}}, \"releases\"=>[]}>"
   end
 
   it "#appends to collections" do
@@ -76,7 +76,7 @@ class HashTest < MiniTest::Spec
 
     song.sync
 
-    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"band\"=>{\"label\"=>{}}, \"releases\"=>[{\"version\"=>1}]}>"
+    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"title\"=>nil, \"band\"=>{\"name\"=>nil, \"label\"=>{\"location\"=>nil}}, \"releases\"=>[{\"version\"=>1}]}>"
   end
 
   it "doesn't erase existing, undeclared content" do
@@ -88,7 +88,7 @@ class HashTest < MiniTest::Spec
     # puts song.content.class.ancestors
     song.sync
 
-    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"artist\"=>{}, \"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}, \"releases\"=>[]}>"
+    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"artist\"=>{}, \"title\"=>nil, \"band\"=>{\"name\"=>nil, \"label\"=>{\"location\"=>\"San Francisco\"}}, \"releases\"=>[]}>"
   end
 
   it "doesn't erase existing, undeclared content in existing content" do
@@ -99,7 +99,7 @@ class HashTest < MiniTest::Spec
 
     song.sync
 
-    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"owner\"=>\"Brett Gurewitz\", \"location\"=>\"San Francisco\"}, \"genre\"=>\"Punkrock\"}, \"releases\"=>[]}>"
+    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"owner\"=>\"Brett Gurewitz\", \"location\"=>\"San Francisco\"}, \"genre\"=>\"Punkrock\", \"name\"=>nil}, \"title\"=>nil, \"releases\"=>[]}>"
   end
 
 
