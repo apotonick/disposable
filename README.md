@@ -181,7 +181,34 @@ property :artist, twin: TwinArtist
 
 ## Unnest
 
-#todo: document
+To expose a nested property on an outer level, use `::unnest`.
+
+```ruby
+class AlbumTwin < Disposable::Twin
+  property :artist do
+    property :email
+  end
+
+  unnest :email, from: :artist
+end
+```
+
+The `email` accessors will now be on top-level, hiding the nested structure to the outside world.
+
+```ruby
+album = Album.find(1)
+twin  = AlbumTwin.new(album)
+
+twin.email #=> "duran@duran.to"
+twin.email = "duran@duran.com"
+```
+
+When `sync`ing, only the nested structure will be considered.
+
+```ruby
+twin.sync
+album.artist.email #=> "duran@duran.com"
+```
 
 ## Features
 
