@@ -1,6 +1,8 @@
 module Disposable::Twin::Parent
   def self.included(includer)
-    includer.property(:parent, virtual: true)
+    includer.class_eval do
+      property(:parent, virtual: true)
+    end
   end
 
   # FIXME: for collections, this will merge options for every element.
