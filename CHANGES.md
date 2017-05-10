@@ -1,3 +1,7 @@
+# 0.4.3
+
+* Fix `NoMethodError: private method `property' called for MyForm:Class in Reform.` by using `class_eval`.
+
 # 0.4.2
 
 * `Twin#schema` doesn't `extend` at runtime anymore but uses a decorator for `each`.
