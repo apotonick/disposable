@@ -17,7 +17,7 @@ module Disposable::Twin::Coercion
 
       mod = Module.new do
         define_method("#{name}=") do |value|
-          super type.call(value)
+          super type.(value)
         end
       end
       include mod
