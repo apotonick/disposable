@@ -6,7 +6,9 @@ class Disposable::Twin
     module Struct
       def read_value_for(dfn, options)
         name = dfn[:name]
-        @model[name.to_s] || @model[name.to_sym] # TODO: test sym vs. str.
+        # TODO: test sym vs. str.
+        return unless key_value = model.to_h.find { |k, _| k.to_sym == name.to_sym }
+        key_value.last
       end
 
       def sync_hash_representer # TODO: make this without representable, please.
