@@ -125,7 +125,7 @@ class CallbackGroupTest < MiniTest::Spec
 
     twin.name = "Dear Landlord"
 
-    group = Group.new(twin).(context: context = Operation.new, content: content)
+    group = Group.new(twin).(context: Operation.new, content: content)
     # Disposable::Callback::Dispatch.new(twin).on_change{ |twin| puts twin;puts }
 
     # pp group.invocations
