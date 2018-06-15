@@ -58,7 +58,7 @@
 #       # Album#name :sync was called, first case.
 #       album.name.must_equal "processed+Run For Cover"
 #       # Song#title :sync called but returns nil.
-#       song.title.must_equal nil
+#       song.title.must_be_nil
 #       # Song#title :sync called and processed, first case.
 #       song_with_composer.title.must_equal "++Empty Rooms"
 
@@ -139,7 +139,7 @@
 #       # Album#name :sync was called, first case.
 #       album.name.must_equal "processed+Run For Cover"
 #       # Song#title :sync called but returns nil.
-#       song.title.must_equal nil
+#       song.title.must_be_nil
 #       # Song#title :sync called and processed, first case.
 #      #### song_with_composer.title.must_equal "++Empty Rooms"
 

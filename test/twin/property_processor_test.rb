@@ -5,7 +5,7 @@ class PropertyProcessorTest < Minitest::Spec
 	Artist = Struct.new(:name)
 	Song   = Struct.new(:id)
 
- 	class AlbumTwin < Disposable::Twin
+  class AlbumTwin < Disposable::Twin
     property :title
 
     property :artist do
@@ -35,7 +35,7 @@ class PropertyProcessorTest < Minitest::Spec
 
   	it "allows nil collection" do
   		twin   = AlbumTwin.new(Album.new("Live!", Artist.new, nil))
-	    
+
 	    called = []
 	    Disposable::Twin::PropertyProcessor.new(twin.class.definitions.get(:songs), twin).() { |v, i| called << [v.model, i] }
 

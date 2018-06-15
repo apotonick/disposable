@@ -44,7 +44,7 @@ class TwinCollectionTest < MiniTest::Spec
     let (:album) { Model::Album.new(1, "The Rest Is Silence", [Model::Song.new(3), Model::Song.new(4)]) }
     let (:twin) { Twin::Album.new(album) }
 
-    it { twin.songs.find_by(id: 1).must_equal nil }
+    it { twin.songs.find_by(id: 1).must_be_nil }
     it { twin.songs.find_by(id: 3).must_equal twin.songs[0] }
     it { twin.songs.find_by(id: 4).must_equal twin.songs[1] }
     it { twin.songs.find_by(id: "4").must_equal twin.songs[1] }
@@ -172,7 +172,7 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
       twin.songs.added.must_equal []
       twin.songs << song2
       twin.songs.added.must_equal [twin.songs[1]]
-      twin.songs.insert(2, song3 = Song.new)
+      twin.songs.insert(2, Song.new)
       twin.songs.added.must_equal [twin.songs[1], twin.songs[2]]
 
       # TODO: what to do if we override an item (insert)?
@@ -180,7 +180,7 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
   end
 
   describe "#deleted" do
-    let (:album) { Album.create(name: "The Rest Is Silence", songs: [song1, song2, song3 = Song.new]) }
+    let (:album) { Album.create(name: "The Rest Is Silence", songs: [song1, song2, Song.new]) }
 
     it do
       twin = Twin::Album.new(album)

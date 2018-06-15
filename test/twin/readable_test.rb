@@ -30,9 +30,9 @@ class ReadableTest < MiniTest::Spec
   let (:twin) { PasswordForm.new(cred) }
 
   it {
-    twin.password.must_equal nil            # not readable.
+    twin.password.must_be_nil            # not readable.
     twin.credit_card.name.must_equal "Jonny"
-    twin.credit_card.number.must_equal nil  # not readable.
+    twin.credit_card.number.must_be_nil  # not readable.
 
     # manual setting on the twin works.
     twin.password = "123"

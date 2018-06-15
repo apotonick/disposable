@@ -27,14 +27,14 @@ class TwinParentTest < MiniTest::Spec
 
   let (:album) { Album.new(Model::Album.new(1, Model::Artist.new("Helloween"), [Model::Song.new("I'm Alive", Model::Artist.new("Kai Hansen"))])) }
 
-  it { album.parent.must_equal nil }
+  it { album.parent.must_be_nil }
   it { album.artist.parent.must_equal album }
   it { album.songs[0].parent.must_equal album }
   it { album.songs[0].composer.parent.must_equal album.songs[0] }
 
   describe "Collection#append" do
     it do
-      album.songs.append(song = Model::Song.new)
+      album.songs.append(Model::Song.new)
       album.songs[1].parent.must_equal album
     end
   end

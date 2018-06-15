@@ -74,9 +74,9 @@ class CallbacksTest < MiniTest::Spec
 
     # for collections.
     it do
-      album.songs << song1 = Song.new
+      album.songs << Song.new
       album.songs << Song.create(title: "Run For Cover")
-      album.songs << song2 = Song.new
+      album.songs << Song.new
       invokes = []
 
       Callback.new(twin.songs).on_create { |t| invokes << t }
@@ -144,9 +144,9 @@ class CallbacksTest < MiniTest::Spec
 
     # for collections.
     it do
-      album.songs << song1 = Song.new
+      album.songs << Song.new
       album.songs << Song.create(title: "Run For Cover")
-      album.songs << song2 = Song.new
+      album.songs << Song.new
 
       invokes = []
       Callback.new(twin.songs).on_update { |t| invokes << t }
@@ -350,7 +350,7 @@ class CallbacksTest < MiniTest::Spec
       song    = Song.new
       album.songs = [ex_song, song]
 
-      twin.songs.delete(deleted = twin.songs[0])
+      twin.songs.delete(twin.songs[0])
 
       Callback.new(twin.songs).on_destroy { |t| invokes << t }
       invokes.must_equal []
