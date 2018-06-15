@@ -204,6 +204,53 @@ class HashTest < MiniTest::Spec
       song.band.name.must_equal "Duran Duran"
     end
   end
+
+  describe 'collection schema' do
+    AlbumModel = Struct.new(:id, :songs)
+    class Album < Disposable::Twin
+      feature Sync
+      feature Property::Hash
+
+      property :id
+      collection :songs, field: :hash do
+        property :title
+        property :band do
+          property :name
+
+          property :label do
+            property :location
+          end
+        end
+
+        collection :featured_artists do
+          property :name
+        end
+      end
+    end
+
+    it "exposes reader and writer" do
+      model = AlbumModel.new(1, [
+        { title: "Sherry", band: { name: 'The Four Seasons', label: { location: 'US' } }, featured_artists: [{ name: 'Frankie Valli' }, { name: 'The Variatones' }] },
+        { title: "Walk Like a Man", band: { name: 'The Four Seasons', label: { location: 'US' } }, featured_artists: [{ name: 'Frankie Valli' }] }
+      ])
+      contract = Album.new(model)
+
+      song1 = contract.songs[0]
+
+      song1.title.must_equal "Sherry"
+      song1.band.name.must_equal 'The Four Seasons'
+      song1.band.label.location.must_equal 'US'
+      song1.featured_artists[0].name.must_equal 'Frankie Valli'
+      song1.featured_artists[1].name.must_equal 'The Variatones'
+
+      song2 = contract.songs[1]
+
+      song2.title.must_equal "Walk Like a Man"
+      song2.band.name.must_equal 'The Four Seasons'
+      song2.band.label.location.must_equal 'US'
+      song2.featured_artists[0].name.must_equal 'Frankie Valli'
+    end
+  end
 end
 
 # fixme: make sure default hash is different for every invocation, and not created at compile time.

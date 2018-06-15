@@ -23,7 +23,7 @@ module Disposable
       end
 
       def setup_property!(dfn, options)
-        if options.has_key?(name = dfn[:name].to_sym)
+        if options.has_key?(dfn[:name].to_sym)
           value = options[dfn[:name].to_sym]
           return setup_write!(dfn, value)
         end
