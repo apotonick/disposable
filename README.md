@@ -206,7 +206,7 @@ class AlbumTwin < Disposable::Twin
   feature Coercion
   feature Setup::SkipSetter
 
-  property :id, type: Types::Form::Int
+  property :id, type: Types::Params::Integer
 ```
 
 The `:type` option defines the coercion type. You may incluce `Setup::SkipSetter`, too, as otherwise the coercion will happen at initialization time and in the setter.

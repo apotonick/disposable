@@ -3,16 +3,15 @@ require "test_helper"
 require "disposable/twin/coercion"
 
 class CoercionTest < MiniTest::Spec
-
   class TwinWithSkipSetter < Disposable::Twin
     feature Coercion
     feature Setup::SkipSetter
 
     property :id
-    property :released_at, type: Types::Form::DateTime
+    property :released_at, type: DRY_TYPES_CONSTANT::DateTime
 
     property :hit do
-      property :length, type: Types::Coercible::Int
+      property :length, type: const_get("Types::Coercible::#{DRY_TYPES_INT_CONSTANT}")
       property :good,   type: Types::Bool
     end
 
@@ -24,7 +23,6 @@ class CoercionTest < MiniTest::Spec
   end
 
   describe "with Setup::SkipSetter" do
-
     subject do
       TwinWithSkipSetter.new(album)
     end
@@ -61,7 +59,7 @@ class CoercionTest < MiniTest::Spec
 
   class TwinWithoutSkipSetter < Disposable::Twin
     feature Coercion
-    property :id, type: Types::Coercible::Int
+    property :id, type: const_get("Types::Coercible::#{DRY_TYPES_INT_CONSTANT}")
   end
 
   describe "without Setup::SkipSetter" do
@@ -81,9 +79,9 @@ class CoercionTest < MiniTest::Spec
     feature Coercion
 
     property :date_of_birth,
-             type: Types::Form::Date, nilify: true
+             type: DRY_TYPES_CONSTANT::Date, nilify: true
     property :date_of_death_by_unicorns,
-             type: Types::Form::Nil | Types::Form::Date
+             type: DRY_TYPES_CONSTANT::Nil | DRY_TYPES_CONSTANT::Date
     property :id, nilify: true
   end
 
@@ -118,17 +116,17 @@ class CoercionTest < MiniTest::Spec
 end
 
 # this converts "" to nil and then breaks because it's strict.
-# Types::Strict::String.constructor(Dry::Types::Coercions::Form.method(:to_nil))
+# Types::Strict::String.constructor(Dry::Types::Params.method(:to_nil))
 
 class CoercionTypingTest < MiniTest::Spec
   class Song < Disposable::Twin
     include Coercion
     include Setup::SkipSetter
 
-    # property :title, type: Dry::Types::Strict::String.constructor(Dry::Types::Coercions::Form.method(:to_nil))
+    # property :title, type: Dry::Types::Strict::String.constructor(Dry::Types::Params.method(:to_nil))
     property :title, type: Types::Strict::String.optional # this is the behavior of the "DB" data twin. this is NOT the form.
 
-    # property :name, type: Types::Form::String
+    # property :name, type: Types::Params::String
   end
 
   it do
@@ -155,12 +153,14 @@ class CoercionTypingTest < MiniTest::Spec
     include Setup::SkipSetter
 
 
-    # property :title, type: Dry::Types::Strict::String.constructor(Dry::Types::Coercions::Form.method(:to_nil))
-    property :title, type: Types::Strict::String.optional.constructor(Dry::Types::Coercions::Form.method(:to_nil)) # this is the behavior of the "DB" data twin. this is NOT the form.
+    # property :title, type: Dry::Types::Strict::String.constructor(Dry::Types::Params.method(:to_nil))
 
-    # property :name, type: Types::Form::String
+    constructor = Disposable::Twin::Coercion::DRY_TYPES_VERSION < 13 ? 'form.nil' : 'params.nil'
+    property :title, type: Types::Strict::String.optional.constructor(Dry::Types[constructor]) # this is the behavior of the "DB" data twin. this is NOT the form.
 
-    property :enabled, type: Types::Form::Bool
+    # property :name, type: Types::Params::String
+
+    property :enabled, type: DRY_TYPES_CONSTANT::Bool
     # property :enabled, Bool.constructor(:trim!)
   end
   it do

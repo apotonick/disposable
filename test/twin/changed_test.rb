@@ -114,7 +114,7 @@ class ChangedWithCoercionTest < MiniTest::Spec
     include Changed
     include Coercion
 
-    property :released, type: Types::Form::Bool
+    property :released, type: DRY_TYPES_CONSTANT::Bool
   end
 
   it do

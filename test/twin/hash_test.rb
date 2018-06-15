@@ -137,7 +137,7 @@ class HashTest < MiniTest::Spec
       include Property::Hash
       feature Coercion
 
-      property :id, type: Types::Coercible::Int
+      property :id, type: const_get("Types::Coercible::#{DRY_TYPES_INT_CONSTANT}")
       property :content, field: :hash do
         property :title
         property :band do
