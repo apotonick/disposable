@@ -33,9 +33,9 @@ class HashTest < MiniTest::Spec
 
     song = Song.new(model)
     song.id.must_equal 1
-    song.content.title.must_equal nil
-    song.content.band.name.must_equal nil
-    song.content.band.label.location.must_equal nil
+    song.content.title.must_be_nil
+    song.content.band.name.must_be_nil
+    song.content.band.label.location.must_be_nil
     song.content.releases.must_equal []
 
     # model's hash hasn't changed.
@@ -48,9 +48,9 @@ class HashTest < MiniTest::Spec
 
     song = Song.new(model)
     song.id.must_equal 1
-    song.content.title.must_equal nil
-    song.content.band.name.must_equal nil
-    song.content.band.label.location.must_equal nil
+    song.content.title.must_be_nil
+    song.content.band.name.must_be_nil
+    song.content.band.label.location.must_be_nil
 
     # model's hash hasn't changed.
     model.inspect.must_equal "#<struct HashTest::Model id=1, content=nil>"
@@ -161,7 +161,7 @@ class HashTest < MiniTest::Spec
       include Property::Hash
 
       property :id
-      content=property :content, field: :hash do
+      property :content, field: :hash do
         property :title
         property :band do
           property :name
@@ -198,8 +198,8 @@ class HashTest < MiniTest::Spec
       song.content.title.must_equal "Notorious"
 
       # singular nested accessors
-      song.band.name.must_equal nil
-      song.content.band.name.must_equal nil
+      song.band.name.must_be_nil
+      song.content.band.name.must_be_nil
       song.band.name = "Duran Duran"
       song.band.name.must_equal "Duran Duran"
     end

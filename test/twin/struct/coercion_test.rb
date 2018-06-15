@@ -21,7 +21,7 @@ class StructCoercionTest < Minitest::Spec
     twin = Expense.new( ExpenseModel.new({}) )
 
     #- direct access, without unnest
-    twin.content.amount.must_equal nil
+    twin.content.amount.must_be_nil
     twin.content.amount = "1.8"
     twin.content.amount.must_equal 1.8
   end
@@ -29,7 +29,7 @@ class StructCoercionTest < Minitest::Spec
   it "via unnest" do
     twin = Expense.new( ExpenseModel.new({}) )
 
-    twin.amount.must_equal nil
+    twin.amount.must_be_nil
     twin.amount = "1.8"
     twin.amount.must_equal 1.8
   end

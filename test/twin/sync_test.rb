@@ -47,11 +47,11 @@ class TwinSyncTest < MiniTest::Spec
       fill_out!(twin)
 
       # not written to model, yet.
-      album.name.must_equal nil
-      album.songs[0].title.must_equal nil
-      album.songs[1].title.must_equal nil
-      album.songs[1].composer.name.must_equal nil
-      album.artist.name.must_equal nil
+      album.name.must_be_nil
+      album.songs[0].title.must_be_nil
+      album.songs[1].title.must_be_nil
+      album.songs[1].composer.name.must_be_nil
+      album.artist.name.must_be_nil
 
       twin.sync
 
@@ -82,9 +82,9 @@ class TwinSyncTest < MiniTest::Spec
       twin.songs[1].composer.name = "Lynott"
 
       # not written to model, yet.
-      album.name.must_equal nil
+      album.name.must_be_nil
       album.songs.must_equal []
-      album.artist.must_equal nil
+      album.artist.must_be_nil
 
       twin.sync # this assigns a new collection via #songs=.
 
@@ -110,11 +110,11 @@ class TwinSyncTest < MiniTest::Spec
         nested_hash.must_equal({"name"=>"Live And Dangerous", "songs"=>[{"title"=>"Southbound", "composer"=>nil}, {"title"=>"The Boys Are Back In Town", "composer"=>{"name"=>"Lynott"}}], "artist"=>{"name"=>"Thin Lizzy"}})
 
         # nothing written to model.
-        album.name.must_equal nil
-        album.songs[0].title.must_equal nil
-        album.songs[1].title.must_equal nil
-        album.songs[1].composer.name.must_equal nil
-        album.artist.name.must_equal nil
+        album.name.must_be_nil
+        album.songs[0].title.must_be_nil
+        album.songs[1].title.must_be_nil
+        album.songs[1].composer.name.must_be_nil
+        album.artist.name.must_be_nil
       end
 
       describe "nil values" do

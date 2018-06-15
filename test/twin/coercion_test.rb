@@ -54,7 +54,7 @@ class CoercionTest < MiniTest::Spec
       subject.released_at.must_be_kind_of DateTime
       subject.released_at.must_equal DateTime.parse("30/03/1981")
       subject.hit.length.must_equal 312
-      subject.hit.good.must_equal nil
+      subject.hit.good.must_be_nil
       subject.band.label.value.must_equal 9999.99
     end
   end
@@ -102,17 +102,17 @@ class CoercionTest < MiniTest::Spec
 
     it "coerce empty values to nil when using option nilify: true" do
       subject.date_of_birth = ""
-      subject.date_of_birth.must_equal nil
+      subject.date_of_birth.must_be_nil
     end
 
     it "coerce empty values to nil when using dry-types | operator" do
       subject.date_of_death_by_unicorns = ""
-      subject.date_of_death_by_unicorns.must_equal nil
+      subject.date_of_death_by_unicorns.must_be_nil
     end
 
     it "converts blank string to nil, without :type option" do
       subject.id = ""
-      subject.id.must_equal nil
+      subject.id.must_be_nil
     end
   end
 end

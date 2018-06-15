@@ -25,12 +25,12 @@ class UnnestTest < MiniTest::Spec
   it "exposes accessors on top-level twin" do
     twin = Twin.new(OpenStruct.new(content: OpenStruct.new()))
 
-    twin.email.must_equal nil
+    twin.email.must_be_nil
     twin.email= 2
     twin.email.model.must_equal 2
 
 
-    twin.id.must_equal nil
+    twin.id.must_be_nil
     twin.id = 1
     twin.id.must_equal 1
   end

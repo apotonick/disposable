@@ -12,7 +12,7 @@ class TwinStructTest < MiniTest::Spec
 
   # empty hash
   # it { Song.new({}).number.must_equal 1 }
-  it { Song.new({}).number.must_equal nil } # TODO: implement default.
+  it { Song.new({}).number.must_be_nil } # TODO: implement default.
 
   # model hash
   it { Song.new(number: 2).number.must_equal 2 }
@@ -179,7 +179,7 @@ class StructReadableWriteableTest < Minitest::Spec
   it "ignores readable: false" do
     song = Song.new(length: 123, id: 1)
     song.length.must_equal 123
-    song.id.must_equal nil
+    song.id.must_be_nil
   end
 
   it "ignores writeable: false" do

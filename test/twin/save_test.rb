@@ -88,19 +88,19 @@ class SaveTest < MiniTest::Spec
     nested_hash.must_equal({"name"=>"Live And Dangerous", "songs"=>[{"title"=>"Southbound", "composer"=>nil}, {"title"=>"The Boys Are Back In Town", "composer"=>{"name"=>"Lynott"}}], "artist"=>{"name"=>"Thin Lizzy"}})
 
     # nothing written to model.
-    album.name.must_equal nil
-    album.songs[0].title.must_equal nil
-    album.songs[1].title.must_equal nil
-    album.songs[1].composer.name.must_equal nil
-    album.artist.name.must_equal nil
+    album.name.must_be_nil
+    album.songs[0].title.must_be_nil
+    album.songs[1].title.must_be_nil
+    album.songs[1].composer.name.must_be_nil
+    album.artist.name.must_be_nil
 
     # nothing saved.
     # saved?
-    album.saved?.must_equal nil
-    album.songs[0].saved?.must_equal nil
-    album.songs[1].saved?.must_equal nil
-    album.songs[1].composer.saved?.must_equal nil
-    album.artist.saved?.must_equal nil
+    album.saved?.must_be_nil
+    album.songs[0].saved?.must_be_nil
+    album.songs[1].saved?.must_be_nil
+    album.songs[1].composer.saved?.must_be_nil
+    album.artist.saved?.must_be_nil
   end
 
 
@@ -148,9 +148,9 @@ class SaveTest < MiniTest::Spec
 
     # saved?
     album.saved?.must_equal true
-    album.songs[0].saved?.must_equal nil
-    album.songs[1].saved?.must_equal nil
-    album.songs[1].composer.saved?.must_equal nil # doesn't get saved.
+    album.songs[0].saved?.must_be_nil
+    album.songs[1].saved?.must_be_nil
+    album.songs[1].composer.saved?.must_be_nil # doesn't get saved.
     album.artist.saved?.must_equal true
   end
 
@@ -186,7 +186,7 @@ end
 #     form.save(length: lambda { |value, options| form.model.id = "#{value}: #{length_seconds}" })
 
 #     song.title.must_equal "A Poor Man's Memory"
-#     song.length.must_equal nil
+#     song.length.must_be_nil
 #     song.id.must_equal "10: 120"
 #   end
 # end

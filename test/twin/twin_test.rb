@@ -75,12 +75,12 @@ class TwinTest < MiniTest::Spec
 
     describe "deleting" do
       it "allows overwriting nested twin with nil" do
-        album = Model::Album.new(1, "Uncertain Terms", [], artist=Model::Artist.new("Greg Howe"))
+        album = Model::Album.new(1, "Uncertain Terms", [], Model::Artist.new("Greg Howe"))
         twin = Twin::Album.new(album)
         twin.artist.id.must_equal "Greg Howe"
 
         twin.artist = nil
-        twin.artist.must_equal nil
+        twin.artist.must_be_nil
       end
     end
 

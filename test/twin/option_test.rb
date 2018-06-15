@@ -28,7 +28,7 @@
 #   # option is not delegated to model.
 #   it { twin.preview?.must_equal false }
 #   # not passing option means zero.
-#   it { twin.current_user.must_equal nil }
+#   it { twin.current_user.must_be_nil }
 
 #   describe "passing all options" do
 #     let (:twin) { Song.new(song, :preview? => false, current_user: Object) }

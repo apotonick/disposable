@@ -33,7 +33,7 @@ class VirtualTest < MiniTest::Spec
     end
 
     it "what" do
-      Raising.new(Object.new).id.must_equal nil
+      Raising.new(Object.new).id.must_be_nil
     end
   end
 end
