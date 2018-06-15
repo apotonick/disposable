@@ -5,6 +5,9 @@ module Disposable::Twin::Coercion
     include Dry::Types.module
   end
 
+  DRY_TYPES_VERSION = Integer(Dry::Types::VERSION.split('.')[-2])
+  DRY_TYPES_CONSTANT = DRY_TYPES_VERSION < 13 ? Types::Form : Types::Params
+
   module ClassMethods
     def property(name, options={}, &block)
       super(name, options, &block).tap do
@@ -13,7 +16,7 @@ module Disposable::Twin::Coercion
     end
 
     def coercing_setter!(name, type, nilify=false)
-     type = type ? (Types::Form::Nil | type) : Types::Form::Nil if nilify
+     type = type ? (DRY_TYPES_CONSTANT::Nil | type) : DRY_TYPES_CONSTANT::Nil if nilify
 
       mod = Module.new do
         define_method("#{name}=") do |value|

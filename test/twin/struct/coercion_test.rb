@@ -10,7 +10,7 @@ class StructCoercionTest < Minitest::Spec
     feature Coercion
 
     property :content do
-      property :amount, type: Types::Form::Float
+      property :amount, type: DRY_TYPES_CONSTANT::Float
     end
 
     unnest :amount, from: :content

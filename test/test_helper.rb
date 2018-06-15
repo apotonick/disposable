@@ -4,6 +4,10 @@ require "pp"
 require "representable/debug"
 require "declarative/testing"
 
+require "disposable/twin/coercion"
+DRY_TYPES_CONSTANT = Disposable::Twin::Coercion::DRY_TYPES_CONSTANT
+DRY_TYPES_INT_CONSTANT = Disposable::Twin::Coercion::DRY_TYPES_VERSION < 13 ? 'Int' : 'Integer'
+
 class Track
   def initialize(options={})
     @title = options[:title]
@@ -11,7 +15,6 @@ class Track
 
   attr_reader :title
 end
-
 
 # require 'active_record'
 # require 'database_cleaner'
