@@ -1,6 +1,5 @@
 require "test_helper"
 require "disposable/callback"
-require "pp"
 
 class CallbackGroupTest < MiniTest::Spec
   class Group < Disposable::Callback::Group
@@ -185,7 +184,7 @@ class CallbackGroupInheritanceTest < MiniTest::Spec
 
   it do
     Group.hooks.size.must_equal 4
-    pp EnhancedGroup.hooks
+    # pp EnhancedGroup.hooks
     EnhancedGroup.hooks.size.must_equal 6
     EnhancedGroup.definitions.get(EnhancedGroup.hooks[5][1])[:nested].hooks.to_s.must_equal "[[:on_add, :rewind!, {}]]"
   end

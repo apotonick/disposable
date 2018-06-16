@@ -30,9 +30,7 @@ class Disposable::Rescheme
 
 private
   def build_representer(options)
-    Class.new(options[:superclass]) do
-      include *options[:include]
-    end
+    Class.new(options[:superclass]) { include(*options[:include]) }
   end
 
   def build_definition!(options, source_dfn, representer, &block)
