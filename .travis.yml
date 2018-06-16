@@ -1,14 +1,31 @@
 language: ruby
 sudo: false
 rvm:
-  - 2.5.1
-  - 2.4.4
-  - 2.3.7
+  - ruby-head
+  - 2.5
+  - 2.4
+  - 2.3
   - 2.2
-  - 2.1
-  # - 2.0
+env:
+  - "DRY_TYPES=0.13"
+  - "DRY_TYPES=0.12"
+  - "ACTIVERECORD=5.0"
+  - "ACTIVERECORD=5.1"
+  - "ACTIVERECORD=5.2"
 gemfile:
   - Gemfile
 matrix:
+  fast_finish: true
+  include:
+    - { rvm: 2.3, env: ACTIVERECORD=4.2  }
+    - { rvm: 2.2, env: ACTIVERECORD=4.2  }
+    - { rvm: 2.3, env: ACTIVERECORD=4.1  }
+    - { rvm: 2.2, env: ACTIVERECORD=4.1  }
+    - rvm: 2.1
+      env:
+        - ACTIVERECORD=4.1
+        - DRY_TYPES=0.10
   allow_failures:
-    # - rvm: 2.4.0
+    - rvm: ruby-head
+    - env: ACTIVERECORD=4.1
+    - rvm: 2.1

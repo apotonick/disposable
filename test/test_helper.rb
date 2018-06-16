@@ -1,7 +1,7 @@
 require "disposable"
 require "minitest/autorun"
-require "pp"
 require "representable/debug"
+# require "pp"
 require "declarative/testing"
 
 require "disposable/twin/coercion"
@@ -42,18 +42,18 @@ ActiveRecord::Base.establish_connection(
 ActiveRecord::Schema.define do
   create_table :artists do |table|
     table.column :name, :string
-    table.timestamps
+    table.timestamps null: false
   end
   create_table :songs do |table|
     table.column :title, :string
     table.column :artist_id, :integer
     table.column :album_id, :integer
-    table.timestamps
+    table.timestamps null: false
   end
   create_table :albums do |table|
     table.column :name, :string
     table.column :artist_id, :integer
-    table.timestamps
+    table.timestamps null: false
   end
 end
 
@@ -74,7 +74,7 @@ module Disposable
     end
 
     def saved?
-      @saved
+      defined?(@saved) ? @saved : nil
     end
   end
 end

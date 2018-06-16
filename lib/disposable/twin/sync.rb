@@ -22,7 +22,7 @@ class Disposable::Twin
     def self.hash_representer(twin_class, &block)
       Disposable::Rescheme.from(twin_class,
         recursive: false,
-        definitions_from: lambda { |twin_class| twin_class.definitions },
+        definitions_from: lambda { |twin_klass| twin_klass.definitions },
         superclass: Representable::Decorator,
         include: Representable::Hash,
         exclude_options: [:default], # TODO: TEST IN default_test.
