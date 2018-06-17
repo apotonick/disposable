@@ -1,3 +1,7 @@
+# 0.4.4
+
+* Add support for Dry::Types version 0.13
+
 # 0.4.3
 
 * Fix `NoMethodError: private method `property' called for MyForm:Class in Reform.` by using `class_eval`.
