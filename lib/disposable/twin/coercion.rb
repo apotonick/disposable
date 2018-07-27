@@ -5,8 +5,8 @@ module Disposable::Twin::Coercion
     include Dry::Types.module
   end
 
-  DRY_TYPES_VERSION = Integer(Dry::Types::VERSION.split('.')[-2])
-  DRY_TYPES_CONSTANT = DRY_TYPES_VERSION < 13 ? Types::Form : Types::Params
+  DRY_TYPES_VERSION = Gem::Version.new(Dry::Types::VERSION)
+  DRY_TYPES_CONSTANT = DRY_TYPES_VERSION < Gem::Version.new("0.13.0") ? Types::Form : Types::Params
 
   module ClassMethods
     def property(name, options={}, &block)

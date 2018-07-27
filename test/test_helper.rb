@@ -6,7 +6,7 @@ require "declarative/testing"
 
 require "disposable/twin/coercion"
 DRY_TYPES_CONSTANT = Disposable::Twin::Coercion::DRY_TYPES_CONSTANT
-DRY_TYPES_INT_CONSTANT = Disposable::Twin::Coercion::DRY_TYPES_VERSION < 13 ? 'Int' : 'Integer'
+DRY_TYPES_INT_CONSTANT = Disposable::Twin::Coercion::DRY_TYPES_VERSION < Gem::Version.new("0.13.0") ? 'Int' : 'Integer'
 
 class Track
   def initialize(options={})
