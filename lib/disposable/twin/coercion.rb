@@ -2,7 +2,7 @@ require "dry-types"
 
 module Disposable::Twin::Coercion
   module Types
-    include Dry::Types.module
+    include Dry.Types
   end
 
   DRY_TYPES_VERSION = Integer(Dry::Types::VERSION.split('.')[-2])
