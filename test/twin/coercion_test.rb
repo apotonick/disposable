@@ -155,7 +155,7 @@ class CoercionTypingTest < MiniTest::Spec
 
     # property :title, type: Dry::Types::Strict::String.constructor(Dry::Types::Params.method(:to_nil))
 
-    constructor = Disposable::Twin::Coercion::DRY_TYPES_VERSION < 13 ? 'form.nil' : 'params.nil'
+    constructor = Disposable::Twin::Coercion::DRY_TYPES_VERSION < Gem::Version.new("0.13.0") ? 'form.nil' : 'params.nil'
     property :title, type: Types::Strict::String.optional.constructor(Dry::Types[constructor]) # this is the behavior of the "DB" data twin. this is NOT the form.
 
     # property :name, type: Types::Params::String

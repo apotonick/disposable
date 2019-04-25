@@ -1,3 +1,7 @@
+# 0.4.5
+
+* Use Gem::Version to detect version for dry-types
+
 # 0.4.4
 
 * Add support for Dry::Types version 0.13
