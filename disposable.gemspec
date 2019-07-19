@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "declarative-option",  "< 0.2.0"
   spec.add_dependency "representable", ">= 2.4.0", "<= 3.1.0"
 
-  spec.add_development_dependency "bundler", "~> 1.3"
+  spec.add_development_dependency "bundler"#, "~> 1.3"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "minitest"
   spec.add_development_dependency "activerecord"#, "4.2.5"
