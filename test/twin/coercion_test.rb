@@ -82,7 +82,7 @@ class CoercionTest < MiniTest::Spec
              type: DRY_TYPES_CONSTANT::Date, nilify: true
     property :date_of_death_by_unicorns,
              type: DRY_TYPES_CONSTANT::Nil | DRY_TYPES_CONSTANT::Date
-    property :id, nilify: true
+    property :id, type: const_get("Types::Coercible::#{DRY_TYPES_INT_CONSTANT}"), nilify: true
   end
 
   describe "with Nilify" do
@@ -155,8 +155,7 @@ class CoercionTypingTest < MiniTest::Spec
 
     # property :title, type: Dry::Types::Strict::String.constructor(Dry::Types::Params.method(:to_nil))
 
-    constructor = Disposable::Twin::Coercion::DRY_TYPES_VERSION < Gem::Version.new("0.13.0") ? 'form.nil' : 'params.nil'
-    property :title, type: Types::Strict::String.optional.constructor(Dry::Types[constructor]) # this is the behavior of the "DB" data twin. this is NOT the form.
+    property :title, type: DRY_TYPES_CONSTANT::Nil | Types::Strict::String # this is the behavior of the "DB" data twin. this is NOT the form.
 
     # property :name, type: Types::Params::String
 
