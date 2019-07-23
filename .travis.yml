@@ -32,6 +32,7 @@ matrix:
     - rvm: ruby-head
     - env: ACTIVERECORD=4.1
     - rvm: 2.1
+    - rvm: 2.2
   exclude:
     - { rvm: 2.3, env: DRY_TYPES=1.1 }
     - { rvm: 2.2, env: DRY_TYPES=1.1 }
