@@ -2,7 +2,9 @@ require "dry-types"
 
 module Disposable::Twin::Coercion
   module Types
-    include Dry::Types.module
+    # NOTE: Use Dry.Types() instead. Beware, it exports strict types by default, for old behavior use Dry.Types(default: :nominal)
+    DRY_MODULE =  Gem::Version.new(Dry::Types::VERSION) < Gem::Version.new("0.15.0") ? Dry::Types.module : Dry.Types()
+    include DRY_MODULE
   end
 
   DRY_TYPES_VERSION = Gem::Version.new(Dry::Types::VERSION)
