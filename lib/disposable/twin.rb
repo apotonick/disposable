@@ -9,6 +9,9 @@ require "representable/decorator"
 
 module Disposable
   class Twin
+    class InvalidPropertyNameError < StandardError; end
+    INVALID_PROPERTY_NAMES = %i[class].freeze
+
     extend Declarative::Schema
     def self.definition_class
       Definition
@@ -32,6 +35,10 @@ module Disposable
 
       # TODO: move to Declarative, as in Representable and Reform.
       def property(name, options={}, &block)
+        if INVALID_PROPERTY_NAMES.include?(name)
+          raise InvalidPropertyNameError.new("#{name} is used internally and cannot be used as property name")
+        end
+
         options[:private_name] ||= options.delete(:from) || name
         is_inherited = options.delete(:_inherited)
 
