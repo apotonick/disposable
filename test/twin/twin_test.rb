@@ -152,3 +152,13 @@ class AccessorsTest < Minitest::Spec
     twin.format = "blubb"
   end
 end
+
+class InvalidPropertyNameTest < Minitest::Spec
+  it 'raises InvalidPropertyNameError' do
+  assert_raises(Disposable::Twin::InvalidPropertyNameError) {
+      class Twin < Disposable::Twin
+        property :class
+      end
+    }
+  end
+end
