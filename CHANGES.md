@@ -1,6 +1,9 @@
 # 0.4.5
 
 * Use Gem::Version to detect version for dry-types
+* Remove deprecation warnings for newer versions of dry-types
+* Fix sqlite3 version to 1.3.x to avoid issue with AR 5.0
+* Raise an error if class is used as property name
 
 # 0.4.4
 
