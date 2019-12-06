@@ -11,7 +11,7 @@ class VirtualTest < MiniTest::Spec
   it {
     twin.credit_card_number = "123"
 
-    twin.credit_card_number.must_equal "123"  # this is still readable in the UI.
+    expect(twin.credit_card_number).must_equal "123"  # this is still readable in the UI.
 
     twin.sync
 
@@ -20,7 +20,7 @@ class VirtualTest < MiniTest::Spec
       hash = nested
     end
 
-    hash.must_equal("credit_card_number"=> "123")
+    expect(hash).must_equal("credit_card_number"=> "123")
   }
 
   describe "setter should never be called with virtual:true" do
@@ -33,7 +33,7 @@ class VirtualTest < MiniTest::Spec
     end
 
     it "what" do
-      Raising.new(Object.new).id.must_be_nil
+      expect(Raising.new(Object.new).id).must_be_nil
     end
   end
 end

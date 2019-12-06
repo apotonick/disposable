@@ -29,31 +29,31 @@ class HashTest < MiniTest::Spec
 
   it "allows reading from existing hash" do
     model = Model.new(1, {})
-    model.inspect.must_equal "#<struct HashTest::Model id=1, content={}>"
+    expect(model.inspect).must_equal "#<struct HashTest::Model id=1, content={}>"
 
     song = Song.new(model)
-    song.id.must_equal 1
-    song.content.title.must_be_nil
-    song.content.band.name.must_be_nil
-    song.content.band.label.location.must_be_nil
-    song.content.releases.must_equal []
+    expect(song.id).must_equal 1
+    expect(song.content.title).must_be_nil
+    expect(song.content.band.name).must_be_nil
+    expect(song.content.band.label.location).must_be_nil
+    expect(song.content.releases).must_equal []
 
     # model's hash hasn't changed.
-    model.inspect.must_equal "#<struct HashTest::Model id=1, content={}>"
+    expect(model.inspect).must_equal "#<struct HashTest::Model id=1, content={}>"
   end
 
   it "defaults to hash when value is nil" do
     model = Model.new(1)
-    model.inspect.must_equal "#<struct HashTest::Model id=1, content=nil>"
+    expect(model.inspect).must_equal "#<struct HashTest::Model id=1, content=nil>"
 
     song = Song.new(model)
-    song.id.must_equal 1
-    song.content.title.must_be_nil
-    song.content.band.name.must_be_nil
-    song.content.band.label.location.must_be_nil
+    expect(song.id).must_equal 1
+    expect(song.content.title).must_be_nil
+    expect(song.content.band.name).must_be_nil
+    expect(song.content.band.label.location).must_be_nil
 
     # model's hash hasn't changed.
-    model.inspect.must_equal "#<struct HashTest::Model id=1, content=nil>"
+    expect(model.inspect).must_equal "#<struct HashTest::Model id=1, content=nil>"
   end
 
   it "#sync writes to model" do
@@ -64,7 +64,7 @@ class HashTest < MiniTest::Spec
 
     song.sync
 
-    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}, \"releases\"=>[]}>"
+    expect(model.inspect).must_equal "#<struct HashTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}, \"releases\"=>[]}>"
   end
 
   it "#appends to collections" do
@@ -76,7 +76,7 @@ class HashTest < MiniTest::Spec
 
     song.sync
 
-    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"band\"=>{\"label\"=>{}}, \"releases\"=>[{\"version\"=>1}]}>"
+    expect(model.inspect).must_equal "#<struct HashTest::Model id=nil, content={\"band\"=>{\"label\"=>{}}, \"releases\"=>[{\"version\"=>1}]}>"
   end
 
   it "doesn't erase existing, undeclared content" do
@@ -88,7 +88,7 @@ class HashTest < MiniTest::Spec
     # puts song.content.class.ancestors
     song.sync
 
-    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"artist\"=>{}, \"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}, \"releases\"=>[]}>"
+    expect(model.inspect).must_equal "#<struct HashTest::Model id=nil, content={\"artist\"=>{}, \"band\"=>{\"label\"=>{\"location\"=>\"San Francisco\"}}, \"releases\"=>[]}>"
   end
 
   it "doesn't erase existing, undeclared content in existing content" do
@@ -99,7 +99,7 @@ class HashTest < MiniTest::Spec
 
     song.sync
 
-    model.inspect.must_equal "#<struct HashTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"owner\"=>\"Brett Gurewitz\", \"location\"=>\"San Francisco\"}, \"genre\"=>\"Punkrock\"}, \"releases\"=>[]}>"
+    expect(model.inspect).must_equal "#<struct HashTest::Model id=nil, content={\"band\"=>{\"label\"=>{\"owner\"=>\"Brett Gurewitz\", \"location\"=>\"San Francisco\"}, \"genre\"=>\"Punkrock\"}, \"releases\"=>[]}>"
   end
 
 
@@ -125,9 +125,9 @@ class HashTest < MiniTest::Spec
 
     it "includes features into all nested twins" do
       song = Hit.new(Model.new)
-      song.uuid.must_equal "1224"
-      song.content.uuid.must_equal "1224"
-      song.content.band.uuid.must_equal "1224"
+      expect(song.uuid).must_equal "1224"
+      expect(song.content.uuid).must_equal "1224"
+      expect(song.content.band.uuid).must_equal "1224"
     end
   end
 
@@ -149,9 +149,9 @@ class HashTest < MiniTest::Spec
     it "coerces" do
       song = Coercing.new(Model.new(1))
       song.id = "9"
-      song.id.must_equal 9
+      expect(song.id).must_equal 9
       song.content.band.name = 18
-      song.content.band.name.must_equal "18"
+      expect(song.content.band.name).must_equal "18"
     end
   end
 
@@ -190,18 +190,18 @@ class HashTest < MiniTest::Spec
       song = Unnesting.new(model)
 
       # singular scalar accessors
-      song.content.title.must_equal "Bedroom Eyes"
-      song.title.must_equal "Bedroom Eyes"
+      expect(song.content.title).must_equal "Bedroom Eyes"
+      expect(song.title).must_equal "Bedroom Eyes"
 
       song.title = "Notorious"
-      song.title.must_equal "Notorious"
-      song.content.title.must_equal "Notorious"
+      expect(song.title).must_equal "Notorious"
+      expect(song.content.title).must_equal "Notorious"
 
       # singular nested accessors
-      song.band.name.must_be_nil
-      song.content.band.name.must_be_nil
+      expect(song.band.name).must_be_nil
+      expect(song.content.band.name).must_be_nil
       song.band.name = "Duran Duran"
-      song.band.name.must_equal "Duran Duran"
+      expect(song.band.name).must_equal "Duran Duran"
     end
   end
 
@@ -237,18 +237,18 @@ class HashTest < MiniTest::Spec
 
       song1 = contract.songs[0]
 
-      song1.title.must_equal "Sherry"
-      song1.band.name.must_equal 'The Four Seasons'
-      song1.band.label.location.must_equal 'US'
-      song1.featured_artists[0].name.must_equal 'Frankie Valli'
-      song1.featured_artists[1].name.must_equal 'The Variatones'
+      expect(song1.title).must_equal "Sherry"
+      expect(song1.band.name).must_equal 'The Four Seasons'
+      expect(song1.band.label.location).must_equal 'US'
+      expect(song1.featured_artists[0].name).must_equal 'Frankie Valli'
+      expect(song1.featured_artists[1].name).must_equal 'The Variatones'
 
       song2 = contract.songs[1]
 
-      song2.title.must_equal "Walk Like a Man"
-      song2.band.name.must_equal 'The Four Seasons'
-      song2.band.label.location.must_equal 'US'
-      song2.featured_artists[0].name.must_equal 'Frankie Valli'
+      expect(song2.title).must_equal "Walk Like a Man"
+      expect(song2.band.name).must_equal 'The Four Seasons'
+      expect(song2.band.label.location).must_equal 'US'
+      expect(song2.featured_artists[0].name).must_equal 'Frankie Valli'
     end
   end
 end

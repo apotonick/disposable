@@ -33,9 +33,9 @@ class TwinCollectionTest < MiniTest::Spec
     it do
       twin = Twin::Album.new(album)
 
-      twin.songs.size.must_equal 1
-      twin.songs[0].title.must_equal "Broken"
-      twin.songs.must_be_instance_of Disposable::Twin::Collection
+      expect(twin.songs.size).must_equal 1
+      expect(twin.songs[0].title).must_equal "Broken"
+      expect(twin.songs).must_be_instance_of Disposable::Twin::Collection
 
     end
   end
@@ -44,10 +44,10 @@ class TwinCollectionTest < MiniTest::Spec
     let (:album) { Model::Album.new(1, "The Rest Is Silence", [Model::Song.new(3), Model::Song.new(4)]) }
     let (:twin) { Twin::Album.new(album) }
 
-    it { twin.songs.find_by(id: 1).must_be_nil }
-    it { twin.songs.find_by(id: 3).must_equal twin.songs[0] }
-    it { twin.songs.find_by(id: 4).must_equal twin.songs[1] }
-    it { twin.songs.find_by(id: "4").must_equal twin.songs[1] }
+    it { expect(twin.songs.find_by(id: 1)).must_be_nil }
+    it { expect(twin.songs.find_by(id: 3)).must_equal twin.songs[0] }
+    it { expect(twin.songs.find_by(id: 4)).must_equal twin.songs[1] }
+    it { expect(twin.songs.find_by(id: "4")).must_equal twin.songs[1] }
   end
 end
 
@@ -92,31 +92,31 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
     twin.songs << song1 # assuming that we add AR model here.
     twin.songs << song2
 
-    twin.songs.size.must_equal 2
+    expect(twin.songs.size).must_equal 2
 
-    twin.songs[0].must_be_instance_of Twin::Song # twin wraps << added in twin.
-    twin.songs[1].must_be_instance_of Twin::Song
+    expect(twin.songs[0]).must_be_instance_of Twin::Song # twin wraps << added in twin.
+    expect(twin.songs[1]).must_be_instance_of Twin::Song
 
-    # twin.songs[0].persisted?.must_equal false
-    twin.songs[0].send(:model).persisted?.must_equal false
-    twin.songs[1].send(:model).persisted?.must_equal true
+    # expect(twin.songs[0].persisted?).must_equal false
+    expect(twin.songs[0].send(:model).persisted?).must_equal false
+    expect(twin.songs[1].send(:model).persisted?).must_equal true
 
-    album.songs.size.must_equal 0 # nothing synced, yet.
+    expect(album.songs.size).must_equal 0 # nothing synced, yet.
 
     # sync: delete removed items, add new?
 
     # save
     twin.save
 
-    album.persisted?.must_equal true
-    album.name.must_equal "The Rest Is Silence"
+    expect(album.persisted?).must_equal true
+    expect(album.name).must_equal "The Rest Is Silence"
 
-    album.songs.size.must_equal 2 # synced!
+    expect(album.songs.size).must_equal 2 # synced!
 
-    album.songs[0].persisted?.must_equal true
-    album.songs[1].persisted?.must_equal true
-    album.songs[0].title.must_equal "Snorty Pacifical Rascal"
-    album.songs[1].title.must_equal "At Any Cost"
+    expect(album.songs[0].persisted?).must_equal true
+    expect(album.songs[1].persisted?).must_equal true
+    expect(album.songs[0].title).must_equal "Snorty Pacifical Rascal"
+    expect(album.songs[1].title).must_equal "At Any Cost"
   end
 
   # test with adding to existing collection [song1] << song2
@@ -128,20 +128,20 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
     it do
       twin.songs.delete(twin.songs.first)
 
-      twin.songs.size.must_equal 0
-      album.songs.size.must_equal 1 # not synced, yet.
+      expect(twin.songs.size).must_equal 0
+      expect(album.songs.size).must_equal 1 # not synced, yet.
 
       twin.save
 
-      twin.songs.size.must_equal 0
-      album.songs.size.must_equal 0
-      song1.persisted?.must_equal true
+      expect(twin.songs.size).must_equal 0
+      expect(album.songs.size).must_equal 0
+      expect(song1.persisted?).must_equal true
     end
 
     # non-existant delete.
     it do
       twin.songs.delete("non-existant") # won't delete anything.
-      twin.songs.size.must_equal 1
+      expect(twin.songs.size).must_equal 1
     end
   end
 
@@ -151,14 +151,14 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
     it do
       twin.songs.destroy(twin.songs.first)
 
-      twin.songs.size.must_equal 0
-      album.songs.size.must_equal 1 # not synced, yet.
+      expect(twin.songs.size).must_equal 0
+      expect(album.songs.size).must_equal 1 # not synced, yet.
 
       twin.save
 
-      twin.songs.size.must_equal 0
-      album.songs.size.must_equal 0
-      song1.persisted?.must_equal false
+      expect(twin.songs.size).must_equal 0
+      expect(album.songs.size).must_equal 0
+      expect(song1.persisted?).must_equal false
     end
   end
 
@@ -169,11 +169,11 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
     it do
       twin = Twin::Album.new(album)
 
-      twin.songs.added.must_equal []
+      expect(twin.songs.added).must_equal []
       twin.songs << song2
-      twin.songs.added.must_equal [twin.songs[1]]
+      expect(twin.songs.added).must_equal [twin.songs[1]]
       twin.songs.insert(2, Song.new)
-      twin.songs.added.must_equal [twin.songs[1], twin.songs[2]]
+      expect(twin.songs.added).must_equal [twin.songs[1], twin.songs[2]]
 
       # TODO: what to do if we override an item (insert)?
     end
@@ -185,20 +185,20 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
     it do
       twin = Twin::Album.new(album)
 
-      twin.songs.deleted.must_equal []
+      expect(twin.songs.deleted).must_equal []
 
       twin.songs.delete(deleted1 = twin.songs[-1])
       twin.songs.delete(deleted2 = twin.songs[-1])
 
-      twin.songs.must_equal [twin.songs[0]]
+      expect(twin.songs).must_equal [twin.songs[0]]
 
-      twin.songs.deleted.must_equal [deleted1, deleted2]
+      expect(twin.songs.deleted).must_equal [deleted1, deleted2]
     end
 
     # non-existant delete.
     it do
       twin.songs.delete("non-existant") # won't delete anything.
-      twin.songs.deleted.must_equal []
+      expect(twin.songs.deleted).must_equal []
     end
   end
 end
@@ -223,24 +223,24 @@ class CollectionUnitTest < MiniTest::Spec
 
   # #insert(index, model)
   it do
-    collection.insert(0, Model::Album.new).must_be_instance_of Twin::Album
+    expect(collection.insert(0, Model::Album.new)).must_be_instance_of Twin::Album
   end
 
   # #append(model)
   it do
-    collection.append(Model::Album.new).must_be_instance_of Twin::Album
-    collection[0].must_be_instance_of Twin::Album
+    expect(collection.append(Model::Album.new)).must_be_instance_of Twin::Album
+    expect(collection[0]).must_be_instance_of Twin::Album
 
     # allows subsequent calls.
     collection.append(Model::Album.new)
-    collection[1].must_be_instance_of Twin::Album
+    expect(collection[1]).must_be_instance_of Twin::Album
 
-    collection.size.must_equal 2
+    expect(collection.size).must_equal 2
   end
 
   # #<<
   it do
-    (collection << Model::Album.new).must_be_instance_of Array
-    collection[0].must_be_instance_of Twin::Album
+    expect((collection << Model::Album.new)).must_be_instance_of Array
+    expect(collection[0]).must_be_instance_of Twin::Album
   end
 end

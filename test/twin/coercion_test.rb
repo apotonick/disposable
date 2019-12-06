@@ -37,9 +37,9 @@ class CoercionTest < MiniTest::Spec
     }
 
     it "NOT coerce values in setup" do
-      subject.released_at.must_equal "31/03/1981"
-      subject.hit.length.must_equal "312"
-      subject.band.label.value.must_equal "9999.99"
+      expect(subject.released_at).must_equal "31/03/1981"
+      expect(subject.hit.length).must_equal "312"
+      expect(subject.band.label.value).must_equal "9999.99"
     end
 
 
@@ -49,11 +49,11 @@ class CoercionTest < MiniTest::Spec
       subject.hit.length = "312"
       subject.band.label.value = "9999.99"
 
-      subject.released_at.must_be_kind_of DateTime
-      subject.released_at.must_equal DateTime.parse("30/03/1981")
-      subject.hit.length.must_equal 312
-      subject.hit.good.must_be_nil
-      subject.band.label.value.must_equal 9999.99
+      expect(subject.released_at).must_be_kind_of DateTime
+      expect(subject.released_at).must_equal DateTime.parse("30/03/1981")
+      expect(subject.hit.length).must_equal 312
+      expect(subject.hit.good).must_be_nil
+      expect(subject.band.label.value).must_equal 9999.99
     end
   end
 
@@ -69,9 +69,9 @@ class CoercionTest < MiniTest::Spec
     end
 
     it "coerce values in setup and when using a setter" do
-      subject.id.must_equal 1
+      expect(subject.id).must_equal 1
       subject.id = "2"
-      subject.id.must_equal 2
+      expect(subject.id).must_equal 2
     end
   end
 
@@ -94,23 +94,23 @@ class CoercionTest < MiniTest::Spec
     end
 
     it "coerce values correctly" do
-      subject.date_of_birth.must_equal Date.parse('1990-01-12')
-      subject.date_of_death_by_unicorns.must_equal Date.parse('2037-02-18')
+      expect(subject.date_of_birth).must_equal Date.parse('1990-01-12')
+      expect(subject.date_of_death_by_unicorns).must_equal Date.parse('2037-02-18')
     end
 
     it "coerce empty values to nil when using option nilify: true" do
       subject.date_of_birth = ""
-      subject.date_of_birth.must_be_nil
+      expect(subject.date_of_birth).must_be_nil
     end
 
     it "coerce empty values to nil when using dry-types | operator" do
       subject.date_of_death_by_unicorns = ""
-      subject.date_of_death_by_unicorns.must_be_nil
+      expect(subject.date_of_death_by_unicorns).must_be_nil
     end
 
     it "converts blank string to nil, without :type option" do
       subject.id = ""
-      subject.id.must_be_nil
+      expect(subject.id).must_be_nil
     end
   end
 end
@@ -135,13 +135,13 @@ class CoercionTypingTest < MiniTest::Spec
     # with type: Dry::Types::Strict::String
     # assert_raises(Dry::Types::ConstraintError) { twin.title = nil }
     twin.title = nil
-    twin.title.must_be_nil
+    expect(twin.title).must_be_nil
 
     twin.title = "Yo"
-    twin.title.must_equal "Yo"
+    expect(twin.title).must_equal "Yo"
 
     twin.title = ""
-    twin.title.must_equal ""
+    expect(twin.title).must_equal ""
 
     assert_raises(Dry::Types::ConstraintError) { twin.title = :bla }
     assert_raises(Dry::Types::ConstraintError) { twin.title = 1 }
@@ -167,16 +167,16 @@ class CoercionTypingTest < MiniTest::Spec
 
     # assert_raises(Dry::Types::ConstraintError) { twin.title = nil } # in form, we either have a blank string or the key's not present at all.
     twin.title = nil
-    twin.title.must_be_nil
+    expect(twin.title).must_be_nil
 
     twin.title = "" # nilify blank strings
-    twin.title.must_be_nil
+    expect(twin.title).must_be_nil
 
     twin.title = "Yo"
-    twin.title.must_equal "Yo"
+    expect(twin.title).must_equal "Yo"
 
     # twin.enabled = " TRUE"
-    # twin.enabled.must_equal true
+    #expect(twin.enabled).must_equal true
   end
 end
 

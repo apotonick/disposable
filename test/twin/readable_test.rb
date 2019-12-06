@@ -30,21 +30,21 @@ class ReadableTest < MiniTest::Spec
   let (:twin) { PasswordForm.new(cred) }
 
   it {
-    twin.password.must_be_nil            # not readable.
-    twin.credit_card.name.must_equal "Jonny"
-    twin.credit_card.number.must_be_nil  # not readable.
+    expect(twin.password).must_be_nil            # not readable.
+    expect(twin.credit_card.name).must_equal "Jonny"
+    expect(twin.credit_card.number).must_be_nil  # not readable.
 
     # manual setting on the twin works.
     twin.password = "123"
-    twin.password.must_equal "123"
+    expect(twin.password).must_equal "123"
 
     twin.credit_card.number = "456"
-    twin.credit_card.number.must_equal "456"
+    expect(twin.credit_card.number).must_equal "456"
 
     twin.sync
 
     # it writes, but does not read.
-    cred.inspect.must_equal '#<struct ReadableTest::Credentials password="123", credit_card=#<struct ReadableTest::CreditCard name="Jonny", number="456">>'
+    expect(cred.inspect).must_equal '#<struct ReadableTest::Credentials password="123", credit_card=#<struct ReadableTest::CreditCard name="Jonny", number="456">>'
 
     # test sync{}.
     hash = {}
@@ -52,12 +52,12 @@ class ReadableTest < MiniTest::Spec
       hash = nested
     end
 
-    hash.must_equal("password"=> "123", "credit_card"=>{"name"=>"Jonny", "number"=>"456"})
+    expect(hash).must_equal("password"=> "123", "credit_card"=>{"name"=>"Jonny", "number"=>"456"})
   }
 
   # allow passing non-readable value as option.
   it do
     twin = PasswordForm.new(cred, password: "open sesame!")
-    twin.password.must_equal "open sesame!"
+    expect(twin.password).must_equal "open sesame!"
   end
 end

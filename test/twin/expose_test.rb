@@ -28,28 +28,28 @@ class TwinExposeTest < MiniTest::Spec
   let (:request) { Request.new(song) }
 
   it do
-    request.song_title.must_equal "Extraction"
-    request.id.must_equal 2
+    expect(request.song_title).must_equal "Extraction"
+    expect(request.id).must_equal 2
 
     request.song_title = "Tease"
     request.id = 1
 
 
-    request.song_title.must_equal "Tease"
-    request.id.must_equal 1
+    expect(request.song_title).must_equal "Tease"
+    expect(request.id).must_equal 1
 
     # does not write to model.
-    song.title.must_equal "Extraction"
-    song.id.must_equal 2
+    expect(song.title).must_equal "Extraction"
+    expect(song.id).must_equal 2
 
     request.save
 
     # make sure models got synced and saved.
-    song.id.must_equal 1
-    song.title.must_equal "Tease"
-    song.album.must_equal album # nested objects don't get twinned or anything.
+    expect(song.id).must_equal 1
+    expect(song.title).must_equal "Tease"
+    expect(song.album).must_equal album # nested objects don't get twinned or anything.
 
-    song.saved?.must_equal true
+    expect(song.saved?).must_equal true
   end
 
   # save with block.
@@ -63,11 +63,11 @@ class TwinExposeTest < MiniTest::Spec
       nested_hash = hash
     end
 
-    nested_hash.must_equal({"title"=>"Tease", "id"=>1, "captcha" => "Awesome!", "album"=>{"getName"=>"Appeal To Reason"}})
+    expect(nested_hash).must_equal({"title"=>"Tease", "id"=>1, "captcha" => "Awesome!", "album"=>{"getName"=>"Appeal To Reason"}})
 
     # does not write to model.
-    song.title.must_equal "Extraction"
-    song.id.must_equal 2
-    album.getName.must_equal "Appeal To Reason"
+    expect(song.title).must_equal "Extraction"
+    expect(song.id).must_equal 2
+    expect(album.getName).must_equal "Appeal To Reason"
   end
 end

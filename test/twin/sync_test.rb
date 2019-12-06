@@ -47,23 +47,23 @@ class TwinSyncTest < MiniTest::Spec
       fill_out!(twin)
 
       # not written to model, yet.
-      album.name.must_be_nil
-      album.songs[0].title.must_be_nil
-      album.songs[1].title.must_be_nil
-      album.songs[1].composer.name.must_be_nil
-      album.artist.name.must_be_nil
+      expect(album.name).must_be_nil
+      expect(album.songs[0].title).must_be_nil
+      expect(album.songs[1].title).must_be_nil
+      expect(album.songs[1].composer.name).must_be_nil
+      expect(album.artist.name).must_be_nil
 
       twin.sync
 
-      album.name.must_equal "Live And Dangerous"
-      album.songs[0].must_be_instance_of Model::Song
-      album.songs[1].must_be_instance_of Model::Song
-      album.songs[0].title.must_equal "Southbound"
-      album.songs[1].title.must_equal "The Boys Are Back In Town"
-      album.songs[1].composer.must_be_instance_of Model::Artist
-      album.songs[1].composer.name.must_equal "Lynott"
-      album.artist.must_be_instance_of Model::Artist
-      album.artist.name.must_equal "Thin Lizzy"
+      expect(album.name).must_equal "Live And Dangerous"
+      expect(album.songs[0]).must_be_instance_of Model::Song
+      expect(album.songs[1]).must_be_instance_of Model::Song
+      expect(album.songs[0].title).must_equal "Southbound"
+      expect(album.songs[1].title).must_equal "The Boys Are Back In Town"
+      expect(album.songs[1].composer).must_be_instance_of Model::Artist
+      expect(album.songs[1].composer.name).must_equal "Lynott"
+      expect(album.artist).must_be_instance_of Model::Artist
+      expect(album.artist.name).must_equal "Thin Lizzy"
     end
 
     # with empty, not populated model.
@@ -82,16 +82,16 @@ class TwinSyncTest < MiniTest::Spec
       twin.songs[1].composer.name = "Lynott"
 
       # not written to model, yet.
-      album.name.must_be_nil
-      album.songs.must_equal []
-      album.artist.must_be_nil
+      expect(album.name).must_be_nil
+      expect(album.songs).must_equal []
+      expect(album.artist).must_be_nil
 
       twin.sync # this assigns a new collection via #songs=.
 
-      album.name.must_equal "Live And Dangerous"
-      album.songs[0].title.must_equal "Southbound"
-      album.songs[1].title.must_equal "The Boys Are Back In Town"
-      album.songs[1].composer.name.must_equal "Lynott"
+      expect(album.name).must_equal "Live And Dangerous"
+      expect(album.songs[0].title).must_equal "Southbound"
+      expect(album.songs[1].title).must_equal "The Boys Are Back In Town"
+      expect(album.songs[1].composer.name).must_equal "Lynott"
     end
 
     # save with block.
@@ -107,14 +107,14 @@ class TwinSyncTest < MiniTest::Spec
           nested_hash = hash
         end
 
-        nested_hash.must_equal({"name"=>"Live And Dangerous", "songs"=>[{"title"=>"Southbound", "composer"=>nil}, {"title"=>"The Boys Are Back In Town", "composer"=>{"name"=>"Lynott"}}], "artist"=>{"name"=>"Thin Lizzy"}})
+        expect(nested_hash).must_equal({"name"=>"Live And Dangerous", "songs"=>[{"title"=>"Southbound", "composer"=>nil}, {"title"=>"The Boys Are Back In Town", "composer"=>{"name"=>"Lynott"}}], "artist"=>{"name"=>"Thin Lizzy"}})
 
         # nothing written to model.
-        album.name.must_be_nil
-        album.songs[0].title.must_be_nil
-        album.songs[1].title.must_be_nil
-        album.songs[1].composer.name.must_be_nil
-        album.artist.name.must_be_nil
+        expect(album.name).must_be_nil
+        expect(album.songs[0].title).must_be_nil
+        expect(album.songs[1].title).must_be_nil
+        expect(album.songs[1].composer.name).must_be_nil
+        expect(album.artist.name).must_be_nil
       end
 
       describe "nil values" do
@@ -127,7 +127,7 @@ class TwinSyncTest < MiniTest::Spec
           nested_hash = nil
           twin.sync { |hash| nested_hash = hash }
 
-          nested_hash.must_equal({"name"=>nil, "artist"=>nil})
+          expect(nested_hash).must_equal({"name"=>nil, "artist"=>nil})
         end
 
         it "includes empty collections" do
@@ -139,7 +139,7 @@ class TwinSyncTest < MiniTest::Spec
           nested_hash = nil
           twin.sync { |hash| nested_hash = hash }
 
-          nested_hash.must_equal({"name"=>nil, "songs"=>[], "artist"=>nil})
+          expect(nested_hash).must_equal({"name"=>nil, "songs"=>[], "artist"=>nil})
         end
       end
     end

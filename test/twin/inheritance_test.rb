@@ -20,7 +20,7 @@ class InheritanceTest < Minitest::Spec
 
   it do
     twin = Twin.new(song)
-    twin.id.must_equal 0
+    expect(twin.id).must_equal 0
   end
 
   class TwinComposition < Disposable::Twin
@@ -32,9 +32,9 @@ class InheritanceTest < Minitest::Spec
 
   it do
     twin = TwinComposition.new(song: song)
-    twin.id.must_equal 0
+    expect(twin.id).must_equal 0
     twin.id= 3
-    twin.id.must_equal 3
+    expect(twin.id).must_equal 3
   end
 
 
@@ -50,7 +50,7 @@ class InheritanceTest < Minitest::Spec
 
   it do
     twin = TwinCompositionDefineMethod.new(song: song)
-    twin.id.must_equal 9
+    expect(twin.id).must_equal 9
   end
 
 
@@ -66,8 +66,8 @@ class InheritanceTest < Minitest::Spec
     end
 
     it do
-      TwinWithFrom.new(song).id.must_equal 1
-      InheritingFrom.new(song).id.must_equal 1
+      expect(TwinWithFrom.new(song).id).must_equal 1
+      expect(InheritingFrom.new(song).id).must_equal 1
     end
   end
 end

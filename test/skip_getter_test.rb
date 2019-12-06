@@ -26,20 +26,20 @@ class SkipGetterTest < MiniTest::Spec
     album = Album.new("Wild Frontier", Artist.new("Gary Moore"))
     twin  = AlbumTwin.new(album)
 
-    twin.title.must_equal "reitnorF dliW"
-    twin.artist.name.must_equal "GARY MOORE"
+    expect(twin.title).must_equal "reitnorF dliW"
+    expect(twin.artist.name).must_equal "GARY MOORE"
 
     twin.sync # does NOT call getter.
 
-    album.title.must_equal "Wild Frontier"
-    album.artist.name.must_equal "Gary Moore"
+    expect(album.title).must_equal "Wild Frontier"
+    expect(album.artist.name).must_equal "Gary Moore"
 
     # nested hash.
     nested_hash = nil
     twin.sync do |hash|
       nested_hash = hash
     end
-    nested_hash.must_equal({"title"=>"Wild Frontier", "artist"=>{"name"=>"Gary Moore"}})
+    expect(nested_hash).must_equal({"title"=>"Wild Frontier", "artist"=>{"name"=>"Gary Moore"}})
   end
 end
 
@@ -68,8 +68,8 @@ class SkipSetterTest < MiniTest::Spec
   it do
     twin = AlbumTwin.new(Album.new("Wild Frontier", Artist.new("Gary Moore")))
 
-    twin.title.must_equal "Wild Frontier"
-    twin.artist.name.must_equal "Gary Moore"
+    expect(twin.title).must_equal "Wild Frontier"
+    expect(twin.artist.name).must_equal "Gary Moore"
   end
 end
 
@@ -111,18 +111,18 @@ class SkipGetterAndSetterWithChangedTest < MiniTest::Spec
     twin  = AlbumTwin.new(album) # does not call getter (Changed).
 
 
-    twin.title.must_equal "reitnorF dliW"
-    twin.artist.name.must_equal "GARY MOORE"
+    expect(twin.title).must_equal "reitnorF dliW"
+    expect(twin.artist.name).must_equal "GARY MOORE"
 
-    twin.changed?.must_equal false
-    twin.artist.changed?.must_equal false
+    expect(twin.changed?).must_equal false
+    expect(twin.artist.changed?).must_equal false
 
     twin.title = "Self-Entitled"
     twin.artist.name = "Nofx"
 
     twin.sync # does NOT call getter.
 
-    album.title.must_equal "deltitnE-fleS"
-    album.artist.name.must_equal "Nof"
+    expect(album.title).must_equal "deltitnE-fleS"
+    expect(album.artist.name).must_equal "Nof"
   end
 end

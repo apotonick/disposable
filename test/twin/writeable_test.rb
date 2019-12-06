@@ -30,20 +30,20 @@ class WriteableTest < MiniTest::Spec
   let (:twin) { PasswordForm.new(cred) }
 
   it {
-    twin.password.must_equal "secret"
-    twin.credit_card.name.must_equal "Jonny"
-    twin.credit_card.number.must_equal "0987654321"
+    expect(twin.password).must_equal "secret"
+    expect(twin.credit_card.name).must_equal "Jonny"
+    expect(twin.credit_card.number).must_equal "0987654321"
 
     # manual setting on the twin works.
     twin.password = "123"
-    twin.password.must_equal "123"
+    expect(twin.password).must_equal "123"
 
     twin.credit_card.number = "456"
-    twin.credit_card.number.must_equal "456"
+    expect(twin.credit_card.number).must_equal "456"
 
     twin.sync
 
-    cred.inspect.must_equal '#<struct WriteableTest::Credentials password="secret", credit_card=#<struct WriteableTest::CreditCard name="Jonny", number="0987654321">>'
+    expect(cred.inspect).must_equal '#<struct WriteableTest::Credentials password="secret", credit_card=#<struct WriteableTest::CreditCard name="Jonny", number="0987654321">>'
 
     # test sync{}.
     hash = {}
@@ -51,6 +51,6 @@ class WriteableTest < MiniTest::Spec
       hash = nested
     end
 
-    hash.must_equal("password"=> "123", "credit_card"=>{"name"=>"Jonny", "number"=>"456"})
+    expect(hash).must_equal("password"=> "123", "credit_card"=>{"name"=>"Jonny", "number"=>"456"})
   }
 end

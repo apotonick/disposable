@@ -26,7 +26,7 @@ class BuilderTest < MiniTest::Spec
   end
 
 
-  it { Twin.build(Model::Song.new).must_be_instance_of Twin }
-  it { Twin.build(Model::Hit.new).must_be_instance_of  Hit }
-  it { Twin.build(Model::Evergreen.new, evergreen: true).must_be_instance_of Evergreen }
+  it { expect(Twin.build(Model::Song.new)).must_be_instance_of Twin }
+  it { expect(Twin.build(Model::Hit.new)).must_be_instance_of  Hit }
+  it { expect(Twin.build(Model::Evergreen.new, evergreen: true)).must_be_instance_of Evergreen }
 end

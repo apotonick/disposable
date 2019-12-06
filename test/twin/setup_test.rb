@@ -44,16 +44,16 @@ class TwinSetupTest < MiniTest::Spec
     it do
       twin = Twin::Album.new(album)
 
-      twin.songs.size.must_equal 2
-      twin.songs.must_be_instance_of Disposable::Twin::Collection
+      expect(twin.songs.size).must_equal 2
+      expect(twin.songs).must_be_instance_of Disposable::Twin::Collection
 
-      twin.songs[0].must_be_instance_of Twin::Song
-      twin.songs[0].id.must_equal 1
+      expect(twin.songs[0]).must_be_instance_of Twin::Song
+      expect(twin.songs[0].id).must_equal 1
 
-      twin.songs[1].must_be_instance_of Twin::Song
-      twin.songs[1].id.must_equal 1
-      twin.songs[1].composer.must_be_instance_of Twin::Artist
-      twin.songs[1].composer.id.must_equal 2
+      expect(twin.songs[1]).must_be_instance_of Twin::Song
+      expect(twin.songs[1].id).must_equal 1
+      expect(twin.songs[1].composer).must_be_instance_of Twin::Artist
+      expect(twin.songs[1].composer.id).must_equal 2
     end
   end
 
@@ -63,8 +63,8 @@ class TwinSetupTest < MiniTest::Spec
     it do
       twin = Twin::Album.new(album)
 
-      twin.songs.size.must_equal 0
-      twin.songs.must_be_instance_of Disposable::Twin::Collection
+      expect(twin.songs.size).must_equal 0
+      expect(twin.songs).must_be_instance_of Disposable::Twin::Collection
     end
   end
 
@@ -75,7 +75,7 @@ class TwinSetupTest < MiniTest::Spec
   #   it do
   #     twin = Twin::Album.new(album)
 
-  #     twin.songs.size.must_equal 0
+  #     twin.songs.size).must_equal 0
   #     twin.songs.must_be_instance_of Disposable::Twin::Collection
   #   end
   # end
@@ -118,23 +118,23 @@ class TwinSetupWithInlineTwinsTest < MiniTest::Spec
     twin = AlbumForm.new(album)
     # pp twin
 
-    twin.id.must_equal 0
-    twin.name.must_equal "Toto Live"
+    expect(twin.id).must_equal 0
+    expect(twin.name).must_equal "Toto Live"
 
-    twin.artist.must_be_kind_of Disposable::Twin
-    twin.artist.id.must_equal 9
+    expect(twin.artist).must_be_kind_of Disposable::Twin
+    expect(twin.artist.id).must_equal 9
 
-    twin.songs.must_be_instance_of Disposable::Twin::Collection
+    expect(twin.songs).must_be_instance_of Disposable::Twin::Collection
 
     # nil nested objects work (no composer)
-    twin.songs[0].must_be_kind_of Disposable::Twin
-    twin.songs[0].id.must_equal 1
+    expect(twin.songs[0]).must_be_kind_of Disposable::Twin
+    expect(twin.songs[0].id).must_equal 1
 
-    twin.songs[1].must_be_kind_of Disposable::Twin
-    twin.songs[1].id.must_equal 3
+    expect(twin.songs[1]).must_be_kind_of Disposable::Twin
+    expect(twin.songs[1].id).must_equal 3
 
-    twin.songs[1].composer.must_be_kind_of Disposable::Twin
-    twin.songs[1].composer.id.must_equal 2
+    expect(twin.songs[1].composer).must_be_kind_of Disposable::Twin
+    expect(twin.songs[1].composer.id).must_equal 2
   end
 end
 
@@ -149,7 +149,7 @@ class TwinWithVirtualSetupTest < MiniTest::Spec
 
   it do
     twin = AlbumTwin.new(Song.new(1), is_online: true)
-    twin.id.must_equal 1
-    twin.is_online.must_equal true
+    expect(twin.id).must_equal 1
+    expect(twin.is_online).must_equal true
   end
 end

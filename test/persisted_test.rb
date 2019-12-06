@@ -29,36 +29,36 @@ class PersistedTest < MiniTest::Spec
     album   = Album.new(artist: artist, songs: [ex_song, song])
 
 
-    artist.persisted?.must_equal false
-    album.persisted?.must_equal false
-    ex_song.persisted?.must_equal true
-    song.persisted?.must_equal false
+    expect(artist.persisted?).must_equal false
+    expect(album.persisted?).must_equal false
+    expect(ex_song.persisted?).must_equal true
+    expect(song.persisted?).must_equal false
 
     twin = AlbumTwin.new(album)
-    twin.persisted?.must_equal false
-    twin.changed?(:persisted?).must_equal false
-    twin.artist.persisted?.must_equal false
-    twin.artist.changed?(:persisted?).must_equal false
-    twin.songs[0].persisted?.must_equal true
-    twin.songs[0].changed?(:persisted?).must_equal false
-    twin.songs[1].persisted?.must_equal false
-    twin.songs[1].changed?(:persisted?).must_equal false
+    expect(twin.persisted?).must_equal false
+    expect(twin.changed?(:persisted?)).must_equal false
+    expect(twin.artist.persisted?).must_equal false
+    expect(twin.artist.changed?(:persisted?)).must_equal false
+    expect(twin.songs[0].persisted?).must_equal true
+    expect(twin.songs[0].changed?(:persisted?)).must_equal false
+    expect(twin.songs[1].persisted?).must_equal false
+    expect(twin.songs[1].changed?(:persisted?)).must_equal false
 
     twin.save
 
-    artist.persisted?.must_equal true
-    album.persisted?.must_equal true
-    ex_song.persisted?.must_equal true
-    song.persisted?.must_equal true
+    expect(artist.persisted?).must_equal true
+    expect(album.persisted?).must_equal true
+    expect(ex_song.persisted?).must_equal true
+    expect(song.persisted?).must_equal true
 
-    twin.persisted?.must_equal true
-    twin.changed?(:persisted?).must_equal true
-    twin.artist.persisted?.must_equal true
-    twin.artist.changed?(:persisted?).must_equal true
-    twin.songs[0].persisted?.must_equal true
-    twin.songs[0].changed?(:persisted?).must_equal false
-    twin.songs[1].persisted?.must_equal true
-    twin.songs[1].changed?(:persisted?).must_equal true
+    expect(twin.persisted?).must_equal true
+    expect(twin.changed?(:persisted?)).must_equal true
+    expect(twin.artist.persisted?).must_equal true
+    expect(twin.artist.changed?(:persisted?)).must_equal true
+    expect(twin.songs[0].persisted?).must_equal true
+    expect(twin.songs[0].changed?(:persisted?)).must_equal false
+    expect(twin.songs[1].persisted?).must_equal true
+    expect(twin.songs[1].changed?(:persisted?)).must_equal true
   end
 
 
@@ -66,17 +66,17 @@ class PersistedTest < MiniTest::Spec
     it do
       twin = AlbumTwin.new(Album.new)
 
-      twin.created?.must_equal false
+      expect(twin.created?).must_equal false
       twin.save
-      twin.created?.must_equal true
+      expect(twin.created?).must_equal true
     end
 
     it do
       twin = AlbumTwin.new(Album.create)
 
-      twin.created?.must_equal false
+      expect(twin.created?).must_equal false
       twin.save
-      twin.created?.must_equal false
+      expect(twin.created?).must_equal false
     end
   end
 
