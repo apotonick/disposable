@@ -7,4 +7,4 @@ gem "minitest-line"
   gem gem_name, dependency
 end
 
-
+gem "sqlite3", ENV.fetch('ACTIVERECORD', '5.2').to_f >= 6 ? '~> 1.4' : '~> 1.3.0'
