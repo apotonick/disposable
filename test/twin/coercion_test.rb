@@ -85,8 +85,15 @@ class CoercionTest < MiniTest::Spec
     property :id, type: const_get("Types::Coercible::#{DRY_TYPES_INT_CONSTANT}"), nilify: true
   end
 
-  describe "with Nilify" do
+  class TwinWithoutTypeWithNilify < Disposable::Twin
+    feature Coercion
 
+    property :date_of_birth, nilify: true
+    property :date_of_death_by_unicorns, type: DRY_TYPES_CONSTANT::Nil | DRY_TYPES_CONSTANT::Date
+    property :id, type: const_get("Types::Coercible::#{DRY_TYPES_INT_CONSTANT}"), nilify: true
+  end
+
+  describe "with Nilify" do
     subject do
       TwinWithNilify.new(OpenStruct.new(date_of_birth: '1990-01-12',
                                         date_of_death_by_unicorns: '2037-02-18',
@@ -111,6 +118,37 @@ class CoercionTest < MiniTest::Spec
     it "converts blank string to nil, without :type option" do
       subject.id = ""
       expect(subject.id).must_be_nil
+    end
+  end
+
+  describe "without Type With Nilify" do
+    let(:date_of_birth) { '1990-01-12' }
+    subject do
+      TwinWithoutTypeWithNilify.new(
+        OpenStruct.new(
+          date_of_birth: date_of_birth,
+          date_of_death_by_unicorns: '2037-02-18',
+          id: 1
+        )
+      )
+    end
+
+    it 'raise error for new dry-types v - work as expected for older versions' do
+      if Disposable::Twin::Coercion::DRY_TYPES_VERSION >= Gem::Version.new("1.0")
+        assert_raises(Dry::Types::CoercionError) { subject.date_of_birth }
+        assert_raises(Dry::Types::CoercionError) { subject.date_of_death_by_unicorns }
+      else
+        expect(subject.date_of_birth).must_equal '1990-01-12'
+        expect(subject.date_of_death_by_unicorns).must_equal Date.parse('2037-02-18')
+      end
+    end
+
+    describe 'when passing nil' do
+      let(:date_of_birth) { '' }
+
+      it 'coerce values correctly' do
+        expect(subject.date_of_birth).must_be_nil
+      end
     end
   end
 end

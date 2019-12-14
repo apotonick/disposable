@@ -18,7 +18,10 @@ module Disposable::Twin::Coercion
     end
 
     def coercing_setter!(name, type, nilify=false)
-     type = type ? (DRY_TYPES_CONSTANT::Nil | type) : DRY_TYPES_CONSTANT::Nil if nilify
+      # TODO: remove nilily with next release (0.5) for new dry-type versions
+      type = type ? (DRY_TYPES_CONSTANT::Nil | type) : DRY_TYPES_CONSTANT::Nil if nilify
+
+      warn "DEPRECATION WARNING [Disposable]: nilify is deprecated and it will be removed with the next release" if nilify && DRY_TYPES_CONSTANT == Types::Params
 
       mod = Module.new do
         define_method("#{name}=") do |value|
