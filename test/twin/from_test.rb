@@ -27,8 +27,8 @@ class FromTest < MiniTest::Spec
   let (:twin)     { Twin::Album.new(album) }
 
   it do
-    twin.full_name.must_equal "Black Sails In The Sunset"
-    twin.artist.name.must_equal "AFI"
+    expect(twin.full_name).must_equal "Black Sails In The Sunset"
+    expect(twin.artist.name).must_equal "AFI"
 
     twin.save
 

@@ -24,8 +24,8 @@ class ExposeTest < MiniTest::Spec
 
   describe "readers" do
     it  do
-      subject.id.must_equal 1
-      subject.title.must_equal "Dick Sandwich"
+      expect(subject.id).must_equal 1
+      expect(subject.title).must_equal "Dick Sandwich"
     end
   end
 
@@ -35,10 +35,10 @@ class ExposeTest < MiniTest::Spec
       subject.id = 3
       subject.title = "Eclipse"
 
-      subject.id.must_equal 3
-      subject.title.must_equal "Eclipse"
-      album.id.must_equal 3
-      album.name.must_equal "Eclipse"
+      expect(subject.id).must_equal 3
+      expect(subject.title).must_equal "Eclipse"
+      expect(album.id).must_equal 3
+      expect(album.name).must_equal "Eclipse"
     end
   end
 end
@@ -69,9 +69,9 @@ class ExposeCompositionTest < MiniTest::Spec
 
 
   describe "readers" do
-    it { subject.id.must_equal 2 }
-    it { subject.band_id.must_equal 1 }
-    it { subject.name.must_equal "Dick Sandwich" }
+    it { expect(subject.id).must_equal 2 }
+    it { expect(subject.band_id).must_equal 1 }
+    it { expect(subject.name).must_equal "Dick Sandwich" }
   end
 
 
@@ -81,12 +81,12 @@ class ExposeCompositionTest < MiniTest::Spec
       subject.band_id = 4
       subject.name = "Eclipse"
 
-      subject.id.must_equal 3
-      subject.band_id.must_equal 4
-      subject.name.must_equal "Eclipse"
-      band.id.must_equal 4
-      album.id.must_equal 3
-      album.name.must_equal "Eclipse"
+      expect(subject.id).must_equal 3
+      expect(subject.band_id).must_equal 4
+      expect(subject.name).must_equal "Eclipse"
+      expect(band.id).must_equal 4
+      expect(album.id).must_equal 3
+      expect(album.name).must_equal "Eclipse"
     end
   end
 end

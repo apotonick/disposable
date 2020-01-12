@@ -11,19 +11,19 @@ class TwinStructTest < MiniTest::Spec
   end
 
   # empty hash
-  # it { Song.new({}).number.must_equal 1 }
-  it { Song.new({}).number.must_be_nil } # TODO: implement default.
+  # it { Song.new({}).number).must_equal 1 }
+  it { expect(Song.new({}).number).must_be_nil } # TODO: implement default.
 
   # model hash
-  it { Song.new(number: 2).number.must_equal 2 }
+  it { expect(Song.new(number: 2).number).must_equal 2 }
 
   # with hash and options as one hash.
-  it { Song.new(number: 3, cool?: true).cool?.must_equal true }
-  it { Song.new(number: 3, cool?: true).number.must_equal 3 }
+  it { expect(Song.new(number: 3, cool?: true).cool?).must_equal true }
+  it { expect(Song.new(number: 3, cool?: true).number).must_equal 3 }
 
   # with model hash and options hash separated.
-  it { Song.new({number: 3}, {cool?: true}).cool?.must_equal true }
-  it { Song.new({number: 3}, {cool?: true}).number.must_equal 3 }
+  it { expect(Song.new({number: 3}, {cool?: true}).cool?).must_equal true }
+  it { expect(Song.new({number: 3}, {cool?: true}).number).must_equal 3 }
 
 
   describe "writing" do
@@ -33,8 +33,8 @@ class TwinStructTest < MiniTest::Spec
     # writer
     it do
       song.number = 9
-      song.number.must_equal 9
-      model[:number].must_equal 3
+      expect(song.number).must_equal 9
+      expect(model[:number]).must_equal 3
     end
 
     # writer with sync
@@ -42,10 +42,10 @@ class TwinStructTest < MiniTest::Spec
       song.number = 9
       model = song.sync
 
-      song.number.must_equal 9
-      model["number"].must_equal 9
+      expect(song.number).must_equal 9
+      expect(model["number"]).must_equal 9
 
-      # song.send(:model).object_id.must_equal model.object_id
+      # song.send(:model).object_id).must_equal model.object_id
     end
   end
 end
@@ -79,26 +79,26 @@ class TwinWithNestedStructTest < MiniTest::Spec
     preferences: {show_image: true, play_teaser: 2}, roles: [{name: "user"}]}) }
 
   # public "hash" reader
-  it { Song.new(model).options.recorded.must_equal true }
+  it { expect(Song.new(model).options.recorded).must_equal true }
 
   # public "hash" writer
   it {
     song = Song.new(model)
 
     song.options.recorded = "yo"
-    song.options.recorded.must_equal "yo"
+    expect(song.options.recorded).must_equal "yo"
 
-    song.options.preferences.show_image.must_equal true
-    song.options.preferences.play_teaser.must_equal 2
+    expect(song.options.preferences.show_image).must_equal true
+    expect(song.options.preferences.play_teaser).must_equal 2
 
     song.options.preferences.show_image= 9
 
 
     song.sync # this is only called on the top model, e.g. in Reform#save.
 
-    model.title.must_equal "Seed of Fear and Anger"
-    model.options["recorded"].must_equal "yo"
-    model.options["preferences"].must_equal({"show_image" => 9, "play_teaser"=>2})
+    expect(model.title).must_equal "Seed of Fear and Anger"
+    expect(model.options["recorded"]).must_equal "yo"
+    expect(model.options["preferences"]).must_equal({"show_image" => 9, "play_teaser"=>2})
   }
 
   describe "nested writes" do
@@ -111,14 +111,14 @@ class TwinWithNestedStructTest < MiniTest::Spec
       role = song.options.roles.append({}) # add empty "model" to hash collection.
       role.name = "admin"
 
-      song.options.roles.size.must_equal 2
-      song.options.roles[0].name.must_equal "user"
-      song.options.roles[1].name.must_equal "admin"
-      model.options[:roles].must_equal([{:name=>"user"}]) # model hasn't changed, of course.
+      expect(song.options.roles.size).must_equal 2
+      expect(song.options.roles[0].name).must_equal "user"
+      expect(song.options.roles[1].name).must_equal "admin"
+      expect(model.options[:roles]).must_equal([{:name=>"user"}]) # model hasn't changed, of course.
 
       song.sync
 
-      model.options.must_equal({"recorded"=>true, "released"=>1, "preferences"=>{"show_image"=>true, "play_teaser"=>2}, "roles"=>[{"name"=>"user"}, {"name"=>"admin"}]})
+      expect(model.options).must_equal({"recorded"=>true, "released"=>1, "preferences"=>{"show_image"=>true, "play_teaser"=>2}, "roles"=>[{"name"=>"user"}, {"name"=>"admin"}]})
     end
 
     # overwriting nested property via #preferences=.
@@ -126,7 +126,7 @@ class TwinWithNestedStructTest < MiniTest::Spec
       song.options.preferences = {play_teaser: :maybe}
       song.sync
 
-      model.options.must_equal({"recorded"=>true, "released"=>1, "preferences"=>{"play_teaser"=>:maybe}, "roles"=>[{"name"=>"user"}]})
+      expect(model.options).must_equal({"recorded"=>true, "released"=>1, "preferences"=>{"play_teaser"=>:maybe}, "roles"=>[{"name"=>"user"}]})
     end
 
     # overwriting collection via #roles=.
@@ -134,7 +134,7 @@ class TwinWithNestedStructTest < MiniTest::Spec
       song.options.roles = [{name: "wizard"}]
       song.sync
 
-      model.options.must_equal({"recorded"=>true, "released"=>1, "preferences"=>{"show_image"=>true, "play_teaser"=>2}, "roles"=>[{"name"=>"wizard"}]})
+      expect(model.options).must_equal({"recorded"=>true, "released"=>1, "preferences"=>{"show_image"=>true, "play_teaser"=>2}, "roles"=>[{"name"=>"wizard"}]})
     end
   end
 
@@ -146,7 +146,7 @@ class TwinWithNestedStructTest < MiniTest::Spec
 
   #   song.sync
 
-  #   model[:options][:roles].must_equal({    })
+  #   model[:options][:roles]).must_equal({    })
 
   #   pp song
 
@@ -178,8 +178,8 @@ class StructReadableWriteableTest < Minitest::Spec
 
   it "ignores readable: false" do
     song = Song.new(length: 123, id: 1)
-    song.length.must_equal 123
-    song.id.must_be_nil
+    expect(song.length).must_equal 123
+    expect(song.id).must_be_nil
   end
 
   it "ignores writeable: false" do
@@ -209,20 +209,20 @@ class DefaultWithStructTest < Minitest::Spec
   # all given.
   it do
     twin = Twin.new(Song.new({enabled: true, roles: {admin: false}}))
-    twin.settings.enabled.must_equal true
-    twin.settings.roles.admin.must_equal false
+    expect(twin.settings.enabled).must_equal true
+    expect(twin.settings.roles.admin).must_equal false
   end
 
   # defaults, please.
   it do
     song = Song.new
     twin = Twin.new(song)
-    twin.settings.enabled.must_equal "yes"
-    twin.settings.roles.admin.must_equal "maybe"
+    expect(twin.settings.enabled).must_equal "yes"
+    expect(twin.settings.roles.admin).must_equal "maybe"
 
     twin.sync
 
-    song.settings.must_equal({"enabled"=>"yes", "roles"=>{"admin"=>"maybe"}})
+    expect(song.settings).must_equal({"enabled"=>"yes", "roles"=>{"admin"=>"maybe"}})
   end
 end
 
@@ -258,7 +258,7 @@ class CompositionWithStructTest < Minitest::Spec
 
     twin.sync
 
-    model.content.must_equal({"tags"=>["history"], "notes"=>[{"text"=>"Freedom", "index"=>0}, {"text"=>"Like", "index"=>1}, {"text"=>"Canberra trip", "index"=>2}]})
+    expect(model.content).must_equal({"tags"=>["history"], "notes"=>[{"text"=>"Freedom", "index"=>0}, {"text"=>"Like", "index"=>1}, {"text"=>"Canberra trip", "index"=>2}]})
   end
 
   class Sheet < Disposable::Twin
@@ -319,9 +319,9 @@ class CompositionWithStructTest < Minitest::Spec
 
 
 
-    sheet.tags.must_equal "#hashtag"
-    sheet.notes[0].text.must_equal "Freedom"
-    sheet.notes[0].index.must_equal 0
+    expect(sheet.tags).must_equal "#hashtag"
+    expect(sheet.notes[0].text).must_equal "Freedom"
+    expect(sheet.notes[0].index).must_equal 0
 
     sheet.notes[0].index = 2
 

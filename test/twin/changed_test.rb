@@ -39,19 +39,19 @@ class ChangedWithSetupTest < MiniTest::Spec
 
   # setup: changed? is always false
   it do
-    twin.changed?(:name).must_equal false
-    twin.changed?.must_equal false
+    expect(twin.changed?(:name)).must_equal false
+    expect(twin.changed?).must_equal false
 
-    twin.songs[0].changed?.must_equal false
-    twin.songs[0].changed?(:title).must_equal false
-    twin.songs[1].changed?.must_equal false
-    twin.songs[1].changed?(:title).must_equal false
+    expect(twin.songs[0].changed?).must_equal false
+    expect(twin.songs[0].changed?(:title)).must_equal false
+    expect(twin.songs[1].changed?).must_equal false
+    expect(twin.songs[1].changed?(:title)).must_equal false
 
-    twin.songs[1].composer.changed?(:name).must_equal false
-    twin.songs[1].composer.changed?.must_equal false
+    expect(twin.songs[1].composer.changed?(:name)).must_equal false
+    expect(twin.songs[1].composer.changed?).must_equal false
 
-    twin.artist.changed?(:name).must_equal false
-    twin.artist.changed?.must_equal false
+    expect(twin.artist.changed?(:name)).must_equal false
+    expect(twin.artist.changed?).must_equal false
   end
 
   # only when a property is assigned, it's changed.
@@ -62,46 +62,46 @@ class ChangedWithSetupTest < MiniTest::Spec
     twin.songs[1].composer.name= "Ingemar Jansson & Mikael Danielsson"
     twin.artist.name = "No Fun At All"
 
-    twin.changed?(:name).must_equal true
-    twin.changed?.must_equal true
+    expect(twin.changed?(:name)).must_equal true
+    expect(twin.changed?).must_equal true
 
-    twin.songs[0].changed?.must_equal true
-    twin.songs[0].changed?(:title).must_equal true
-    twin.songs[1].changed?.must_equal true
-    twin.songs[1].changed?(:title).must_equal true
+    expect(twin.songs[0].changed?).must_equal true
+    expect(twin.songs[0].changed?(:title)).must_equal true
+    expect(twin.songs[1].changed?).must_equal true
+    expect(twin.songs[1].changed?(:title)).must_equal true
 
-    twin.songs[1].composer.changed?(:name).must_equal true
-    twin.songs[1].composer.changed?.must_equal true
+    expect(twin.songs[1].composer.changed?(:name)).must_equal true
+    expect(twin.songs[1].composer.changed?).must_equal true
 
-    twin.artist.changed?(:name).must_equal true
-    twin.artist.changed?.must_equal true
+    expect(twin.artist.changed?(:name)).must_equal true
+    expect(twin.artist.changed?).must_equal true
 
     # you can also ask for nested twins by name.
-    twin.changed?(:songs).must_equal true
-    twin.songs[0].changed?(:composer).must_equal false
-    twin.songs[1].changed?(:composer).must_equal true
-    twin.changed?(:artist).must_equal true
+    expect(twin.changed?(:songs)).must_equal true
+    expect(twin.songs[0].changed?(:composer)).must_equal false
+    expect(twin.songs[1].changed?(:composer)).must_equal true
+    expect(twin.changed?(:artist)).must_equal true
   end
 
   # nested changes should propagate up.
   it do
-    twin.changed?.must_equal false
+    expect(twin.changed?).must_equal false
 
     twin.songs[1].composer.name = "Nofx"
 
-    twin.changed?.must_equal true
+    expect(twin.changed?).must_equal true
 
     assert twin.songs.changed?
-    twin.songs[1].changed?.must_equal true
-    twin.songs[0].changed?.must_equal false
+    expect(twin.songs[1].changed?).must_equal true
+    expect(twin.songs[0].changed?).must_equal false
 
-    twin.artist.changed?.must_equal false
+    expect(twin.artist.changed?).must_equal false
   end
 
   # setting identical value doesn't change.
   it do
     twin.name = "The Rest Is Silence"
-    twin.changed?.must_equal false
+    expect(twin.changed?).must_equal false
   end
 end
 
@@ -119,18 +119,18 @@ class ChangedWithCoercionTest < MiniTest::Spec
 
   it do
     twin = SongTwin.new(Song.new)
-    twin.changed?(:released).must_equal false
+    expect(twin.changed?(:released)).must_equal false
     twin.released = 'true'
-    twin.released.must_equal true
-    twin.changed?(:released).must_equal true
+    expect(twin.released).must_equal true
+    expect(twin.changed?(:released)).must_equal true
   end
 
   it do
     twin = SongTwin.new(Song.new(true))
-    twin.changed?(:released).must_equal false
+    expect(twin.changed?(:released)).must_equal false
     twin.released = 'true' # it coerces, then assigns, then compares, which makes this NOT changed.
-    twin.changed?(:released).must_equal false
+    expect(twin.changed?(:released)).must_equal false
     twin.released = 'false'
-    twin.changed?(:released).must_equal true
+    expect(twin.changed?(:released)).must_equal true
   end
 end

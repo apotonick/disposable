@@ -20,10 +20,10 @@ class TwinFromCollectionDecoratorTest < MiniTest::Spec
     it do
       twined_collection = Twin::Artist.from_collection(collection)
 
-      twined_collection[0].must_be_instance_of Twin::Artist
-      twined_collection[0].model.must_equal artist1
-      twined_collection[1].must_be_instance_of Twin::Artist
-      twined_collection[1].model.must_equal artist2
+      expect(twined_collection[0]).must_be_instance_of Twin::Artist
+      expect(twined_collection[0].model).must_equal artist1
+      expect(twined_collection[1]).must_be_instance_of Twin::Artist
+      expect(twined_collection[1].model).must_equal artist2
     end
   end
 end

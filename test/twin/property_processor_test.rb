@@ -23,14 +23,14 @@ class PropertyProcessorTest < Minitest::Spec
 	    called = []
 	    Disposable::Twin::PropertyProcessor.new(twin.class.definitions.get(:songs), twin).() { |v, i| called << [v.model, i] }
 
-	    called.inspect.must_equal %{[[#<struct PropertyProcessorTest::Song id=1>, 0], [#<struct PropertyProcessorTest::Song id=2>, 1]]}
+	    expect(called.inspect).must_equal %{[[#<struct PropertyProcessorTest::Song id=1>, 0], [#<struct PropertyProcessorTest::Song id=2>, 1]]}
   	end
 
   	it "yields twin" do
 	    called = []
 	    Disposable::Twin::PropertyProcessor.new(twin.class.definitions.get(:songs), twin).() { |v| called << [v.model] }
 
-	    called.inspect.must_equal %{[[#<struct PropertyProcessorTest::Song id=1>], [#<struct PropertyProcessorTest::Song id=2>]]}
+	    expect(called.inspect).must_equal %{[[#<struct PropertyProcessorTest::Song id=1>], [#<struct PropertyProcessorTest::Song id=2>]]}
   	end
 
   	it "allows nil collection" do
@@ -39,7 +39,7 @@ class PropertyProcessorTest < Minitest::Spec
 	    called = []
 	    Disposable::Twin::PropertyProcessor.new(twin.class.definitions.get(:songs), twin).() { |v, i| called << [v.model, i] }
 
-	    called.inspect.must_equal %{[]}
+	    expect(called.inspect).must_equal %{[]}
   	end
   end
 end

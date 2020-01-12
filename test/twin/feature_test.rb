@@ -44,14 +44,14 @@ class FeatureTest < MiniTest::Spec
   let (:form) { AlbumForm.new(album) }
 
   it do
-    form.date.must_equal "May 16"
-    form.artist.date.must_equal "May 16"
-    form.songs[0].date.must_equal "May 16"
-    form.songs[1].date.must_equal "May 16"
-    form.songs[1].composer.date.must_equal "May 16"
-    form.songs[1].wont_be_kind_of(Instrument)
-    form.songs[1].composer.must_be_kind_of(Instrument)
-    form.songs[1].composer.instrument.must_equal "Violins"
-    form.artist.date.must_equal "May 16"
+    expect(form.date).must_equal "May 16"
+    expect(form.artist.date).must_equal "May 16"
+    expect(form.songs[0].date).must_equal "May 16"
+    expect(form.songs[1].date).must_equal "May 16"
+    expect(form.songs[1].composer.date).must_equal "May 16"
+    expect(form.songs[1]).wont_be_kind_of(Instrument)
+    expect(form.songs[1].composer).must_be_kind_of(Instrument)
+    expect(form.songs[1].composer.instrument).must_equal "Violins"
+    expect(form.artist.date).must_equal "May 16"
   end
 end

@@ -48,29 +48,29 @@ class SaveTest < MiniTest::Spec
     twin.save
 
     # sync happened.
-    album.name.must_equal "Live And Dangerous"
-    album.songs[0].must_be_instance_of Model::Song
-    album.songs[1].must_be_instance_of Model::Song
-    album.songs[0].title.must_equal "Southbound"
-    album.songs[1].title.must_equal "The Boys Are Back In Town"
-    album.songs[1].composer.must_be_instance_of Model::Artist
-    album.songs[1].composer.name.must_equal "Lynott"
-    album.artist.must_be_instance_of Model::Artist
-    album.artist.name.must_equal "Thin Lizzy"
+    expect(album.name).must_equal "Live And Dangerous"
+    expect(album.songs[0]).must_be_instance_of Model::Song
+    expect(album.songs[1]).must_be_instance_of Model::Song
+    expect(album.songs[0].title).must_equal "Southbound"
+    expect(album.songs[1].title).must_equal "The Boys Are Back In Town"
+    expect(album.songs[1].composer).must_be_instance_of Model::Artist
+    expect(album.songs[1].composer.name).must_equal "Lynott"
+    expect(album.artist).must_be_instance_of Model::Artist
+    expect(album.artist.name).must_equal "Thin Lizzy"
 
     # saved?
-    album.saved?.must_equal true
-    album.songs[0].saved?.must_equal true
-    album.songs[1].saved?.must_equal true
-    album.songs[1].composer.saved?.must_equal true
-    album.artist.saved?.must_equal true
+    expect(album.saved?).must_equal true
+    expect(album.songs[0].saved?).must_equal true
+    expect(album.songs[1].saved?).must_equal true
+    expect(album.songs[1].composer.saved?).must_equal true
+    expect(album.artist.saved?).must_equal true
   end
 
   #save returns result.
-  it { twin.save.must_equal true }
+  it { expect(twin.save).must_equal true }
   it do
     album.instance_eval { def save; false; end }
-    twin.save.must_equal false
+    expect(twin.save).must_equal false
   end
 
   # with save{}.
@@ -85,22 +85,22 @@ class SaveTest < MiniTest::Spec
       nested_hash = hash
     end
 
-    nested_hash.must_equal({"name"=>"Live And Dangerous", "songs"=>[{"title"=>"Southbound", "composer"=>nil}, {"title"=>"The Boys Are Back In Town", "composer"=>{"name"=>"Lynott"}}], "artist"=>{"name"=>"Thin Lizzy"}})
+    expect(nested_hash).must_equal({"name"=>"Live And Dangerous", "songs"=>[{"title"=>"Southbound", "composer"=>nil}, {"title"=>"The Boys Are Back In Town", "composer"=>{"name"=>"Lynott"}}], "artist"=>{"name"=>"Thin Lizzy"}})
 
     # nothing written to model.
-    album.name.must_be_nil
-    album.songs[0].title.must_be_nil
-    album.songs[1].title.must_be_nil
-    album.songs[1].composer.name.must_be_nil
-    album.artist.name.must_be_nil
+    expect(album.name).must_be_nil
+    expect(album.songs[0].title).must_be_nil
+    expect(album.songs[1].title).must_be_nil
+    expect(album.songs[1].composer.name).must_be_nil
+    expect(album.artist.name).must_be_nil
 
     # nothing saved.
     # saved?
-    album.saved?.must_be_nil
-    album.songs[0].saved?.must_be_nil
-    album.songs[1].saved?.must_be_nil
-    album.songs[1].composer.saved?.must_be_nil
-    album.artist.saved?.must_be_nil
+    expect(album.saved?).must_be_nil
+    expect(album.songs[0].saved?).must_be_nil
+    expect(album.songs[1].saved?).must_be_nil
+    expect(album.songs[1].composer.saved?).must_be_nil
+    expect(album.artist.saved?).must_be_nil
   end
 
 
@@ -136,22 +136,22 @@ class SaveTest < MiniTest::Spec
     twin.save
 
     # sync happened.
-    album.name.must_equal "Live And Dangerous"
-    album.songs[0].must_be_instance_of Model::Song
-    album.songs[1].must_be_instance_of Model::Song
-    album.songs[0].title.must_equal "Southbound"
-    album.songs[1].title.must_equal "The Boys Are Back In Town"
-    album.songs[1].composer.must_be_instance_of Model::Artist
-    album.songs[1].composer.name.must_equal "Lynott"
-    album.artist.must_be_instance_of Model::Artist
-    album.artist.name.must_equal "Thin Lizzy"
+    expect(album.name).must_equal "Live And Dangerous"
+    expect(album.songs[0]).must_be_instance_of Model::Song
+    expect(album.songs[1]).must_be_instance_of Model::Song
+    expect(album.songs[0].title).must_equal "Southbound"
+    expect(album.songs[1].title).must_equal "The Boys Are Back In Town"
+    expect(album.songs[1].composer).must_be_instance_of Model::Artist
+    expect(album.songs[1].composer.name).must_equal "Lynott"
+    expect(album.artist).must_be_instance_of Model::Artist
+    expect(album.artist.name).must_equal "Thin Lizzy"
 
     # saved?
-    album.saved?.must_equal true
-    album.songs[0].saved?.must_be_nil
-    album.songs[1].saved?.must_be_nil
-    album.songs[1].composer.saved?.must_be_nil # doesn't get saved.
-    album.artist.saved?.must_equal true
+    expect(album.saved?).must_equal true
+    expect(album.songs[0].saved?).must_be_nil
+    expect(album.songs[1].saved?).must_be_nil
+    expect(album.songs[1].composer.saved?).must_be_nil # doesn't get saved.
+    expect(album.artist.saved?).must_equal true
   end
 
   def fill_out!(twin)
@@ -185,8 +185,8 @@ end
 #     length_seconds = 120
 #     form.save(length: lambda { |value, options| form.model.id = "#{value}: #{length_seconds}" })
 
-#     song.title.must_equal "A Poor Man's Memory"
-#     song.length.must_be_nil
-#     song.id.must_equal "10: 120"
+#     song.title).must_equal "A Poor Man's Memory"
+#     song.length).must_be_nil
+#     song.id).must_equal "10: 120"
 #   end
 # end

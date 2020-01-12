@@ -53,12 +53,12 @@ class SkipUnchangedTest < MiniTest::Spec
     twin.sync
 
     # unchanged, and no exception raised.
-    album.name.must_equal "30 Years Live"
-    song_with_composer.title.must_equal "American Jesus"
-    artist.name.must_equal "Bad Religion"
+    expect(album.name).must_equal "30 Years Live"
+    expect(song_with_composer.title).must_equal "American Jesus"
+    expect(artist.name).must_equal "Bad Religion"
 
     # this actually got synced.
-    song_with_composer.composer.name.must_equal "Greg Graffin" # was nil.
-    song.title.must_equal "Resist Stance" # was nil.
+    expect(song_with_composer.composer.name).must_equal "Greg Graffin" # was nil.
+    expect(song.title).must_equal "Resist Stance" # was nil.
   end
 end
