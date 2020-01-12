@@ -1,3 +1,8 @@
+# 0.4.7
+
+* Deprecation warning for nilify options for dry-v >= 1.x
+* Fix initializer struct when using `false` as value
+
 # 0.4.6
 
 * Remove deprecation warnings for newer versions of dry-types
