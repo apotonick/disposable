@@ -1,4 +1,4 @@
-require "disposable/twin/struct"
+require "disposable/twin/property/struct"
 
 class Disposable::Twin
   module Property

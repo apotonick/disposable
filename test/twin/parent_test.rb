@@ -1,11 +1,13 @@
-require "test_helper"
-require "disposable/twin/parent.rb"
+# frozen_string_literal: true
+
+require 'test_helper'
+require 'disposable/twin/parent.rb'
 
 class TwinParentTest < MiniTest::Spec
   module Model
     Album = Struct.new(:id, :artist, :songs)
     Artist = Struct.new(:name)
-    Song  = Struct.new(:title, :composer)
+    Song = Struct.new(:title, :composer)
   end
 
   class Album < Disposable::Twin
@@ -25,17 +27,17 @@ class TwinParentTest < MiniTest::Spec
     end
   end
 
-  let (:album) { Album.new(Model::Album.new(1, Model::Artist.new("Helloween"), [Model::Song.new("I'm Alive", Model::Artist.new("Kai Hansen"))])) }
+  let(:album) { Album.new(Model::Album.new(1, Model::Artist.new('Helloween'), [Model::Song.new("I'm Alive", Model::Artist.new('Kai Hansen'))])) }
 
-  it { expect(album.parent).must_be_nil }
-  it { expect(album.artist.parent).must_equal album }
-  it { expect(album.songs[0].parent).must_equal album }
-  it { expect(album.songs[0].composer.parent).must_equal album.songs[0] }
+  it { _(album.parent).must_be_nil }
+  it { _(album.artist.parent).must_equal album }
+  it { _(album.songs[0].parent).must_equal album }
+  it { _(album.songs[0].composer.parent).must_equal album.songs[0] }
 
-  describe "Collection#append" do
+  describe 'Collection#append' do
     it do
       album.songs.append(Model::Song.new)
-      expect(album.songs[1].parent).must_equal album
+      _(album.songs[1].parent).must_equal album
     end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class FromTest < MiniTest::Spec
@@ -5,7 +7,6 @@ class FromTest < MiniTest::Spec
     Album = Struct.new(:name, :composer)
     Artist = Struct.new(:realname)
   end
-
 
   module Twin
     class Album < Disposable::Twin
@@ -21,17 +22,14 @@ class FromTest < MiniTest::Spec
     end
   end
 
-
-  let (:composer) { Model::Artist.new("AFI").extend(Disposable::Saveable) }
-  let (:album)    { Model::Album.new("Black Sails In The Sunset", composer).extend(Disposable::Saveable) }
-  let (:twin)     { Twin::Album.new(album) }
+  let(:composer) { Model::Artist.new('AFI').extend(Disposable::Saveable) }
+  let(:album)    { Model::Album.new('Black Sails In The Sunset', composer).extend(Disposable::Saveable) }
+  let(:twin)     { Twin::Album.new(album) }
 
   it do
-    expect(twin.full_name).must_equal "Black Sails In The Sunset"
-    expect(twin.artist.name).must_equal "AFI"
+    _(twin.full_name).must_equal 'Black Sails In The Sunset'
+    _(twin.artist.name).must_equal 'AFI'
 
     twin.save
-
-
   end
 end

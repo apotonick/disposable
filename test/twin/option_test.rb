@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # require "test_helper"
 
 # class TwinOptionTest < Minitest::Spec
@@ -19,7 +20,6 @@
 
 #   let (:song) { Model::Song.new(1, "Broken") }
 #   let (:twin) { Song.new(song, :preview? => false) }
-
 
 #   # properties are read from model.
 #   it { twin.id.must_equal 1 }

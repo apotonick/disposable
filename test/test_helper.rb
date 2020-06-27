@@ -1,15 +1,14 @@
-require "disposable"
-require "minitest/autorun"
-require "representable/debug"
-# require "pp"
-require "declarative/testing"
+# frozen_string_literal: true
 
-require "disposable/twin/coercion"
-DRY_TYPES_CONSTANT = Disposable::Twin::Coercion::DRY_TYPES_CONSTANT
-DRY_TYPES_INT_CONSTANT = Disposable::Twin::Coercion::DRY_TYPES_VERSION < Gem::Version.new("0.13.0") ? 'Int' : 'Integer'
+require 'disposable'
+require 'minitest/autorun'
+require 'representable/debug'
+require 'declarative/testing'
+
+require 'disposable/twin/coercion'
 
 class Track
-  def initialize(options={})
+  def initialize(options = {})
     @title = options[:title]
   end
 
@@ -35,8 +34,8 @@ class Album < ActiveRecord::Base
 end
 
 ActiveRecord::Base.establish_connection(
-  :adapter => "sqlite3",
-  :database => ":memory:"
+  adapter: 'sqlite3',
+  database: ':memory:'
 )
 
 ActiveRecord::Schema.define do
@@ -78,4 +77,3 @@ module Disposable
     end
   end
 end
-

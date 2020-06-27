@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class ReadableTest < MiniTest::Spec
@@ -25,26 +27,26 @@ class ReadableTest < MiniTest::Spec
     end
   end
 
-  let (:cred) { Credentials.new("secret", CreditCard.new("Jonny", "0987654321")) }
+  let(:cred) { Credentials.new('secret', CreditCard.new('Jonny', '0987654321')) }
 
-  let (:twin) { PasswordForm.new(cred) }
+  let(:twin) { PasswordForm.new(cred) }
 
   it {
-    expect(twin.password).must_be_nil            # not readable.
-    expect(twin.credit_card.name).must_equal "Jonny"
-    expect(twin.credit_card.number).must_be_nil  # not readable.
+    _(twin.password).must_be_nil            # not readable.
+    _(twin.credit_card.name).must_equal 'Jonny'
+    _(twin.credit_card.number).must_be_nil  # not readable.
 
     # manual setting on the twin works.
-    twin.password = "123"
-    expect(twin.password).must_equal "123"
+    twin.password = '123'
+    _(twin.password).must_equal '123'
 
-    twin.credit_card.number = "456"
-    expect(twin.credit_card.number).must_equal "456"
+    twin.credit_card.number = '456'
+    _(twin.credit_card.number).must_equal '456'
 
     twin.sync
 
     # it writes, but does not read.
-    expect(cred.inspect).must_equal '#<struct ReadableTest::Credentials password="123", credit_card=#<struct ReadableTest::CreditCard name="Jonny", number="456">>'
+    _(cred.inspect).must_equal '#<struct ReadableTest::Credentials password="123", credit_card=#<struct ReadableTest::CreditCard name="Jonny", number="456">>'
 
     # test sync{}.
     hash = {}
@@ -52,12 +54,12 @@ class ReadableTest < MiniTest::Spec
       hash = nested
     end
 
-    expect(hash).must_equal("password"=> "123", "credit_card"=>{"name"=>"Jonny", "number"=>"456"})
+    _(hash).must_equal('password' => '123', 'credit_card' => { 'name' => 'Jonny', 'number' => '456' })
   }
 
   # allow passing non-readable value as option.
   it do
-    twin = PasswordForm.new(cred, password: "open sesame!")
-    expect(twin.password).must_equal "open sesame!"
+    twin = PasswordForm.new(cred, password: 'open sesame!')
+    _(twin.password).must_equal 'open sesame!'
   end
 end

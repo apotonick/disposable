@@ -1,4 +1,6 @@
-require "test_helper"
+# frozen_string_literal: true
+
+require 'test_helper'
 
 class PersistedTest < MiniTest::Spec
   class AlbumTwin < Disposable::Twin
@@ -24,62 +26,59 @@ class PersistedTest < MiniTest::Spec
 
   it do
     artist  = Artist.new
-    ex_song = Song.create(title: "Run For Cover")
+    ex_song = Song.create(title: 'Run For Cover')
     song    = Song.new
     album   = Album.new(artist: artist, songs: [ex_song, song])
 
-
-    expect(artist.persisted?).must_equal false
-    expect(album.persisted?).must_equal false
-    expect(ex_song.persisted?).must_equal true
-    expect(song.persisted?).must_equal false
+    _(artist.persisted?).must_equal false
+    _(album.persisted?).must_equal false
+    _(ex_song.persisted?).must_equal true
+    _(song.persisted?).must_equal false
 
     twin = AlbumTwin.new(album)
-    expect(twin.persisted?).must_equal false
-    expect(twin.changed?(:persisted?)).must_equal false
-    expect(twin.artist.persisted?).must_equal false
-    expect(twin.artist.changed?(:persisted?)).must_equal false
-    expect(twin.songs[0].persisted?).must_equal true
-    expect(twin.songs[0].changed?(:persisted?)).must_equal false
-    expect(twin.songs[1].persisted?).must_equal false
-    expect(twin.songs[1].changed?(:persisted?)).must_equal false
+    _(twin.persisted?).must_equal false
+    _(twin.changed?(:persisted?)).must_equal false
+    _(twin.artist.persisted?).must_equal false
+    _(twin.artist.changed?(:persisted?)).must_equal false
+    _(twin.songs[0].persisted?).must_equal true
+    _(twin.songs[0].changed?(:persisted?)).must_equal false
+    _(twin.songs[1].persisted?).must_equal false
+    _(twin.songs[1].changed?(:persisted?)).must_equal false
 
     twin.save
 
-    expect(artist.persisted?).must_equal true
-    expect(album.persisted?).must_equal true
-    expect(ex_song.persisted?).must_equal true
-    expect(song.persisted?).must_equal true
+    _(artist.persisted?).must_equal true
+    _(album.persisted?).must_equal true
+    _(ex_song.persisted?).must_equal true
+    _(song.persisted?).must_equal true
 
-    expect(twin.persisted?).must_equal true
-    expect(twin.changed?(:persisted?)).must_equal true
-    expect(twin.artist.persisted?).must_equal true
-    expect(twin.artist.changed?(:persisted?)).must_equal true
-    expect(twin.songs[0].persisted?).must_equal true
-    expect(twin.songs[0].changed?(:persisted?)).must_equal false
-    expect(twin.songs[1].persisted?).must_equal true
-    expect(twin.songs[1].changed?(:persisted?)).must_equal true
+    _(twin.persisted?).must_equal true
+    _(twin.changed?(:persisted?)).must_equal true
+    _(twin.artist.persisted?).must_equal true
+    _(twin.artist.changed?(:persisted?)).must_equal true
+    _(twin.songs[0].persisted?).must_equal true
+    _(twin.songs[0].changed?(:persisted?)).must_equal false
+    _(twin.songs[1].persisted?).must_equal true
+    _(twin.songs[1].changed?(:persisted?)).must_equal true
   end
 
-
-  describe "#created?" do
+  describe '#created?' do
     it do
       twin = AlbumTwin.new(Album.new)
 
-      expect(twin.created?).must_equal false
+      _(twin.created?).must_equal false
       twin.save
-      expect(twin.created?).must_equal true
+      _(twin.created?).must_equal true
     end
 
     it do
       twin = AlbumTwin.new(Album.create)
 
-      expect(twin.created?).must_equal false
+      _(twin.created?).must_equal false
       twin.save
-      expect(twin.created?).must_equal false
+      _(twin.created?).must_equal false
     end
   end
-
 
   # describe "#updated?" do
   #   it do

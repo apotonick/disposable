@@ -1,7 +1,9 @@
-require "test_helper"
+# frozen_string_literal: true
+
+require 'test_helper'
 
 class InheritanceTest < Minitest::Spec
-  let (:song) { OpenStruct.new(id: 0) }
+  let(:song) { OpenStruct.new(id: 0) }
 
   module Id
     def id
@@ -9,7 +11,7 @@ class InheritanceTest < Minitest::Spec
     end
 
     def id=(v)
-      super(v+1)
+      super(v + 1)
     end
   end
 
@@ -20,7 +22,7 @@ class InheritanceTest < Minitest::Spec
 
   it do
     twin = Twin.new(song)
-    expect(twin.id).must_equal 0
+    _(twin.id).must_equal 0
   end
 
   class TwinComposition < Disposable::Twin
@@ -32,11 +34,10 @@ class InheritanceTest < Minitest::Spec
 
   it do
     twin = TwinComposition.new(song: song)
-    expect(twin.id).must_equal 0
-    twin.id= 3
-    expect(twin.id).must_equal 3
+    _(twin.id).must_equal 0
+    twin.id = 3
+    _(twin.id).must_equal 3
   end
-
 
   class TwinCompositionDefineMethod < Disposable::Twin
     include Composition
@@ -50,12 +51,11 @@ class InheritanceTest < Minitest::Spec
 
   it do
     twin = TwinCompositionDefineMethod.new(song: song)
-    expect(twin.id).must_equal 9
+    _(twin.id).must_equal 9
   end
 
-
-  describe ":from" do
-    let (:song) { Struct.new(:ident).new(1) }
+  describe ':from' do
+    let(:song) { Struct.new(:ident).new(1) }
 
     class TwinWithFrom < Disposable::Twin
       include Expose
@@ -66,8 +66,8 @@ class InheritanceTest < Minitest::Spec
     end
 
     it do
-      expect(TwinWithFrom.new(song).id).must_equal 1
-      expect(InheritingFrom.new(song).id).must_equal 1
+      _(TwinWithFrom.new(song).id).must_equal 1
+      _(InheritingFrom.new(song).id).must_equal 1
     end
   end
 end

@@ -1,0 +1,4 @@
+require:
+ - rubocop-minitest
+ - rubocop-performance
+

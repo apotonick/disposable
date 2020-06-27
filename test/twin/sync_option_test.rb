@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # require 'test_helper'
 # require "disposable/twin/changed"
 
@@ -7,7 +8,6 @@
 #     Album = Struct.new(:id, :name, :songs, :artist)
 #     Artist = Struct.new(:name, :hidden_taste)
 #   end
-
 
 #   module Twin
 #     class Album < Disposable::Twin
@@ -28,8 +28,6 @@
 #       end
 #     end
 #   end
-
-
 
 #   # sync does NOT call setter.
 #   describe ":sync allows you conditionals and is run in twin context" do
@@ -77,14 +75,12 @@
 #   end
 # end
 
-
 # class SyncWithDynamicOptionsTest < MiniTest::Spec
 #   module Model
 #     Song  = Struct.new(:title, :composer)
 #     Album = Struct.new(:id, :name, :songs, :artist)
 #     Artist = Struct.new(:name, :hidden_taste)
 #   end
-
 
 #   module Twin
 #     class Album < Disposable::Twin
@@ -105,7 +101,6 @@
 #       end
 #     end
 #   end
-
 
 #   # sync does NOT call setter.
 #   describe ":sync allows you conditionals and is run in twin context" do
@@ -151,14 +146,12 @@
 #   end
 # end
 
-
 # class SyncWithOptionsAndSkipUnchangedTest < MiniTest::Spec
 #   module Model
 #     Song  = Struct.new(:title, :composer)
 #     Album = Struct.new(:id, :name, :songs, :artist)
 #     Artist = Struct.new(:name)
 #   end
-
 
 #   module Twin
 #     class Album < Disposable::Twin
@@ -225,4 +218,3 @@
 # #     song.band.name.must_equal "Rise Against"
 # #   end
 # # end
-

@@ -1,3 +1,8 @@
+# 0.5.0
+* Drop support for legacy version of dry-types
+* Remove Disposable::Twin::Struct
+* Removal of nilify option
+
 # 0.4.7
 
 * Deprecation warning for nilify options for dry-v >= 1.x
