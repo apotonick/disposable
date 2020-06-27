@@ -1,4 +1,6 @@
-require "test_helper"
+# frozen_string_literal: true
+
+require 'test_helper'
 
 class BuilderTest < MiniTest::Spec
   module Model
@@ -13,10 +15,10 @@ class BuilderTest < MiniTest::Spec
     # option   :is_released
 
     include Builder
-    builds ->(model, options) do
+    builds lambda { |model, options|
       return Hit       if model.is_a? Model::Hit
       return Evergreen if options[:evergreen]
-    end
+    }
   end
 
   class Hit < Twin
@@ -25,8 +27,7 @@ class BuilderTest < MiniTest::Spec
   class Evergreen < Twin
   end
 
-
-  it { expect(Twin.build(Model::Song.new)).must_be_instance_of Twin }
-  it { expect(Twin.build(Model::Hit.new)).must_be_instance_of  Hit }
-  it { expect(Twin.build(Model::Evergreen.new, evergreen: true)).must_be_instance_of Evergreen }
+  it { _(Twin.build(Model::Song.new)).must_be_instance_of Twin }
+  it { _(Twin.build(Model::Hit.new)).must_be_instance_of  Hit }
+  it { _(Twin.build(Model::Evergreen.new, evergreen: true)).must_be_instance_of Evergreen }
 end

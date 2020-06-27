@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class TwinTest < MiniTest::Spec
@@ -28,59 +30,59 @@ class TwinTest < MiniTest::Spec
     end
   end
 
-  let (:song) { Model::Song.new(1, "Broken", nil) }
+  let(:song) { Model::Song.new(1, 'Broken', nil) }
 
-  describe "#initialize" do
+  describe '#initialize' do
     it do
       twin = Twin::Song.new(song)
       song.id = 2
       # :from maps public name
-      expect(twin.title).must_equal "Broken" # public: #record_name
-      expect(twin.id).must_equal 1
+      _(twin.title).must_equal 'Broken' # public: #record_name
+      _(twin.id).must_equal 1
     end
 
     # allows passing options.
     it do
       # override twin's value...
-      expect(Twin::Song.new(song, :title => "Kenny").title).must_equal "Kenny"
+      _(Twin::Song.new(song, title: 'Kenny').title).must_equal 'Kenny'
 
       # .. but do not write to the model!
-      expect(song.title).must_equal "Broken"
+      _(song.title).must_equal 'Broken'
     end
   end
 
-  describe "setter" do
-    let (:twin) { Twin::Song.new(song) }
-    let (:album) { Model::Album.new(1, "The Stories Are True") }
+  describe 'setter' do
+    let(:twin) { Twin::Song.new(song) }
+    let(:album) { Model::Album.new(1, 'The Stories Are True') }
 
     it do
       twin.id = 3
-      twin.title = "Lucky"
+      twin.title = 'Lucky'
       twin.album = album # this is a model, not a twin.
 
       # updates twin
-      expect(twin.id).must_equal 3
-      expect(twin.title).must_equal "Lucky"
+      _(twin.id).must_equal 3
+      _(twin.title).must_equal 'Lucky'
 
       # setter for nested property will twin value.
       twin.album.extend(Disposable::Comparable)
-      assert twin.album == Twin::Album.new(album) # FIXME: why does) must_equal not call #== ?
+      assert_equal twin.album, Twin::Album.new(album) # FIXME: why does must_equal not call #== ?
 
       # setter for nested collection.
 
       # DOES NOT update model
-      expect(song.id).must_equal 1
-      expect(song.title).must_equal "Broken"
+      _(song.id).must_equal 1
+      _(song.title).must_equal 'Broken'
     end
 
-    describe "deleting" do
-      it "allows overwriting nested twin with nil" do
-        album = Model::Album.new(1, "Uncertain Terms", [], Model::Artist.new("Greg Howe"))
+    describe 'deleting' do
+      it 'allows overwriting nested twin with nil' do
+        album = Model::Album.new(1, 'Uncertain Terms', [], Model::Artist.new('Greg Howe'))
         twin = Twin::Album.new(album)
-        expect(twin.artist.id).must_equal "Greg Howe"
+        _(twin.artist.id).must_equal 'Greg Howe'
 
         twin.artist = nil
-        expect(twin.artist).must_be_nil
+        _(twin.artist).must_be_nil
       end
     end
 
@@ -91,7 +93,6 @@ class TwinTest < MiniTest::Spec
     # end
   end
 end
-
 
 class OverridingAccessorsTest < TwinTest
   # overriding accessors in Twin
@@ -104,15 +105,14 @@ class OverridingAccessorsTest < TwinTest
     end
 
     def id=(v)
-      super(v+1)
+      super(v + 1)
     end
   end
 
-  let (:model) { Model::Song.new(1, "A Tale That Wasn't Right") }
-  it { expect(Song.new(model).title).must_equal "a tale that wasn't right" }
-  it { expect(Song.new(model).id).must_equal 2 }
+  let(:model) { Model::Song.new(1, "A Tale That Wasn't Right") }
+  it { _(Song.new(model).title).must_equal "a tale that wasn't right" }
+  it { _(Song.new(model).id).must_equal 2 }
 end
-
 
 class TwinAsTest < MiniTest::Spec
   module Model
@@ -120,22 +120,20 @@ class TwinAsTest < MiniTest::Spec
     Album = Struct.new(:name)
   end
 
-
   module Twin
     class Album < Disposable::Twin
-      property :record_name, :from => :name
+      property :record_name, from: :name
 
       # model Model::Album
     end
 
     class Song < Disposable::Twin
-      property :name, :from => :title
-      property :record, twin: Album, :from => :album
+      property :name, from: :title
+      property :record, twin: Album, from: :album
 
       # model Model::Song
     end
   end
-
 end
 # TODO: test coercion!
 
@@ -147,18 +145,18 @@ class AccessorsTest < Minitest::Spec
   end
 
   it do
-    twin = Twin.new(Song.new("bla"))
-    expect(twin.format).must_equal "bla"
-    twin.format = "blubb"
+    twin = Twin.new(Song.new('bla'))
+    _(twin.format).must_equal 'bla'
+    twin.format = 'blubb'
   end
 end
 
 class InvalidPropertyNameTest < Minitest::Spec
   it 'raises InvalidPropertyNameError' do
-  assert_raises(Disposable::Twin::InvalidPropertyNameError) {
+    assert_raises(Disposable::Twin::InvalidPropertyNameError) do
       class Twin < Disposable::Twin
         property :class
       end
-    }
+    end
   end
 end

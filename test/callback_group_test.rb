@@ -1,5 +1,5 @@
-require "test_helper"
-require "disposable/callback"
+require 'test_helper'
+require 'disposable/callback'
 
 class CallbackGroupTest < MiniTest::Spec
   class Group < Disposable::Callback::Group
@@ -13,26 +13,24 @@ class CallbackGroupTest < MiniTest::Spec
 
       # on_delete :notify_deleted_author! # in Update!
 
-      def notify_album!(twin, options)
-        options[:content] << "notify_album!"
+      def notify_album!(_twin, options)
+        options[:content] << 'notify_album!'
       end
 
-      def reset_song!(twin, options)
-        options[:content] << "reset_song!"
+      def reset_song!(_twin, options)
+        options[:content] << 'reset_song!'
       end
     end
 
     on_change :rehash_name!, property: :title
 
-
     on_create :expire_cache! # on_change
     on_update :expire_cache!
 
-    def change!(twin, options)
-      @output = "Album has changed!"
+    def change!(_twin, _options)
+      @output = 'Album has changed!'
     end
   end
-
 
   class AlbumTwin < Disposable::Twin
     feature Sync, Save
@@ -49,99 +47,93 @@ class CallbackGroupTest < MiniTest::Spec
     end
   end
 
-
   # empty.
   it do
-    album = Album.new(songs: [Song.new(title: "Dead To Me"), Song.new(title: "Diesel Boy")])
+    album = Album.new(songs: [Song.new(title: 'Dead To Me'), Song.new(title: 'Diesel Boy')])
     twin  = AlbumTwin.new(album)
 
-    expect(Group.new(twin).().invocations).must_equal [
+    _(Group.new(twin).call.invocations).must_equal [
       [:on_change, :change!, []],
       [:on_add, :notify_album!, []],
       [:on_add, :reset_song!, []],
       [:on_change, :rehash_name!, []],
       [:on_create, :expire_cache!, []],
-      [:on_update, :expire_cache!, []],
+      [:on_update, :expire_cache!, []]
     ]
   end
 
   # trigger songs:on_add, and on_change.
-  let (:content) { "" }
+  let(:content) { '' }
   it do
     twin = AlbumTwin.new(Album.new)
-    twin.songs << Song.new(title: "Dead To Me")
-    twin.songs << Song.new(title: "Diesel Boy")
+    twin.songs << Song.new(title: 'Dead To Me')
+    twin.songs << Song.new(title: 'Diesel Boy')
 
-    twin.name = "Dear Landlord"
+    twin.name = 'Dear Landlord'
 
-    group = Group.new(twin).(content: content)
+    group = Group.new(twin).call(content: content)
 
-    expect(group.invocations).must_equal [
+    _(group.invocations).must_equal [
       [:on_change, :change!, [twin]],
       [:on_add, :notify_album!, [twin.songs[0], twin.songs[1]]],
       [:on_add, :reset_song!,   [twin.songs[0], twin.songs[1]]],
       [:on_change, :rehash_name!, []],
       [:on_create, :expire_cache!, []],
-      [:on_update, :expire_cache!, []],
+      [:on_update, :expire_cache!, []]
     ]
 
-    expect(content).must_equal "notify_album!notify_album!reset_song!reset_song!"
-    expect(group.output).must_equal "Album has changed!"
+    _(content).must_equal 'notify_album!notify_album!reset_song!reset_song!'
+    _(group.output).must_equal 'Album has changed!'
   end
-
-
-
-
 
   # context.
   class Operation
     attr_reader :output
 
-    def change!(twin, options)
+    def change!(_twin, options)
       options[:content] << "Op: changed! [#{options[:context].class}]"
     end
 
-    def notify_album!(twin, options)
+    def notify_album!(_twin, options)
       options[:content] << "Op: notify_album! [#{options[:context].class}]"
     end
 
-    def reset_song!(twin, options)
+    def reset_song!(_twin, options)
       options[:content] << "Op: reset_song! [#{options[:context].class}]"
     end
 
-    def rehash_name!(twin, options)
+    def rehash_name!(_twin, options)
       options[:content] << "Op: rehash_name! [#{options[:context].class}]"
     end
 
-    def expire_cache!(twin, options)
+    def expire_cache!(_twin, options)
       options[:content] << "Op: expire_cache! [#{options[:context].class}]"
     end
   end
 
   it do
     twin = AlbumTwin.new(Album.new)
-    twin.songs << Song.new(title: "Dead To Me")
+    twin.songs << Song.new(title: 'Dead To Me')
 
-    twin.name = "Dear Landlord"
+    twin.name = 'Dear Landlord'
 
-    group = Group.new(twin).(context: Operation.new, content: content)
+    group = Group.new(twin).call(context: Operation.new, content: content)
     # Disposable::Callback::Dispatch.new(twin).on_change{ |twin| puts twin;puts }
 
     # pp group.invocations
 
-    expect(group.invocations).must_equal [
+    _(group.invocations).must_equal [
       [:on_change, :change!, [twin]],
       [:on_add, :notify_album!, [twin.songs[0]]],
       [:on_add, :reset_song!,   [twin.songs[0]]],
       [:on_change, :rehash_name!, []],
       [:on_create, :expire_cache!, []],
-      [:on_update, :expire_cache!, []],
+      [:on_update, :expire_cache!, []]
     ]
 
-    expect(content).must_equal "Op: changed! [CallbackGroupTest::Operation]Op: notify_album! [CallbackGroupTest::Operation]Op: reset_song! [CallbackGroupTest::Operation]"
+    _(content).must_equal 'Op: changed! [CallbackGroupTest::Operation]Op: notify_album! [CallbackGroupTest::Operation]Op: reset_song! [CallbackGroupTest::Operation]'
   end
 end
-
 
 class CallbackGroupInheritanceTest < MiniTest::Spec
   class Group < Disposable::Callback::Group
@@ -157,21 +149,19 @@ class CallbackGroupInheritanceTest < MiniTest::Spec
   end
 
   it do
-    expect(Group.hooks.size).must_equal 4
-    expect(Group.hooks[0].to_s).must_equal "[:on_change, :change!, {}]"
+    _(Group.hooks.size).must_equal 4
+    _(Group.hooks[0].to_s).must_equal '[:on_change, :change!, {}]'
     # Group.hooks[1][1][:nested].hooks.to_s.must_equal "[[:on_add, [:notify_album!]],[:on_add, [:reset_song!]]]"
-    expect(Group.hooks[2].to_s).must_equal "[:on_change, :rehash_name!, {:property=>:title}]"
+    _(Group.hooks[2].to_s).must_equal '[:on_change, :rehash_name!, {:property=>:title}]'
 
-    expect(Group.definitions.get(Group.hooks[3][1])[:nested].hooks.to_s).must_equal "[[:on_change, :sing!, {}]]"
+    _(Group.definitions.get(Group.hooks[3][1])[:nested].hooks.to_s).must_equal '[[:on_change, :sing!, {}]]'
   end
 
   class EmptyGroup < Group
   end
 
-
-
   it do
-    expect(EmptyGroup.hooks.size).must_equal 4
+    _(EmptyGroup.hooks.size).must_equal 4
     # TODO:
   end
 
@@ -183,10 +173,10 @@ class CallbackGroupInheritanceTest < MiniTest::Spec
   end
 
   it do
-    expect(Group.hooks.size).must_equal 4
+    _(Group.hooks.size).must_equal 4
     # pp EnhancedGroup.hooks
-    expect(EnhancedGroup.hooks.size).must_equal 6
-    expect(EnhancedGroup.definitions.get(EnhancedGroup.hooks[5][1])[:nested].hooks.to_s).must_equal "[[:on_add, :rewind!, {}]]"
+    _(EnhancedGroup.hooks.size).must_equal 6
+    _(EnhancedGroup.definitions.get(EnhancedGroup.hooks[5][1])[:nested].hooks.to_s).must_equal '[[:on_add, :rewind!, {}]]'
   end
 
   class EnhancedWithInheritGroup < EnhancedGroup
@@ -199,13 +189,13 @@ class CallbackGroupInheritanceTest < MiniTest::Spec
   end
 
   it do
-    expect(Group.hooks.size).must_equal 4
-    expect(EnhancedGroup.hooks.size).must_equal 6
+    _(Group.hooks.size).must_equal 4
+    _(EnhancedGroup.hooks.size).must_equal 6
 
-    expect(EnhancedGroup.definitions.get(EnhancedGroup.hooks[5][1])[:nested].hooks.to_s).must_equal "[[:on_add, :rewind!, {}]]"
-    expect(EnhancedWithInheritGroup.hooks.size).must_equal 6
-    expect(EnhancedWithInheritGroup.definitions.get(EnhancedWithInheritGroup.hooks[1][1])[:nested].hooks.to_s).must_equal "[[:on_add, :rewind!, {}], [:on_add, :eat!, {}]]"
-    expect(EnhancedWithInheritGroup.definitions.get(EnhancedWithInheritGroup.hooks[3][1])[:nested].hooks.to_s).must_equal "[[:on_change, :sing!, {}], [:on_delete, :yell!, {}]]"
+    _(EnhancedGroup.definitions.get(EnhancedGroup.hooks[5][1])[:nested].hooks.to_s).must_equal '[[:on_add, :rewind!, {}]]'
+    _(EnhancedWithInheritGroup.hooks.size).must_equal 6
+    _(EnhancedWithInheritGroup.definitions.get(EnhancedWithInheritGroup.hooks[1][1])[:nested].hooks.to_s).must_equal '[[:on_add, :rewind!, {}], [:on_add, :eat!, {}]]'
+    _(EnhancedWithInheritGroup.definitions.get(EnhancedWithInheritGroup.hooks[3][1])[:nested].hooks.to_s).must_equal '[[:on_change, :sing!, {}], [:on_delete, :yell!, {}]]'
   end
 
   class RemovingInheritGroup < Group
@@ -215,21 +205,21 @@ class CallbackGroupInheritanceTest < MiniTest::Spec
     end
   end
 
-# # puts "@@@@@ #{Group.hooks.object_id.inspect}"
-# # puts "@@@@@ #{EmptyGroup.hooks.object_id.inspect}"
-# puts "@@@@@ Group:         #{Group.definitions.get(:songs)[:nested].hooks.inspect}"
-# puts "@@@@@ EnhancedGroup: #{EnhancedGroup.definitions.get(:songs)[:nested].hooks.inspect}"
-# puts "@@@@@ InheritGroup:  #{EnhancedWithInheritGroup.definitions.get(:songs)[:nested].hooks.inspect}"
-# puts "@@@@@ RemovingGroup: #{RemovingInheritGroup.definitions.get(:songs)[:nested].hooks.inspect}"
-# # puts "@@@@@ #{EnhancedWithInheritGroup.definitions.get(:songs)[:nested].hooks.object_id.inspect}"
+  # # puts "@@@@@ #{Group.hooks.object_id.inspect}"
+  # # puts "@@@@@ #{EmptyGroup.hooks.object_id.inspect}"
+  # puts "@@@@@ Group:         #{Group.definitions.get(:songs)[:nested].hooks.inspect}"
+  # puts "@@@@@ EnhancedGroup: #{EnhancedGroup.definitions.get(:songs)[:nested].hooks.inspect}"
+  # puts "@@@@@ InheritGroup:  #{EnhancedWithInheritGroup.definitions.get(:songs)[:nested].hooks.inspect}"
+  # puts "@@@@@ RemovingGroup: #{RemovingInheritGroup.definitions.get(:songs)[:nested].hooks.inspect}"
+  # # puts "@@@@@ #{EnhancedWithInheritGroup.definitions.get(:songs)[:nested].hooks.object_id.inspect}"
 
   # TODO: object_id tests for all nested representers.
 
   it do
-    expect(Group.hooks.size).must_equal 4
-    expect(RemovingInheritGroup.hooks.size).must_equal 3
-    expect(RemovingInheritGroup.definitions.get(RemovingInheritGroup.hooks[0][1])[:nested].hooks.to_s).must_equal "[[:on_add, :reset_song!, {}]]"
-    expect(RemovingInheritGroup.definitions.get(RemovingInheritGroup.hooks[2][1])[:nested].hooks.to_s).must_equal "[[:on_change, :sing!, {}]]"
+    _(Group.hooks.size).must_equal 4
+    _(RemovingInheritGroup.hooks.size).must_equal 3
+    _(RemovingInheritGroup.definitions.get(RemovingInheritGroup.hooks[0][1])[:nested].hooks.to_s).must_equal '[[:on_add, :reset_song!, {}]]'
+    _(RemovingInheritGroup.definitions.get(RemovingInheritGroup.hooks[2][1])[:nested].hooks.to_s).must_equal '[[:on_change, :sing!, {}]]'
   end
 
   # Group::clone
@@ -239,7 +229,7 @@ class CallbackGroupInheritanceTest < MiniTest::Spec
   end
 
   it do
-    expect(Group.hooks.size).must_equal 4
-    expect(ClonedGroup.hooks.size).must_equal 3
+    _(Group.hooks.size).must_equal 4
+    _(ClonedGroup.hooks.size).must_equal 3
   end
 end

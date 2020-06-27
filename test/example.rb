@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 # run me with bundle exec ruby -Itest test/example.rb
 
-require "test_helper"
+require 'test_helper'
 
 ActiveRecord::Base.logger = Logger.new(STDOUT)
 
@@ -8,7 +10,7 @@ module Twin
   class Album < Disposable::Twin
     property :id # DISCUSS: needed for #save.
     property :name
-    collection :songs, :twin => lambda { |*| Song }
+    collection :songs, twin: ->(*) { Song }
 
     extend Representer
     include Setup
@@ -33,7 +35,7 @@ puts "existing songs (#{twin.songs.size}): #{twin.songs.inspect}"
 
 # this is what basically should happen in the representer, returning a Twin.
 twin.songs << Song.new
-twin.songs.last.title = "Back To Allentown"
+twin.songs.last.title = 'Back To Allentown'
 
 puts "new songs (#{twin.songs.size}): #{twin.songs.inspect}"
 
