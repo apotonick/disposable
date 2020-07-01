@@ -11,8 +11,11 @@ class TwinCompositionTest < MiniTest::Spec
     property :song_id,    on: :song, from: :id
 
     property :name,       on: :requester
-    property :id,         on: :requester
     property :captcha,    readable: false, writeable: false, on: :requester # TODO: allow both, virtual with and without :on.
+
+    on :requester do
+      property :id
+    end
   end
 
   module Model

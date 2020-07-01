@@ -28,6 +28,22 @@ module Disposable
         def expose_class
           @expose_class ||= Class.new(Disposable::Composition).from(definitions.values)
         end
+
+        def on(model_key, &block)
+          builder = OnBuilder.new(model_key, self)
+          builder.instance_eval(&block)
+        end
+
+        class OnBuilder
+          def initialize(model_key, definition)
+            @model_key = model_key
+            @definition = definition
+          end
+
+          def property(name, options={}, &block)
+            @definition.property(name, options.merge(on: @model_key), &block)
+          end
+        end
       end
 
       def self.included(base)
