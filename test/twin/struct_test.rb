@@ -170,6 +170,11 @@ class TwinWithNestedStructTest < MiniTest::Spec
   describe "#save" do
     it { Song.new(model).extend(Disposable::Twin::Save).save }
   end
+
+  describe "#persisted?" do
+    it { expect(Song.new(model).options.persisted?).must_be_nil }
+    it { expect(Song.new(model).options.preferences.persisted?).must_be_nil }
+  end
 end
 
 class StructReadableWriteableTest < Minitest::Spec

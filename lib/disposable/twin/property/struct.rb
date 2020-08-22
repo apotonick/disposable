@@ -29,6 +29,9 @@ class Disposable::Twin
       # So far, hashes can't be persisted separately.
       def save!
       end
+
+      def persisted?
+      end
     end
   end # Property
 end
