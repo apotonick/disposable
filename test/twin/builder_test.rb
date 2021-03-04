@@ -13,7 +13,7 @@ class BuilderTest < MiniTest::Spec
     # option   :is_released
 
     include Builder
-    builds ->(model, options) do
+    builds ->(model, options, **) do
       return Hit       if model.is_a? Model::Hit
       return Evergreen if options[:evergreen]
     end

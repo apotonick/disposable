@@ -14,8 +14,8 @@ class Disposable::Twin
       def sync_hash_representer # TODO: make this without representable, please.
         Sync.hash_representer(self.class) do |dfn|
           dfn.merge!(
-            prepare:       lambda { |options| options[:input] },
-            serialize: lambda { |options| options[:input].sync! },
+            prepare:   lambda { |_, input:, **| input },
+            serialize: lambda { |_, input:, **| input.sync! },
             representable: true
           ) if dfn[:nested]
         end
