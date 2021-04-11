@@ -1,4 +1,4 @@
-require "declarative/option"
+require "representable/option"
 
 # TODO: allow default: -> for hashes, etc.
 module Disposable::Twin::Default
@@ -12,13 +12,13 @@ module Disposable::Twin::Default
     # TODO: introduce Null object in Declarative::Definition#[].
     # dfn[:default].(self) # dfn#[] should return a Null object here if empty.
     return unless dfn[:default]
-    dfn[:default].(self)
+    dfn[:default].(exec_context: self) # Representable::Option#call
   end
 
   module ClassMethods
   private
     def build_definition(name, options={}, &block)
-      options = options.merge(default: Declarative::Option(options[:default], instance_exec: true)) if options.has_key?(:default)
+      options = options.merge(default: ::Representable::Option(options[:default])) if options.has_key?(:default)
       super
     end
   end
