@@ -1,3 +1,7 @@
+# 0.5.0
+
+* Upgrade `representable` to replace `Declarative::Option` with `Representable::Option` in order to support ruby-3 style of keyword arguments.
+
 # 0.4.7
 
 * Deprecation warning for nilify options for dry-v >= 1.x
