@@ -1,4 +1,3 @@
-# require "uber/inheritable_attr"
 require "declarative/schema"
 require "representable/decorator"
 
@@ -53,8 +52,8 @@ module Disposable
         end
       end
 
-      def collection(name, options={}, &block)
-        property(name, options.merge(collection: true), &block)
+      def collection(name, **options, &block)
+        property(name, **options.merge(collection: true), &block)
       end
 
       require "disposable/twin/property/unnest"
