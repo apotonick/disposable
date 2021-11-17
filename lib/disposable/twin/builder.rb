@@ -1,3 +1,4 @@
+gem "declarative-builder", "0.2.0"
 require "declarative/builder"
 
 module Disposable

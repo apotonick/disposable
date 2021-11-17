@@ -1,6 +1,6 @@
 require "disposable"
 require "minitest/autorun"
-require "representable/debug"
+# require "representable/debug"
 # require "pp"
 require "declarative/testing"
 

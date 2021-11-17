@@ -1,4 +1,8 @@
+# BUNDLE_GEMFILE=Gemfile_builder_test.rb be rake test_builder
+
 require "test_helper"
+
+require "disposable/twin/builder"
 
 class BuilderTest < MiniTest::Spec
   module Model

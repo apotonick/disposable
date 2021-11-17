@@ -16,9 +16,8 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "uber", "< 0.2.0"
   spec.add_dependency "declarative",         ">= 0.0.9", "< 1.0.0"
-  spec.add_dependency "declarative-builder", "~> 0.2.0"
+  # spec.add_dependency "declarative-builder"  #, ">= 0.2.0"
   spec.add_dependency "representable",       ">= 3.1.1", "< 3.2.0"
 
   spec.add_development_dependency "bundler"#, "~> 1.3"

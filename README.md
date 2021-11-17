@@ -640,3 +640,7 @@ Note that this will internally add a `parent` property.
 
 * [Reform](https://github.com/apotonick/reform) forms are based on twins and add a little bit of form decoration on top. Every nested form is a twin.
 * [Trailblazer](https://github.com/apotonick/trailblazer) uses twins as decorators and callbacks in operations to structure business logic.
+
+## Development
+
+* `rake test` runs all tests without `builder_test.rb`. For the latter, run `BUNDLE_GEMFILE=Gemfile_builder_test.rb bundle exec rake test_builder`
