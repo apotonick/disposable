@@ -1,3 +1,8 @@
+# 0.6.0
+
+* Remove `uber` gem.
+* Remove `declarative-builder` dependency and make it optional. Add `gem "declarative-builder"` to your `Gemfile` should you need this feature.
+
 # 0.5.0
 
 * Upgrade `representable` to replace `Declarative::Option` with `Representable::Option` in order to support ruby-3 style of keyword arguments.
