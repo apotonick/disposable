@@ -1,3 +1,7 @@
+# 0.6.1
+
+* Remove `**options` argument from `#property` as it's inconsistent with underlying gems.
+
 # 0.6.0
 
 * Remove `uber` gem.
