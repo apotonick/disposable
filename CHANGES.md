@@ -1,3 +1,10 @@
+# 0.6.2
+
+* Remove `Forwardable` from `Unnest` and refrain from including it into the `Twin` class.
+    This may overwrite the same-named `ActiveSupport::delegate` method and breaks things.
+    Instead, do manual delegation and plan for 2023 to allow using `Forwardable.delegate(target, what, where)`.
+
+
 # 0.6.1
 
 * Remove `**options` argument from `#property` as it's inconsistent with underlying gems.
