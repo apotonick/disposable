@@ -1,3 +1,7 @@
+# 0.6.3
+
+* Loosen `representable` dependency to `< 4`.
+
 # 0.6.2
 
 * Remove `Forwardable` from `Unnest` and refrain from including it into the `Twin` class.
