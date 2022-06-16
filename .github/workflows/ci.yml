@@ -17,10 +17,13 @@ jobs:
           - ruby: '3.0'
             active_record: 6.1
             dry_types: 1.5
+          - ruby: 3.1 
+            active_record: 7.0.1
+            dry_types: 1.5
 
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
