@@ -55,6 +55,11 @@ module Disposable
         destroy!
       end
 
+      # Twins a model
+      def new(model)
+        @twinner.(model)
+      end
+
       module Changed
         # FIXME: this should not be included automatically, as Changed is a feature.
         def changed?

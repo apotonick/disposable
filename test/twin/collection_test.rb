@@ -201,6 +201,15 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
       expect(twin.songs.deleted).must_equal []
     end
   end
+
+  describe "#new" do
+    let (:album) { Album.create() }
+
+    it do
+      twin = Twin::Album.new(album)
+      twin.songs.new(Song.new).must_be_instance_of Twin::Song
+    end
+  end
 end
 
 
