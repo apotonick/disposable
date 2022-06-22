@@ -41,6 +41,7 @@ module Disposable
 
         options[:private_name] ||= options.delete(:from) || name
         is_inherited = options.delete(:_inherited)
+        define_accessor = options.delete(:accessor)
 
         if options.delete(:virtual)
           options[:writeable] = options[:readable] = false
@@ -49,7 +50,7 @@ module Disposable
         options[:nested] = options.delete(:twin) if options[:twin]
 
         super(name, options, &block).tap do |definition| # super is Declarative::Schema::property.
-          create_accessors(name, definition) unless is_inherited
+          create_accessors(name, definition) unless is_inherited || define_accessor == false
         end
       end
 
