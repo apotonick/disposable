@@ -2,10 +2,7 @@ module Disposable::Twin::Property
   module Unnest
     # TODO: test that nested properties options are "unnested", too, e.g. populator.
 
-    def unnest(name, options)
-      from = options.delete(:from)
-      # needed to make reform process this field.
-
+    def unnest(name, from:, **options)
       options = definitions.get(from)[:nested].definitions.get(name).instance_variable_get(:@options) # FIXME.
       options = options.merge(virtual: true, _inherited: true, private_name: nil)
 
