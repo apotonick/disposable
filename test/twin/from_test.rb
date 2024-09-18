@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class FromTest < MiniTest::Spec
+class FromTest < Minitest::Spec
   module Model
     Album = Struct.new(:name, :composer)
     Artist = Struct.new(:realname)

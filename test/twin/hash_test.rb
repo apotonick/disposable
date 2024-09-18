@@ -1,7 +1,7 @@
 require "test_helper"
 require "disposable/twin/property/hash"
 
-class HashTest < MiniTest::Spec
+class HashTest < Minitest::Spec
   Model = Struct.new(:id, :content)
 
   class Song < Disposable::Twin

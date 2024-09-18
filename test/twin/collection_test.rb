@@ -5,7 +5,7 @@ require 'test_helper'
 
 # TODO: eg "after delete hook (dynamic_delete)", after_add
 
-class TwinCollectionTest < MiniTest::Spec
+class TwinCollectionTest < Minitest::Spec
   module Model
     Song  = Struct.new(:id, :title, :album)
     Album = Struct.new(:id, :name, :songs, :artist)
@@ -54,7 +54,7 @@ end
 require "disposable/twin/sync"
 require "disposable/twin/save"
 
-class TwinCollectionActiveRecordTest < MiniTest::Spec
+class TwinCollectionActiveRecordTest < Minitest::Spec
   module Twin
     class Song < Disposable::Twin
       property :id # DISCUSS: needed for #save.
@@ -204,7 +204,7 @@ class TwinCollectionActiveRecordTest < MiniTest::Spec
 end
 
 
-class CollectionUnitTest < MiniTest::Spec
+class CollectionUnitTest < Minitest::Spec
   module Twin
     class Album < Disposable::Twin
     end

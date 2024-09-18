@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class VirtualTest < MiniTest::Spec
+class VirtualTest < Minitest::Spec
   class CreditCardTwin < Disposable::Twin
     include Sync
     property :credit_card_number, virtual: true # no read, no write, it's virtual.

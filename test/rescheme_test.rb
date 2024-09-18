@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ReschemeTest < MiniTest::Spec
+class ReschemeTest < Minitest::Spec
   module Representer
     include Representable
 
@@ -128,7 +128,7 @@ class ReschemeTest < MiniTest::Spec
 end
 
 
-class TwinReschemeTest < MiniTest::Spec
+class TwinReschemeTest < Minitest::Spec
   class Artist < Disposable::Twin
     property :name
   end

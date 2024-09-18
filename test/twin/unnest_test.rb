@@ -1,6 +1,6 @@
 require "test_helper"
 
-class UnnestTest < MiniTest::Spec
+class UnnestTest < Minitest::Spec
   class Twin < Disposable::Twin
     property :content do
       property :id, nice: "yes"

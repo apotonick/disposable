@@ -4,7 +4,7 @@ require "test_helper"
 
 require "disposable/twin/builder"
 
-class BuilderTest < MiniTest::Spec
+class BuilderTest < Minitest::Spec
   module Model
     Song = Struct.new(:id, :title)
     Hit = Struct.new(:id, :title)

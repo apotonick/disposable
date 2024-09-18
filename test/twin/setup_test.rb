@@ -1,6 +1,6 @@
 require "test_helper"
 
-class TwinSetupTest < MiniTest::Spec
+class TwinSetupTest < Minitest::Spec
   module Model
     Song  = Struct.new(:id, :title, :album, :composer)
     Album = Struct.new(:id, :name, :songs, :artist)
@@ -82,7 +82,7 @@ class TwinSetupTest < MiniTest::Spec
 end
 
 # test inline twin building and setup.
-class TwinSetupWithInlineTwinsTest < MiniTest::Spec
+class TwinSetupWithInlineTwinsTest < Minitest::Spec
   module Model
     Song  = Struct.new(:id, :composer)
     Album = Struct.new(:id, :name, :songs, :artist)
@@ -139,7 +139,7 @@ class TwinSetupWithInlineTwinsTest < MiniTest::Spec
 end
 
 # Twin.new(model, is_online: true)
-class TwinWithVirtualSetupTest < MiniTest::Spec
+class TwinWithVirtualSetupTest < Minitest::Spec
   Song = Struct.new(:id)
 
   class AlbumTwin < Disposable::Twin

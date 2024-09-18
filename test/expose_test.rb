@@ -3,7 +3,7 @@ require "disposable/expose"
 require "disposable/composition"
 
 # Disposable::Expose.
-class ExposeTest < MiniTest::Spec
+class ExposeTest < Minitest::Spec
   module Model
     Album = Struct.new(:id, :name)
   end
@@ -45,7 +45,7 @@ end
 
 
 # Disposable::Composition.
-class ExposeCompositionTest < MiniTest::Spec
+class ExposeCompositionTest < Minitest::Spec
   module Model
     Band  = Struct.new(:id)
     Album = Struct.new(:id, :name)

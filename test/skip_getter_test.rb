@@ -1,6 +1,6 @@
 require "test_helper"
 
-class SkipGetterTest < MiniTest::Spec
+class SkipGetterTest < Minitest::Spec
   Album  = Struct.new(:title, :artist)
   Artist = Struct.new(:name)
 
@@ -44,7 +44,7 @@ class SkipGetterTest < MiniTest::Spec
 end
 
 
-class SkipSetterTest < MiniTest::Spec
+class SkipSetterTest < Minitest::Spec
   Album  = Struct.new(:title, :artist)
   Artist = Struct.new(:name)
 
@@ -74,7 +74,7 @@ class SkipSetterTest < MiniTest::Spec
 end
 
 
-class SkipGetterAndSetterWithChangedTest < MiniTest::Spec
+class SkipGetterAndSetterWithChangedTest < Minitest::Spec
   Album  = Struct.new(:title, :artist)
   Artist = Struct.new(:name)
 

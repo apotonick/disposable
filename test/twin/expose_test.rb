@@ -1,7 +1,7 @@
 require 'test_helper'
 
 # Disposable::Twin::Expose.
-class TwinExposeTest < MiniTest::Spec
+class TwinExposeTest < Minitest::Spec
   class Request < Disposable::Twin
     feature Sync
     feature Save
