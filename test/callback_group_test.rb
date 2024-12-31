@@ -1,7 +1,7 @@
 require "test_helper"
 require "disposable/callback"
 
-class CallbackGroupTest < MiniTest::Spec
+class CallbackGroupTest < Minitest::Spec
   class Group < Disposable::Callback::Group
     attr_reader :output
 
@@ -143,7 +143,7 @@ class CallbackGroupTest < MiniTest::Spec
 end
 
 
-class CallbackGroupInheritanceTest < MiniTest::Spec
+class CallbackGroupInheritanceTest < Minitest::Spec
   class Group < Disposable::Callback::Group
     on_change :change!
     collection :songs do

@@ -1,7 +1,7 @@
 require 'test_helper'
 
 # Disposable::Twin::Composition.
-class TwinCompositionTest < MiniTest::Spec
+class TwinCompositionTest < Minitest::Spec
   class Request < Disposable::Twin
     include Sync
     include Save

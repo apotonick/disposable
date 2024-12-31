@@ -1,6 +1,6 @@
 require "test_helper"
 
-class PersistedTest < MiniTest::Spec
+class PersistedTest < Minitest::Spec
   class AlbumTwin < Disposable::Twin
     feature Sync, Save
     feature Persisted, Changed

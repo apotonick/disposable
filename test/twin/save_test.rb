@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class SaveTest < MiniTest::Spec
+class SaveTest < Minitest::Spec
   module Model
     Song  = Struct.new(:title, :composer)
     Album = Struct.new(:name, :songs, :artist)
@@ -166,7 +166,7 @@ end
 
 # TODO: with block
 
-# class SaveWithDynamicOptionsTest < MiniTest::Spec
+# class SaveWithDynamicOptionsTest < Minitest::Spec
 #   Song = Struct.new(:id, :title, :length) do
 #     include Disposable::Saveable
 #   end

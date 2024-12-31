@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class TwinTest < MiniTest::Spec
+class TwinTest < Minitest::Spec
   module Model
     Song  = Struct.new(:id, :title, :album)
     Album = Struct.new(:id, :name, :songs, :artist)
@@ -114,7 +114,7 @@ class OverridingAccessorsTest < TwinTest
 end
 
 
-class TwinAsTest < MiniTest::Spec
+class TwinAsTest < Minitest::Spec
   module Model
     Song  = Struct.new(:title, :album)
     Album = Struct.new(:name)

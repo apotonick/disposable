@@ -1,7 +1,7 @@
 require "test_helper"
 require "disposable/callback"
 
-class CallbacksTest < MiniTest::Spec
+class CallbacksTest < Minitest::Spec
   before do
     @invokes = []
   end

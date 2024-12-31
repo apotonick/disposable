@@ -1,6 +1,6 @@
 require "test_helper"
 
-class TwinSyncTest < MiniTest::Spec
+class TwinSyncTest < Minitest::Spec
   module Model
     Song  = Struct.new(:title, :composer)
     Album = Struct.new(:name, :songs, :artist)

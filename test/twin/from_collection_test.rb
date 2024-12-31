@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class TwinFromCollectionDecoratorTest < MiniTest::Spec
+class TwinFromCollectionDecoratorTest < Minitest::Spec
   module Model
     Artist = Struct.new(:id, :name)
   end

@@ -136,7 +136,7 @@
 
 
 
-# class ApiSemanticsTest < MiniTest::Spec
+# class ApiSemanticsTest < Minitest::Spec
 #   it "xxx" do
 #     album = Model::Album.new(1, "And So I Watch You From Afar", [Model::Song.new(2, "Solidarity"), Model::Song.new(0, "Tale That Wasn't Right")])
 
@@ -153,7 +153,7 @@
 
 # end
 
-# class RemoveFlagSetButNotEnabled < MiniTest::Spec
+# class RemoveFlagSetButNotEnabled < Minitest::Spec
 #   class AlbumDecorator < Representable::Decorator
 #     include Representable::Hash
 
@@ -183,7 +183,7 @@
 #   end
 # end
 
-# class UserCallableTest < MiniTest::Spec
+# class UserCallableTest < Minitest::Spec
 #   class MyOwnSemantic < Representable::Semantics::Semantic
 #     def self.call(model, fragment, index, options)
 #       if fragment["title"] =~ /Solidarity/
@@ -220,7 +220,7 @@
 # end
 
 
-# class ApiSemanticsWithUpdate < MiniTest::Spec
+# class ApiSemanticsWithUpdate < Minitest::Spec
 #   class AlbumDecorator < Representable::Decorator
 #     include Representable::Hash
 

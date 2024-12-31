@@ -3,7 +3,7 @@ require 'test_helper'
 
 require 'disposable/twin/struct'
 
-class TwinStructTest < MiniTest::Spec
+class TwinStructTest < Minitest::Spec
   class Song < Disposable::Twin
     include Property::Struct
     property :number#, default: 1 # FIXME: this should be :default_if_nil so it becomes clear with a model.
@@ -54,7 +54,7 @@ class TwinStructTest < MiniTest::Spec
 end
 
 
-class TwinWithNestedStructTest < MiniTest::Spec
+class TwinWithNestedStructTest < Minitest::Spec
   class Song < Disposable::Twin
     property :title
     include Sync

@@ -1,7 +1,7 @@
 # require 'test_helper'
 # require "disposable/twin/changed"
 
-# class SyncOptionTest < MiniTest::Spec
+# class SyncOptionTest < Minitest::Spec
 #   module Model
 #     Song  = Struct.new(:title, :composer)
 #     Album = Struct.new(:id, :name, :songs, :artist)
@@ -78,7 +78,7 @@
 # end
 
 
-# class SyncWithDynamicOptionsTest < MiniTest::Spec
+# class SyncWithDynamicOptionsTest < Minitest::Spec
 #   module Model
 #     Song  = Struct.new(:title, :composer)
 #     Album = Struct.new(:id, :name, :songs, :artist)
@@ -152,7 +152,7 @@
 # end
 
 
-# class SyncWithOptionsAndSkipUnchangedTest < MiniTest::Spec
+# class SyncWithOptionsAndSkipUnchangedTest < Minitest::Spec
 #   module Model
 #     Song  = Struct.new(:title, :composer)
 #     Album = Struct.new(:id, :name, :songs, :artist)
@@ -200,7 +200,7 @@
 # end
 
 # # :virtual wins over :sync
-# # class SyncWithVirtualTest < MiniTest::Spec
+# # class SyncWithVirtualTest < Minitest::Spec
 # #   Song = Struct.new(:title, :image, :band)
 # #   Band = Struct.new(:name)
 

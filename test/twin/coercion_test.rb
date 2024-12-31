@@ -2,7 +2,7 @@ require "test_helper"
 
 require "disposable/twin/coercion"
 
-class CoercionTest < MiniTest::Spec
+class CoercionTest < Minitest::Spec
   class TwinWithSkipSetter < Disposable::Twin
     feature Coercion
     feature Setup::SkipSetter
@@ -156,7 +156,7 @@ end
 # this converts "" to nil and then breaks because it's strict.
 # Types::Strict::String.constructor(Dry::Types::Params.method(:to_nil))
 
-class CoercionTypingTest < MiniTest::Spec
+class CoercionTypingTest < Minitest::Spec
   class Song < Disposable::Twin
     include Coercion
     include Setup::SkipSetter

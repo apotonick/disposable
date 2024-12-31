@@ -1,7 +1,7 @@
 require "test_helper"
 require "disposable/twin/parent.rb"
 
-class TwinParentTest < MiniTest::Spec
+class TwinParentTest < Minitest::Spec
   module Model
     Album = Struct.new(:id, :artist, :songs)
     Artist = Struct.new(:name)

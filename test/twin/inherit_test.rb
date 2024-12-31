@@ -1,6 +1,6 @@
 require "test_helper"
 
-class InheritTest < MiniTest::Spec
+class InheritTest < Minitest::Spec
   module Model
     Song  = Struct.new(:title, :album)
     Album = Struct.new(:name, :songs, :artist)

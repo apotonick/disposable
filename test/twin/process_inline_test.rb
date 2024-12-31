@@ -1,6 +1,6 @@
 # require "test_helper"
 
-# class ProcessInlineTest < MiniTest::Spec
+# class ProcessInlineTest < Minitest::Spec
 #   Album = Struct.new(:artist, :composer, :recursive_composer)
 
 #   module InlineTwin

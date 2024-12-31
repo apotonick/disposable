@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class WriteableTest < MiniTest::Spec
+class WriteableTest < Minitest::Spec
   Credentials = Struct.new(:password, :credit_card) do
     def password=(v)
       raise "don't call me!"

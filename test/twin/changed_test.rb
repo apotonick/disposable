@@ -1,7 +1,7 @@
 require 'test_helper'
 # require 'reform/form/coercion'
 
-class ChangedWithSetupTest < MiniTest::Spec
+class ChangedWithSetupTest < Minitest::Spec
   module Model
     Song  = Struct.new(:title, :length, :composer)
     Album = Struct.new(:name, :songs, :artist)
@@ -107,7 +107,7 @@ end
 
 
 require "disposable/twin/coercion"
-class ChangedWithCoercionTest < MiniTest::Spec
+class ChangedWithCoercionTest < Minitest::Spec
   Song = Struct.new(:released)
 
   class SongTwin < Disposable::Twin

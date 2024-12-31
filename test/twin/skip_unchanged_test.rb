@@ -1,6 +1,6 @@
 require "test_helper"
 
-class SkipUnchangedTest < MiniTest::Spec
+class SkipUnchangedTest < Minitest::Spec
   module Model
     Song  = Struct.new(:title, :composer)
     Album = Struct.new(:name, :songs, :artist)
