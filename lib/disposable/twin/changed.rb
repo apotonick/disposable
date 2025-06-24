@@ -1,41 +1,32 @@
 module Disposable::Twin::Changed
-  class Changes < Hash
-    def changed?(name=nil)
-      return true if name.nil? and values.find { |val| val == true } # TODO: this could be speed-improved, of course.
+  def changes(name=nil)
+    _find_changed_twins!(_changes)
 
-      !! self[name.to_s]
-    end
+    return _changes unless name
+    _changes[name.to_s]
   end
 
+  def changed?(name=nil)
+    _find_changed_twins!(_changes)
 
-  def changed?(*args) # not recommended for external use?
-    changed.changed?(*args)
-  end
-
-# FIXME: can we make #changed the only public concept? so we don't need to find twice?
-
-  # this is usually called only once in Sync::SkipUnchanged, per twin.
-  def changed
-    _find_changed_twins!(@_changes)
-
-    @_changes
+    (name.nil? && _changes.values.any?) || _changes.has_key?(name.to_s)
   end
 
 private
-  def initialize(model, *args)
-    super         # Setup#initialize.
-    @_changes = Changes.new # override changed from initialize.
-  end
 
-  def _changed
-    @_changes ||= Changes.new # FIXME: why do we need to re-initialize here?
+  attr_reader :_changes
+  def initialize(model, *args)
+    super          # Setup#initialize.
+    @_changes = {} # override changed from initialize.
   end
 
   def write_property(name, value, dfn)
     old_value = field_read(name)
+    return if old_value == value
 
     super.tap do
-      _changed[name.to_s] = old_value != value
+      @_changes ||= {}
+      _changes[name.to_s] = [old_value, value]
     end
   end
 
@@ -44,7 +35,14 @@ private
       next unless twin = send(dfn.getter)
       next unless twin.changed?
 
-      changes[dfn[:name]] = true
+      if twin.is_a?(Disposable::Twin::Collection)
+        changes[dfn[:name]] = []
+        twin.each do |item|
+          changes[dfn[:name]] << item.changes
+        end
+      else
+        changes[dfn[:name]] = twin.changes
+      end
     end
   end
 end
