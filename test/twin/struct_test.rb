@@ -26,7 +26,7 @@ class TwinStructTest < Minitest::Spec
   it { expect(Song.new({number: 3}, {cool?: true}).number).must_equal 3 }
 
   # with string key and false value
-  it { Song.new('number' => 3, 'cool?' => false).cool?.must_equal false }
+  it { expect(Song.new('number' => 3, 'cool?' => false).cool?).must_equal false }
 
 
   describe "writing" do
