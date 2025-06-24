@@ -63,17 +63,53 @@ class ChangedWithSetupTest < Minitest::Spec
     twin.artist.name = "No Fun At All"
 
     expect(twin.changed?(:name)).must_equal true
+    expect(twin.changes(:name)).must_equal ["The Rest Is Silence", "Out Of Bounds"]
+    expect(twin.changes).must_equal({
+      "name" => ["The Rest Is Silence", "Out Of Bounds"],
+      "artist" => { "name" => ["Randy", "No Fun At All"] },
+      "songs" => [
+        {"title" => ["Broken", "I Have Seen"]},
+        {
+          "title" => ["Broken", "In A Rhyme"],
+          "composer" => {
+            "name" => [2, "Ingemar Jansson & Mikael Danielsson"]
+          }
+        }
+      ]
+    })
     expect(twin.changed?).must_equal true
 
     expect(twin.songs[0].changed?).must_equal true
     expect(twin.songs[0].changed?(:title)).must_equal true
+    expect(twin.songs[0].changes(:title)).must_equal ["Broken", "I Have Seen"]
+    expect(twin.songs[0].changes).must_equal({
+      "title" => ["Broken", "I Have Seen"]
+    })
+
     expect(twin.songs[1].changed?).must_equal true
     expect(twin.songs[1].changed?(:title)).must_equal true
+    expect(twin.songs[1].changes(:title)).must_equal ["Broken", "In A Rhyme"]
+    expect(twin.songs[1].changes).must_equal({
+      "title" => ["Broken", "In A Rhyme"],
+      "composer" => {
+        "name" => [2, "Ingemar Jansson & Mikael Danielsson"]
+      }
+    })
 
     expect(twin.songs[1].composer.changed?(:name)).must_equal true
+    expect(twin.songs[1].composer.changes(:name)).must_equal(
+      [2, "Ingemar Jansson & Mikael Danielsson"]
+    )
+    expect(twin.songs[1].composer.changes).must_equal({
+      "name" => [2, "Ingemar Jansson & Mikael Danielsson"]
+    })
     expect(twin.songs[1].composer.changed?).must_equal true
 
     expect(twin.artist.changed?(:name)).must_equal true
+    expect(twin.artist.changes(:name)).must_equal ["Randy", "No Fun At All"]
+    expect(twin.artist.changes).must_equal({
+      "name" => ["Randy", "No Fun At All"]
+    })
     expect(twin.artist.changed?).must_equal true
 
     # you can also ask for nested twins by name.
