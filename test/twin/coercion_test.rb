@@ -3,6 +3,12 @@ require "test_helper"
 require "disposable/twin/coercion"
 
 class CoercionTest < Minitest::Spec
+  Album  = Struct.new(:id, :released_at, :hit, :band, keyword_init: true)
+  Hit    = Struct.new(:length, :good, keyword_init: true)
+  Band   = Struct.new(:label, keyword_init: true)
+  Label  = Struct.new(:value, keyword_init: true)
+  Person = Struct.new(:id, :date_of_birth, :date_of_death_by_unicorns, keyword_init: true)
+
   class TwinWithSkipSetter < Disposable::Twin
     feature Coercion
     feature Setup::SkipSetter
@@ -28,11 +34,11 @@ class CoercionTest < Minitest::Spec
     end
 
     let (:album) {
-      OpenStruct.new(
+      Album.new(
         id: 1,
         :released_at => "31/03/1981",
-        :hit         => OpenStruct.new(:length => "312"),
-        :band        => OpenStruct.new(:label => OpenStruct.new(:value => "9999.99"))
+        :hit         => Hit.new(:length => "312"),
+        :band        => Band.new(:label => Label.new(:value => "9999.99"))
       )
     }
 
@@ -65,7 +71,7 @@ class CoercionTest < Minitest::Spec
   describe "without Setup::SkipSetter" do
 
     subject do
-      TwinWithoutSkipSetter.new(OpenStruct.new(id: "1"))
+      TwinWithoutSkipSetter.new(Person.new(id: "1"))
     end
 
     it "coerce values in setup and when using a setter" do
@@ -95,9 +101,9 @@ class CoercionTest < Minitest::Spec
 
   describe "with Nilify" do
     subject do
-      TwinWithNilify.new(OpenStruct.new(date_of_birth: '1990-01-12',
-                                        date_of_death_by_unicorns: '2037-02-18',
-                                        id: 1))
+      TwinWithNilify.new(Person.new(date_of_birth: '1990-01-12',
+                                    date_of_death_by_unicorns: '2037-02-18',
+                                    id: 1))
     end
 
     it "coerce values correctly" do
@@ -125,7 +131,7 @@ class CoercionTest < Minitest::Spec
     let(:date_of_birth) { '1990-01-12' }
     subject do
       TwinWithoutTypeWithNilify.new(
-        OpenStruct.new(
+        Person.new(
           date_of_birth: date_of_birth,
           date_of_death_by_unicorns: '2037-02-18',
           id: 1

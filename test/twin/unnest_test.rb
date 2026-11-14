@@ -16,14 +16,17 @@ class UnnestTest < Minitest::Spec
   end
 
   it "copies property option" do
-    expect(Twin.definitions.get(:id).extend(Declarative::Inspect).inspect).must_equal %{#<Disposable::Twin::Definition: @options={:nice=>\"yes\", :private_name=>:id, :name=>\"id\", :readable=>false, :writeable=>false}>}
-    expect(Twin.definitions.get(:ids).extend(Declarative::Inspect).inspect).must_equal %{#<Disposable::Twin::Definition: @options={:status=>\"healthy\", :collection=>true, :private_name=>:ids, :name=>\"ids\", :readable=>false, :writeable=>false}>}
+    assert_equal %{#<Disposable::Twin::Definition: @options={:nice=>\"yes\", :private_name=>:id, :name=>\"id\", :readable=>false, :writeable=>false}>}, Trailblazer::Core::Utils.inspect(Twin.definitions.get(:id).extend(Declarative::Inspect).inspect)
+    assert_equal %{#<Disposable::Twin::Definition: @options={:status=>\"healthy\", :collection=>true, :private_name=>:ids, :name=>\"ids\", :readable=>false, :writeable=>false}>}, Trailblazer::Core::Utils.inspect(Twin.definitions.get(:ids).extend(Declarative::Inspect).inspect)
     # also copies :nested.
-    expect(Twin.definitions.get(:email).extend(Declarative::Inspect).inspect).must_equal %{#<Disposable::Twin::Definition: @options={:private_name=>:email, :nested=>#<Class:>, :name=>\"email\", :readable=>false, :writeable=>false}>}
+    assert_equal %{#<Disposable::Twin::Definition: @options={:private_name=>:email, :nested=>#<Class:>, :name=>\"email\", :readable=>false, :writeable=>false}>}, Trailblazer::Core::Utils.inspect(Twin.definitions.get(:email).extend(Declarative::Inspect).inspect)
   end
 
+  Content = Struct.new(:id, :ids, :email)
+  Model   = Struct.new(:content)
+
   it "exposes accessors on top-level twin" do
-    twin = Twin.new(OpenStruct.new(content: OpenStruct.new()))
+    twin = Twin.new(Model.new(Content.new))
 
     expect(twin.email).must_be_nil
     twin.email= 2

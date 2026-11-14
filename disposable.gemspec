@@ -11,6 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Decorators on top of your ORM layer with change tracking, collection semantics and nesting.}
   spec.homepage      = "https://github.com/apotonick/disposable"
   spec.license       = "MIT"
+  spec.required_ruby_version = ">= 3.3.0"
 
   spec.files         = `git ls-files`.split($/)
   spec.test_files    = spec.files.grep(%r{^(test)/})
@@ -19,7 +20,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "declarative",         ">= 0.0.9", "< 1.0.0"
   # spec.add_dependency "declarative-builder"  #, ">= 0.2.0"
   spec.add_dependency "representable",       ">= 3.1.1", "< 4"
-  spec.add_dependency "ostruct",             "< 1"
 
   spec.add_development_dependency "bundler"#, "~> 1.3"
   spec.add_development_dependency "rake"

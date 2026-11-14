@@ -3,7 +3,6 @@
 #   2. call sync! on nested
 #
 # Note: #sync currently implicitly saves AR objects with collections
-require 'ostruct'
 class Disposable::Twin
   module Sync
     class Options < ::Hash
@@ -155,7 +154,9 @@ class Disposable::Twin
       end
 
       def nested_hash_source
-        OpenStruct.new(@fields)
+        names = schema.each.collect { |dfn| dfn[:name] }
+
+        Data.define(*names.map(&:to_sym)).new(*names.collect { |name| @fields[name] })
       end
     end
   end

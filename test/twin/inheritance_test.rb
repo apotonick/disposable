@@ -1,7 +1,7 @@
 require "test_helper"
 
 class InheritanceTest < Minitest::Spec
-  let (:song) { OpenStruct.new(id: 0) }
+  let (:song) { Struct.new(:id).new(0) }
 
   module Id
     def id

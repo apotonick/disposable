@@ -3,6 +3,7 @@ require "minitest/autorun"
 # require "representable/debug"
 # require "pp"
 require "declarative/testing"
+require "trailblazer/core"
 
 require "disposable/twin/coercion"
 DRY_TYPES_CONSTANT = Disposable::Twin::Coercion::DRY_TYPES_CONSTANT
@@ -78,4 +79,3 @@ module Disposable
     end
   end
 end
-

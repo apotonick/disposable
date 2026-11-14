@@ -78,7 +78,11 @@ class TwinWithNestedStructTest < Minitest::Spec
   end
 
   # FIXME: test with missing hash properties, e.g. without released and with released:false.
-  let (:model) { OpenStruct.new(title: "Seed of Fear and Anger", options: {recorded: true, released: 1,
+  Model = Struct.new(:title, :options, keyword_init: true) do
+    def save = true
+  end
+
+  let (:model) { Model.new(title: "Seed of Fear and Anger", options: {recorded: true, released: 1,
     preferences: {show_image: true, play_teaser: 2}, roles: [{name: "user"}]}) }
 
   # public "hash" reader
@@ -288,8 +292,10 @@ class CompositionWithStructTest < Minitest::Spec
     end
   end
 
+  Model = Struct.new(:content, keyword_init: true)
+
   let (:model) do
-    OpenStruct.new(
+    Model.new(
       content: {
         tags:  "#hashtag",
         notes: [
