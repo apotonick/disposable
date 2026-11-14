@@ -1,5 +1,4 @@
 require "disposable/twin"
-require 'ostruct'
 require 'benchmark'
 
 class Band < Disposable::Twin

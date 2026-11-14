@@ -215,11 +215,12 @@ class CollectionUnitTest < Minitest::Spec
   end
 
   module Model
+    Song  = Struct.new(:id, :title, :album)
     Album = Struct.new(:id, :name, :songs, :artist)
   end
 
   # THIS is why private tests suck!
-  let(:collection) { Disposable::Twin::Collection.new(Disposable::Twin::Twinner.new(Twin::Song.new(OpenStruct.new), Twin::Song.definitions.get(:album)), []) }
+  let(:collection) { Disposable::Twin::Collection.new(Disposable::Twin::Twinner.new(Twin::Song.new(Model::Song.new), Twin::Song.definitions.get(:album)), []) }
 
   # #insert(index, model)
   it do

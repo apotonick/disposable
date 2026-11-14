@@ -40,19 +40,19 @@ class ReschemeTest < Minitest::Spec
     expect(decorator.new(nil).hello).must_equal "hello"
     expect(decorator.new(nil).ciao).must_equal "ciao"
 
-    expect(decorator.representable_attrs.get(:id).inspect).must_equal "#<Representable::Definition ==>id @options={:name=>\"id\", :parse_filter=>[], :render_filter=>[]}>"
-    expect(decorator.representable_attrs.get(:title).inspect).must_equal "#<Representable::Definition ==>title @options={:writeable=>false, :deserializer=>{:skip_parse=>\"skip lambda\"}, :name=>\"title\", :parse_filter=>[], :render_filter=>[], :skip_parse=>\"skip lambda\"}>"
+    assert_equal "#<Representable::Definition ==>id @options={:name=>\"id\", :parse_filter=>[], :render_filter=>[]}>", Trailblazer::Core::Utils.inspect(decorator.representable_attrs.get(:id).inspect)
+    assert_equal "#<Representable::Definition ==>title @options={:writeable=>false, :deserializer=>{:skip_parse=>\"skip lambda\"}, :name=>\"title\", :parse_filter=>[], :render_filter=>[], :skip_parse=>\"skip lambda\"}>", Trailblazer::Core::Utils.inspect(decorator.representable_attrs.get(:title).inspect)
 
     songs = decorator.representable_attrs.get(:songs)
     options = songs.instance_variable_get(:@options)
     options[:nested].extend(Declarative::Inspect)
-    expect(options.inspect).must_equal "{:readable=>false, :deserializer=>{:skip_parse=>\"another lambda\", :music=>true, :writeable=>false}, :nested=>#<Class:>, :extend=>#<Class:>, :name=>\"songs\", :parse_filter=>[], :render_filter=>[], :skip_parse=>\"another lambda\", :music=>true, :writeable=>false}"
+    assert_equal "{:readable=>false, :deserializer=>{:skip_parse=>\"another lambda\", :music=>true, :writeable=>false}, :nested=>#<Class:>, :extend=>#<Class:>, :name=>\"songs\", :parse_filter=>[], :render_filter=>[], :skip_parse=>\"another lambda\", :music=>true, :writeable=>false}", Trailblazer::Core::Utils.inspect(options)
 
     # nested works.
     expect(options[:nested].new(nil).hello).must_equal "hello"
     expect(options[:nested].new(nil).ciao).must_equal "ciao"
 
-    expect(options[:nested].representable_attrs.get(:name).inspect).must_equal "#<Representable::Definition ==>name @options={:as=>\"Name\", :deserializer=>{:skip_parse=>\"a crazy cool instance method\"}, :name=>\"name\", :parse_filter=>[], :render_filter=>[], :skip_parse=>\"a crazy cool instance method\"}>"
+    assert_equal "#<Representable::Definition ==>name @options={:as=>\"Name\", :deserializer=>{:skip_parse=>\"a crazy cool instance method\"}, :name=>\"name\", :parse_filter=>[], :render_filter=>[], :skip_parse=>\"a crazy cool instance method\"}>", Trailblazer::Core::Utils.inspect(options[:nested].representable_attrs.get(:name).inspect)
   end
 
   # :options_from and :include is optional
@@ -61,8 +61,8 @@ class ReschemeTest < Minitest::Spec
       definitions_from: lambda { |nested| nested.definitions }
     )
 
-    expect(decorator.representable_attrs.get(:id).inspect).must_equal "#<Representable::Definition ==>id @options={:name=>\"id\", :parse_filter=>[], :render_filter=>[]}>"
-    expect(decorator.representable_attrs.get(:title).inspect).must_equal "#<Representable::Definition ==>title @options={:writeable=>false, :deserializer=>{:skip_parse=>\"skip lambda\"}, :name=>\"title\", :parse_filter=>[], :render_filter=>[]}>"
+    assert_equal "#<Representable::Definition ==>id @options={:name=>\"id\", :parse_filter=>[], :render_filter=>[]}>", Trailblazer::Core::Utils.inspect(decorator.representable_attrs.get(:id).inspect)
+    assert_equal "#<Representable::Definition ==>title @options={:writeable=>false, :deserializer=>{:skip_parse=>\"skip lambda\"}, :name=>\"title\", :parse_filter=>[], :render_filter=>[]}>", Trailblazer::Core::Utils.inspect(decorator.representable_attrs.get(:title).inspect)
   end
 
 
@@ -73,9 +73,9 @@ class ReschemeTest < Minitest::Spec
       exclude_options: [:deserializer]
     )
 
-    expect(decorator.representable_attrs.get(:id).inspect).must_equal "#<Representable::Definition ==>id @options={:name=>\"id\", :parse_filter=>[], :render_filter=>[]}>"
-    expect(decorator.representable_attrs.get(:title).inspect).must_equal "#<Representable::Definition ==>title @options={:writeable=>false, :name=>\"title\", :parse_filter=>[], :render_filter=>[]}>"
-    expect(decorator.representable_attrs.get(:songs).representer_module.representable_attrs.get(:name).inspect).must_equal "#<Representable::Definition ==>name @options={:as=>\"Name\", :name=>\"name\", :parse_filter=>[], :render_filter=>[]}>"
+    assert_equal "#<Representable::Definition ==>id @options={:name=>\"id\", :parse_filter=>[], :render_filter=>[]}>", Trailblazer::Core::Utils.inspect(decorator.representable_attrs.get(:id).inspect)
+    assert_equal "#<Representable::Definition ==>title @options={:writeable=>false, :name=>\"title\", :parse_filter=>[], :render_filter=>[]}>", Trailblazer::Core::Utils.inspect(decorator.representable_attrs.get(:title).inspect)
+    assert_equal "#<Representable::Definition ==>name @options={:as=>\"Name\", :name=>\"name\", :parse_filter=>[], :render_filter=>[]}>", Trailblazer::Core::Utils.inspect(decorator.representable_attrs.get(:songs).representer_module.representable_attrs.get(:name).inspect)
   end
 
 
@@ -85,8 +85,8 @@ class ReschemeTest < Minitest::Spec
       definitions_from: lambda { |nested| nested.definitions },
     ) { |dfn| dfn.merge!(amazing: true) }
 
-    expect(decorator.representable_attrs.get(:id).inspect).must_equal "#<Representable::Definition ==>id @options={:name=>\"id\", :parse_filter=>[], :render_filter=>[], :amazing=>true}>"
-    expect(decorator.representable_attrs.get(:songs).representer_module.representable_attrs.get(:name).inspect).must_equal "#<Representable::Definition ==>name @options={:as=>\"Name\", :deserializer=>{:skip_parse=>\"a crazy cool instance method\"}, :name=>\"name\", :parse_filter=>[], :render_filter=>[], :amazing=>true}>"
+    assert_equal "#<Representable::Definition ==>id @options={:name=>\"id\", :parse_filter=>[], :render_filter=>[], :amazing=>true}>", Trailblazer::Core::Utils.inspect(decorator.representable_attrs.get(:id).inspect)
+    assert_equal "#<Representable::Definition ==>name @options={:as=>\"Name\", :deserializer=>{:skip_parse=>\"a crazy cool instance method\"}, :name=>\"name\", :parse_filter=>[], :render_filter=>[], :amazing=>true}>", Trailblazer::Core::Utils.inspect(decorator.representable_attrs.get(:songs).representer_module.representable_attrs.get(:name).inspect)
   end
 
   it "recursive: false only copies first level" do
@@ -97,8 +97,8 @@ class ReschemeTest < Minitest::Spec
       exclude_options: [:deserializer]
     )
 
-    expect(decorator.representable_attrs.get(:title).inspect).must_equal "#<Representable::Definition ==>title @options={:writeable=>false, :name=>\"title\", :parse_filter=>[], :render_filter=>[]}>"
-    expect(decorator.representable_attrs.get(:songs).representer_module.representable_attrs.get(:name).inspect).must_equal "#<Representable::Definition ==>name @options={:as=>\"Name\", :deserializer=>{:skip_parse=>\"a crazy cool instance method\"}, :name=>\"name\", :parse_filter=>[], :render_filter=>[]}>"
+    assert_equal "#<Representable::Definition ==>title @options={:writeable=>false, :name=>\"title\", :parse_filter=>[], :render_filter=>[]}>", Trailblazer::Core::Utils.inspect(decorator.representable_attrs.get(:title).inspect)
+    assert_equal "#<Representable::Definition ==>name @options={:as=>\"Name\", :deserializer=>{:skip_parse=>\"a crazy cool instance method\"}, :name=>\"name\", :parse_filter=>[], :render_filter=>[]}>", Trailblazer::Core::Utils.inspect(decorator.representable_attrs.get(:songs).representer_module.representable_attrs.get(:name).inspect)
   end
 
   describe ":exclude_properties" do
@@ -145,8 +145,8 @@ class TwinReschemeTest < Minitest::Spec
     artist = decorator.representable_attrs.get(:artist)
     options = artist.instance_variable_get(:@options)
     nested_extend = options[:nested]
-    expect(options.extend(Declarative::Inspect).inspect).must_equal "{:private_name=>:artist, :nested=>#<Class:>, :name=>\"artist\", :extend=>#<Class:>, :parse_filter=>[], :render_filter=>[]}"
+    assert_equal "{:private_name=>:artist, :nested=>#<Class:>, :name=>\"artist\", :extend=>#<Class:>, :parse_filter=>[], :render_filter=>[]}", Trailblazer::Core::Utils.inspect(options.extend(Declarative::Inspect).inspect)
     assert nested_extend < Representable::Decorator
-    expect(nested_extend.representable_attrs.get(:name).inspect).must_equal "#<Representable::Definition ==>name @options={:private_name=>:name, :name=>\"name\", :parse_filter=>[], :render_filter=>[]}>"
+    assert_equal "#<Representable::Definition ==>name @options={:private_name=>:name, :name=>\"name\", :parse_filter=>[], :render_filter=>[]}>", Trailblazer::Core::Utils.inspect(nested_extend.representable_attrs.get(:name).inspect)
   end
 end

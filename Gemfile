@@ -1,12 +1,16 @@
 source "https://rubygems.org"
 gemspec
 gem "minitest-line"
+gem "trailblazer-core-utils"
 
-{ "dry-types" => ENV['DRY_TYPES'], "activerecord" => ENV['ACTIVERECORD']}.each do |gem_name, dependency|
-  next if dependency.nil?
-  gem gem_name, dependency
+if ENV['DRY_TYPES']
+  gem "dry-types", ENV['DRY_TYPES']
 end
 
-gem "sqlite3", ENV.fetch('ACTIVERECORD', '5.2').to_f >= 6 ? '~> 1.4' : '~> 1.3.0'
+if ENV['ACTIVERECORD']
+  gem "activerecord", "~> #{ENV['ACTIVERECORD']}.0"
+end
+
+gem "sqlite3", "~> 2.1"
 
 # gem "declarative-builder"
