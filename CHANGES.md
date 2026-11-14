@@ -1,3 +1,8 @@
+# 0.7.0
+
+* Support Ruby >= 3.3.
+* Remove `Ostruct` dependency.
+
 # 0.6.3
 
 * Loosen `representable` dependency to `< 4`.
